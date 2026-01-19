@@ -6,9 +6,7 @@ const { getRunByID } = require("../database.js");
 
 router.get("/:id", async (req, res) => {
   if (!isUUID(req.params.id)) {
-    const err = new Error(
-      "runID must be a valid UUID."
-    );
+    const err = new Error("runID must be a valid UUID.");
     err.status = 400;
     throw err;
   }

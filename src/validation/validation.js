@@ -17,6 +17,14 @@ const isCorrectISODate = (str) => {
   return !isNaN(date.getTime());
 };
 
+const validateJsonContentType = (req) => {
+  if (!req.is("json")) {
+    const err = new Error("Content-Type must be json.");
+    err.status = 415;
+    throw err;
+  }
+}
+
 /* ================================================================================================= */
 /*  RUN DATA VALIDATION                                                                              */
 /* ================================================================================================= */
@@ -72,4 +80,49 @@ const validateRunFields = ({
   };
 };
 
-module.exports = { isUUID, isCorrectISODate, validateRunFields };
+const parseAndValidateRun = (req) => {
+  validateJsonContentType(req);
+
+  const { userId, startTime, durationSec, distanceMeters } = req.body;
+  const runData = validateRunFields({
+    userId,
+    startTime,
+    durationSec,
+    distanceMeters,
+  });
+  return runData;
+};
+
+/* ================================================================================================= */
+/*  USER DATA VALIDATION                                                                             */
+/* ================================================================================================= */
+
+const parseAndValidateUser = (req) => {
+  validateJsonContentType(req);
+
+  const { username, password, email, profile } = req.body;
+  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+
+  const userData = validateUserFields({
+    username,
+    password,
+    email,
+    firstName,
+    lastName,
+    dateOfBirth,
+    heightCm,
+    weightKg,
+  });
+  return userData;
+};
+
+/* ================================================================================================= */
+/*  EXPORTS                                                                                          */
+/* ================================================================================================= */
+
+module.exports = {
+  isUUID,
+  isCorrectISODate,
+  parseAndValidateRun,
+  parseAndValidateUser,
+};
