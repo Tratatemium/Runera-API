@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+const { validateRunFields } = require("../validation/validation.js");
 const { addNewRun } = require("../database.js");
 
 /* ================================================================================================= */
