@@ -4,6 +4,7 @@
 
 const { MongoClient, ObjectId } = require("mongodb");
 const dotenv = require("dotenv");
+const { randomUUID } = require("crypto");
 
 /* ================================================================================================= */
 /*  CONFIGURATION                                                                                    */
@@ -66,14 +67,17 @@ const getRunByID = async (runID) => {
 const addNewRun = async (runJSON) => {
   const runs = getCollection("runs");
 
+  const newRunID = randomUUID();
+  runJSON.runID = newRunID;
+
   const result = await runs.insertOne(runJSON);
   if (!result.acknowledged) {
     const err = new Error("Failed to save new run.");
     err.status = 500;
     throw err;
   }
-  console.log("New run added to the database. ID:", result.insertedId);
-  return result.insertedId;
+  console.log("New run added to the database. ID:", newRunID);
+  return newRunID;
 };
 
 /* ================================================================================================= */
