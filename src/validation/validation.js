@@ -110,7 +110,7 @@ const validateUserFields = ({
 }) => {
   // To be implemented
 
-  const validatedUserData = {
+  const validated = {
     username,
     email,
     firstName,
@@ -120,7 +120,7 @@ const validateUserFields = ({
     weightKg,
   };
 
-  return { validatedUserData, plainTextPassword: password };
+  return { userData: validated, plainTextPassword: password };
 };
 
 const parseAndValidateUser = (req) => {

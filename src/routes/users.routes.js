@@ -14,16 +14,3 @@ router.post("/new-user", async (req, res) => {
 });
 
 module.exports = router;
-
-// {
-//   "username": "fastfeet",
-//   "password": "StrongPassword!123",
-//   "email": "runner@example.com",
-//   "profile": {
-//     "firstName": "Alex",
-//     "lastName": "Miller",
-//     "dateOfBirth": "1995-06-18",
-//     "heightCm": 178,
-//     "weightKg": 72
-//   }
-// }
