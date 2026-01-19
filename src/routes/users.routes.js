@@ -2,9 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const { parseAndValidateUser } = require("../validation/validation.js");
+const { hashPassword } = require("../authentication/hashing.js");
 
 router.post("/new-user", async (req, res) => {
-  const newUser = parseAndValidateUser(req);
+  const { userData, plainTextPassword } = parseAndValidateUser(req);
+  const hashedPassword = await hashPassword(plainTextPassword);
+  const newUser = {...userData, password: hashedPassword };
   const newUserID = await addNewUser(newUser);
   res.status(201).send(`New user ID: ${newUserID}`);
 });

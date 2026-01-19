@@ -98,6 +98,32 @@ const parseAndValidateRun = (req) => {
 /*  USER DATA VALIDATION                                                                             */
 /* ================================================================================================= */
 
+const validateUserFields = ({
+    username,
+    password,
+    email,
+    firstName,
+    lastName,
+    dateOfBirth,
+    heightCm,
+    weightKg,
+  }) => {
+
+  // To be implemented
+
+  const validatedUserData = {
+    username,
+    email,
+    firstName,
+    lastName,
+    dateOfBirth,
+    heightCm,
+    weightKg,
+  }
+
+  return { validatedUserData, password }; 
+};
+
 const parseAndValidateUser = (req) => {
   validateJsonContentType(req);
 
