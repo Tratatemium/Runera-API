@@ -23,19 +23,19 @@ let db;
 const connectDB = async () => {
   await client.connect();
   console.log("Connected to database.");
-  db =  client.db("runners-app");    
+  db = client.db("runners-app");
 };
 
 const getCollection = (collectionName) => {
   if (!db) {
     const err = new Error(
       "Database not initialized. Ensure connectDB() has completed before accessing collections."
-    )
+    );
     err.status = 500;
     throw err;
   }
   return db.collection(collectionName);
-}
+};
 
 /* ================================================================================================= */
 /*  DATABASE OPERATIONS                                                                              */
