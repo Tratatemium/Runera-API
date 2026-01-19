@@ -1,13 +1,17 @@
-const request = reqire("supertest");
-const { describe } = require("node:test");
+const request = require("supertest");
 const app = require("../src/app.js");
 
 describe("GET /", () => {
     it ("checks server avilability", async () => {
         const response = await request(app)
-            .post("/")
-            .send();
+            .get("/");
         
         expect(response.statusCode).toBe(200)
     });
 });
+
+
+
+// it("creates user", async () => {
+//   // test
+// }, 10000);
