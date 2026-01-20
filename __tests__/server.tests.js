@@ -9,6 +9,13 @@ describe("GET /", () => {
   });
 });
 
+describe("GET /server-runtime", () => {
+  it("checks server runtime", async () => {
+    const response = await request(app).get("/server-runtime");
+
+    expect(response.statusCode).toBe(200);
+  });
+});
 
 
 
