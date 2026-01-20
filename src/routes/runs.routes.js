@@ -18,10 +18,7 @@ router.get("/:id", async (req, res) => {
 router.post("/new-run", async (req, res) => {
   const newRun = parseAndValidateRun(req);
   const newRunID = await addNewRun(newRun);
-  res.status(201)
-    .json({
-      id: newRunID
-    });
+  res.status(201).json({ id: newRunID });
 });
 
 module.exports = router;
