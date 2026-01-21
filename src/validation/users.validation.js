@@ -27,6 +27,7 @@ const parseAndValidateUser = async (req) => {
   return { userData: validated, plainTextPassword: password };
 };
 
+// TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
 //      "firstName": "Alex",
 //      "lastName": "Miller",
