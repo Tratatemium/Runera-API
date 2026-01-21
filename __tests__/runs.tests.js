@@ -52,50 +52,111 @@ describe("GET /runs/:id", () => {
   });
 });
 
-describe("POST /runs/", () => {
-  it("returns 201 and creates a new run with valid data", async () => {
-    const newRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-19T12:25:44.822Z",
-      durationSec: 457,
-      distanceMeters: 1574,
-    };
+describe("POST /runs/ - Integration Tests", () => {
 
-    const res = await request(app).post("/runs/").send(newRun);
+  const validRunData = {
+    userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
+    startTime: "2026-01-19T12:25:44.822Z",
+    durationSec: 1800,
+    distanceMeters: 5000,
+  };
+
+  it("returns 201 and id of created run with valid data", async () => {
+    const res = await request(app)
+      .post("/runs/")
+      .send(validRunData);
 
     expect(res.statusCode).toBe(201);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("id");
   });
 
-  it("returns 415 for wrong Content-Type", async () => {
-    const res = await request(app).post("/runs/");
+
+  it("returns 415 when Content-Type is not JSON", async () => {
+    const res = await request(app)        
+      .post('/runs')
+      .set('Content-Type', 'text/plain')
+      .send('not json');
 
     expect(res.statusCode).toBe(415);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Content-Type must be json.');
   });
+
 
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/runs/").send({});
+    const res = await request(app)
+      .post("/runs/")
+      .send({});
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Run data is missing required fields: userId, startTime, durationSec, distanceMeters.');
   });
 
-  it("returns 400 for missing duration field", async () => {
-    const invalidRun = {
-      userId: "1d9a8400-07cd-466a-9d13-843a544a5b09",
-      startTime: "2026-01-11T14:45:44.822Z",
-      distanceMeters: 1727,
-    };
 
-    const res = await request(app).post("/runs/").send(invalidRun);
+  it("returns 400 for missing userId field", async () => {
+    const { userId, ...dataWithoutUserId } = validRunData;
+    const res = await request(app)
+      .post("/runs/")
+      .send(dataWithoutUserId);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Run data is missing required fields: userId.');
+  });
+
+  
+  it("returns 400 for missing startTime field", async () => {
+    const { startTime, ...dataWithoutStartTime } = validRunData;
+    const res = await request(app)
+      .post("/runs/")
+      .send(dataWithoutStartTime);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Run data is missing required fields: startTime.');
+  });
+
+  
+  it("returns 400 for missing durationSec field", async () => {
+    const { durationSec, ...dataWithoutDurationSec } = validRunData;
+    const res = await request(app)
+      .post("/runs/")
+      .send(dataWithoutDurationSec);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Run data is missing required fields: durationSec.');
+  });
+
+  
+  it("returns 400 for missing distanceMeters field", async () => {
+    const { distanceMeters, ...dataWithoutDistanceMeters } = validRunData;
+    const res = await request(app)
+      .post("/runs/")
+      .send(dataWithoutDistanceMeters);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toBe('Run data is missing required fields: distanceMeters.');
+  });
+
+  it("returns 400 when field is null", async () => {
+    const res = await request(app)
+      .post("/runs")
+      .send({ ...validRunData, userId: null });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.headers["content-type"]).toMatch(/json/);
+    expect(res.body).toHaveProperty("error");
+    expect(res.body.error).toContain("userId");
   });
 
   it("returns 400 for invalid userId format", async () => {
