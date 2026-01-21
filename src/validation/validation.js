@@ -18,8 +18,18 @@ const validateJsonContentType = (req) => {
   }
 };
 
-const assertRequestFields = () => {
-  
+const assertRequestFields = (req, requiredFields, objectName = "Request body") => {
+  if (typeof req.body !== "object" || req.body === null) {
+    throwValidationError(`${objectName} must be an object`)
+  }
+
+  const missingFields = requiredFields.filter(
+    (field) => req.body[field] === undefined || req.body[field] === null
+  );
+  if (missingFields.length > 0) {
+    const missingFieldsString = missingFields.join(", ");
+    throwValidationError(`${objectName} is missing required fields: ${missingFieldsString}.`)
+  }
 }
 
 const validateUUID = (ID, IDname = "ID") => {
@@ -65,13 +75,6 @@ const validateRunFields = ({
   durationSec,
   distanceMeters,
 }) => {
-  if (!userId || !startTime || durationSec == null || distanceMeters == null) {
-    const err = new Error(
-      "The request body must include all required fields: userId, startTime, durationSec, distanceMeters.",
-    );
-    err.status = 400;
-    throw err;
-  }
 
   validateUUID(userId, "userId");
   validateISODate(startTime, "startTime");
@@ -101,6 +104,12 @@ const validateRunFields = ({
 
 const parseAndValidateRun = (req) => {
   validateJsonContentType(req);
+
+  assertRequestFields(
+    req,
+    [ "userId",  "startTime",  "durationSec",  "distanceMeters" ],
+    "Run data"
+  )
 
   const { userId, startTime, durationSec, distanceMeters } = req.body;
   const runData = validateRunFields({
