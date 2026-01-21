@@ -21,11 +21,3 @@ describe("GET /server-runtime", () => {
     expect(res.body.message).toMatch(/^Server is running for \d+(\.\d)? s\.$/);
   });
 });
-
-
-
-
-
-// it("creates user", async () => {
-//   // test
-// }, 10000);
