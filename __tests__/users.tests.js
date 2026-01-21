@@ -33,5 +33,5 @@ describe("POST /users/new-user", () => {
     expect(res.statusCode).toBe(201);
     expect(res.headers["content-type"]).toMatch(/json/);
     expect(res.body).toHaveProperty("id");
-  });
-}, 10000);
+  }, 10000);
+});

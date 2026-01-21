@@ -27,7 +27,7 @@ describe("GET /runs/:id", () => {
     expect(new Date(res.body.startTime).toString()).not.toBe("Invalid Date");
   });
 
-  it("returns 404 for an non-existing ID", async () => {
+  it("returns 404 for a non-existing ID", async () => {
     const runID = "dc9811e7-72d6-4df8-b6da-c1c5219d6109";
 
     const res = await request(app).get(`/runs/${runID}`);
