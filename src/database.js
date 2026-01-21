@@ -42,7 +42,7 @@ const getCollection = (collectionName) => {
 /*  DATABASE OPERATIONS                                                                              */
 /* ================================================================================================= */
 
-const getRunByID = async (runID) => {
+const findRunByID = async (runID) => {
   const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
@@ -85,7 +85,7 @@ const addNewUser = async (newUser) => {
 
 module.exports = {
   connectDB,
-  getRunByID,
+  findRunByID,
   addNewRun,
   addNewUser,
 };
