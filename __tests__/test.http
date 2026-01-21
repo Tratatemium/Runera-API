@@ -101,6 +101,17 @@ Content-Type: application/json
   "distanceMeters": 1727
 }
 
+### Bad date
+POST http://localhost:3000/runs/
+Content-Type: application/json
+
+{
+  "userId": "1d9a8400-07cd-466a-9d13-843a544a5b09",
+  "startTime": 123456,
+  "durationSec": 1550,
+  "distanceMeters": 1727
+}
+
 
 ### Bad duration
 POST http://localhost:3000/runs/
