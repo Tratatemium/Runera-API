@@ -2,33 +2,58 @@
 /*  HELPER FUNCTIONS                                                                                 */
 /* ================================================================================================= */
 
+const throwValidationError = (message, status = 400) => {
+  const err = new Error(message);
+  err.status = status;
+  throw err;
+};
+
+/* ================================================================================================= */
+/*  VALIDATE FUNCTIONS                                                                               */
+/* ================================================================================================= */
+
+const validateJsonContentType = (req) => {
+  if (!req.is("json")) {
+    throwValidationError("Content-Type must be json.", 415);
+  }
+};
+
+const assertRequestFields = () => {
+  
+}
+
 const validateUUID = (ID, IDname = "ID") => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const isUUID = uuidRegex.test(ID);
   if (!isUUID) {
-    const err = new Error(`${IDname} must be a valid UUID.`);
-    err.status = 400;
-    throw err;
+    throwValidationError(`${IDname} must be a valid UUID.`);
   }
 };
 
-const isCorrectISODate = (str) => {
-  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+const validateISODate = (timestamp, timestampName) => {
+  if (typeof timestamp !== "string") {
+    throwValidationError(
+      `${timestampName} must be a string in ISO 8601 format.`,
+    );
+  }
 
-  if (!isoRegex.test(str)) return false;
+  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
 
-  const date = new Date(str);
-  return !isNaN(date.getTime());
-};
+  if (!isoRegex.test(timestamp)) {
+    throwValidationError(
+      `${timestampName} must be a valid date in the ISO 8601 format.`,
+    );
+  }
 
-const validateJsonContentType = (req) => {
-  if (!req.is("json")) {
-    const err = new Error("Content-Type must be json.");
-    err.status = 415;
-    throw err;
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) {
+    throwValidationError(
+      `${timestampName} must be a valid date in the ISO 8601 format.`,
+    );
   }
 };
+
 
 /* ================================================================================================= */
 /*  RUN DATA VALIDATION                                                                              */
@@ -42,21 +67,14 @@ const validateRunFields = ({
 }) => {
   if (!userId || !startTime || durationSec == null || distanceMeters == null) {
     const err = new Error(
-      "The request body must include all required fields: userId, startTime, durationSec, distanceMeters."
+      "The request body must include all required fields: userId, startTime, durationSec, distanceMeters.",
     );
     err.status = 400;
     throw err;
   }
 
   validateUUID(userId, "userId");
-
-  if (!isCorrectISODate(startTime)) {
-    const err = new Error(
-      "startTime must be a valid date in the ISO 8601 format."
-    );
-    err.status = 400;
-    throw err;
-  }
+  validateISODate(startTime, "startTime");
 
   const durationNormalized = Number(durationSec);
   const distanceNormalized = Number(distanceMeters);
@@ -98,28 +116,18 @@ const parseAndValidateRun = (req) => {
 /*  USER DATA VALIDATION                                                                             */
 /* ================================================================================================= */
 
-const validateUserFields = ({
-  username,
-  password,
-  email,
-  firstName,
-  lastName,
-  dateOfBirth,
-  heightCm,
-  weightKg,
-}) => {
-  // To be implemented
+const validateUserFields = ({ username, password, email }) => {
+  isUsernameValid(username);
+  isUsernameUnique(username);
+
+  isEmailValid(email);
+  isEmailUnique(email);
+
+  isPasswordValid(password);
 
   const validated = {
     username,
     email,
-    profile: {
-      firstName,
-      lastName,
-      dateOfBirth,
-      heightCm,
-      weightKg,
-    }
   };
 
   return { userData: validated, plainTextPassword: password };
@@ -128,21 +136,70 @@ const validateUserFields = ({
 const parseAndValidateUser = (req) => {
   validateJsonContentType(req);
 
-  const { username, password, email, profile } = req.body;
-  const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+  const { username, password, email } = req.body;
 
   const { userData, plainTextPassword } = validateUserFields({
     username,
     password,
     email,
-    firstName,
-    lastName,
-    dateOfBirth,
-    heightCm,
-    weightKg,
   });
+
   return { userData, plainTextPassword };
 };
+
+// const validateUserFields = ({
+//   username,
+//   password,
+//   email,
+//   firstName,
+//   lastName,
+//   dateOfBirth,
+//   heightCm,
+//   weightKg,
+// }) => {
+//   // To be implemented
+
+//   const validated = {
+//     username,
+//     email,
+//     profile: {
+//       firstName,
+//       lastName,
+//       dateOfBirth,
+//       heightCm,
+//       weightKg,
+//     }
+//   };
+
+//   return { userData: validated, plainTextPassword: password };
+// };
+
+// const parseAndValidateUser = (req) => {
+//   validateJsonContentType(req);
+
+//   const { username, password, email, profile } = req.body;
+//   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
+
+//   const { userData, plainTextPassword } = validateUserFields({
+//     username,
+//     password,
+//     email,
+//     firstName,
+//     lastName,
+//     dateOfBirth,
+//     heightCm,
+//     weightKg,
+//   });
+//   return { userData, plainTextPassword };
+// };
+
+//  "profile": {
+//      "firstName": "Alex",
+//      "lastName": "Miller",
+//      "dateOfBirth": "1995-06-18",
+//      "heightCm": 178,
+//      "weightKg": 72
+//    }
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
@@ -150,7 +207,7 @@ const parseAndValidateUser = (req) => {
 
 module.exports = {
   validateUUID,
-  isCorrectISODate,
+  validateISODate,
   parseAndValidateRun,
   parseAndValidateUser,
 };

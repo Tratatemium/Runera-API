@@ -1,5 +1,3 @@
-// runs.controller.js
-
 const {
   validateUUID,
   parseAndValidateRun,

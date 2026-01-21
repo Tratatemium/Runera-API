@@ -125,19 +125,12 @@ Content-Type: application/json
   "distanceMeters": "-1455a"
 }
 
-### Good user data
-POST http://localhost:3000/users/new-user
+### Good new user data
+POST http://localhost:3000/users/
 Content-Type: application/json
 
 {
   "username": "fastfeet",
   "password": "StrongPassword!123",
-  "email": "runner@example.com",
-  "profile": {
-    "firstName": "Alex",
-    "lastName": "Miller",
-    "dateOfBirth": "1995-06-18",
-    "heightCm": 178,
-    "weightKg": 72
-  }
+  "email": "runner@example.com"
 }
