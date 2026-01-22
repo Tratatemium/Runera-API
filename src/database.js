@@ -18,13 +18,44 @@ if (!process.env.MONGO_URI) {
 /*  DATABASE INITIALIZATION                                                                          */
 /* ================================================================================================= */
 
-const client = new MongoClient(process.env.MONGO_URI);
+let client;
 let db;
 
-const connectDB = async () => {
+const connectDB = async (uri = process.env.MONGO_URI) => {
+  if (!uri) {
+    throw new Error("MongoDB URI not provided");
+  }
+  client = new MongoClient(uri);
   await client.connect();
-  console.log("Connected to database.");
   db = client.db("runners-app");
+
+  await db.collection("users").createIndex(
+    { username: 1 },
+    { unique: true }
+  );
+  await db.collection("users").createIndex(
+    { email: 1 },
+    { unique: true }
+  );
+
+  console.log("Connected to database.");
+};
+
+const closeDB = async () => {
+  if (client) {
+    await client.close();
+    client = null;
+    db = null;
+  }
+};
+
+const clearDB = async () => {
+  if (!db) return;
+
+  const collections = await db.collections();
+  for (const collection of collections) {
+    await collection.deleteMany({});
+  }
 };
 
 const getCollection = (collectionName) => {
@@ -42,25 +73,20 @@ const getCollection = (collectionName) => {
 /*  DATABASE OPERATIONS                                                                              */
 /* ================================================================================================= */
 
-const findRunByID = async (runID) => {
+const findRunById = async (runId) => {
   const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
-    runID: runID,
+    runId: runId,
   });
-  if (!selectedRun) {
-    const err = new Error(`No run with ID ${runID} found!`);
-    err.status = 404;
-    throw err;
-  }
-  return selectedRun;
+  return selectedRun || null;
 };
 
 const addNewRun = async (newRun) => {
   const runs = getCollection("runs");
 
-  const newRunID = randomUUID();
-  const runToInsert = { runID: newRunID, ...newRun };
+  const newRunId = randomUUID();
+  const runToInsert = { runId: newRunId, ...newRun };
 
   const result = await runs.insertOne(runToInsert);
   if (!result.acknowledged) {
@@ -68,15 +94,40 @@ const addNewRun = async (newRun) => {
     err.status = 500;
     throw err;
   }
-  console.log("New run added to the database. ID:", newRunID);
-  return newRunID;
+  console.log("New run added to the database. ID:", newRunId);
+  return newRunId;
+};
+
+const findUserById = async (userId) => {
+  const users = getCollection("users");
+
+  const selectedUser = await users.findOne({
+    userId: userId,
+  });
+  return selectedUser || null;
+};
+
+const findUserByField = async (field, value) => {
+  const users = getCollection("users");
+  const selectedUser = await users.findOne({
+    [field]: value,
+  });
+  return selectedUser || null;
 };
 
 const addNewUser = async (newUser) => {
-  // To be implemented
-  const newUserID = randomUUID();
-  console.log("New user added to the database. ID:", newUserID);
-  return newUserID;
+  const users = getCollection("users");
+
+  const newUserId = randomUUID();
+  const userToInsert = { userId: newUserId, ...newUser };
+  const result = await users.insertOne(userToInsert);
+  if (!result.acknowledged) {
+    const err = new Error("Failed to save new user.");
+    err.status = 500;
+    throw err;
+  }
+  console.log("New user added to the database. ID:", newUserId);
+  return newUserId;
 };
 
 /* ================================================================================================= */
@@ -85,7 +136,12 @@ const addNewUser = async (newUser) => {
 
 module.exports = {
   connectDB,
-  findRunByID,
+  getCollection,
+  closeDB,
+  clearDB,
+  findRunById,
   addNewRun,
+  findUserById,
+  findUserByField,
   addNewUser,
 };

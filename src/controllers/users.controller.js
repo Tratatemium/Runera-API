@@ -7,8 +7,8 @@ const postNewUser = async (req, res) => {
   const { passwordHash, passwordMetadata } =
     await createPasswordHash(plainTextPassword);
   const newUser = { ...userData, passwordHash, passwordMetadata };
-  const newUserID = await addNewUser(newUser);
-  res.status(201).json({ id: newUserID });
+  const newUserId = await addNewUser(newUser);
+  res.status(201).json({ id: newUserId });
 };
 
 module.exports = { postNewUser };

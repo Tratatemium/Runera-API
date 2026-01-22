@@ -78,7 +78,7 @@ Content-Type: application/json
 }
 
 
-### Bad userID
+### Bad userId
 POST http://localhost:3000/runs/
 Content-Type: application/json
 

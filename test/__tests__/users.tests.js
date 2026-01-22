@@ -1,10 +1,5 @@
 const request = require("supertest");
-const app = require("../src/app.js");
-const { connectDB } = require("../src/database.js");
-
-beforeAll(async () => {
-  await connectDB();
-});
+const app = require("../../src/app.js");
 
 describe("POST /users/ - Integration Tests", () => {
   const validUserData = {
@@ -150,9 +145,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid username with letters, numbers, and underscores", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, username: "valid_user123" });
+      const res = await request(app).post("/users").send({
+        username: "valid_user123",
+        password: "SecurePassword123!",
+        email: "valid_user123@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -160,9 +157,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts username exactly 6 characters long", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, username: "user12" });
+      const res = await request(app).post("/users").send({
+        username: "user12",
+        password: "SecurePassword123!",
+        email: "user12@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -172,7 +171,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts username exactly 30 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, username: "a".repeat(30) });
+        .send({
+          username: "a".repeat(30),
+          password: "SecurePassword123!",
+          email: "thirtychar@example.com",
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -249,9 +252,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid email address", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, email: "valid.email@example.com" });
+      const res = await request(app).post("/users").send({
+        username: "validemail",
+        password: "SecurePassword123!",
+        email: "valid.email@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -259,9 +264,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts email with subdomain", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, email: "user@mail.example.com" });
+      const res = await request(app).post("/users").send({
+        username: "subdomain",
+        password: "SecurePassword123!",
+        email: "user@mail.example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -308,9 +315,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password exactly 12 characters long", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, password: "ValidPass123" });
+      const res = await request(app).post("/users").send({
+        username: "pass12char",
+        password: "ValidPass123",
+        email: "pass12char@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -320,7 +329,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts password exactly 128 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, password: "a".repeat(128) });
+        .send({
+          username: "pass128char",
+          password: "a".repeat(128),
+          email: "pass128char@example.com",
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -328,9 +341,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password with special characters", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ ...validUserData, password: "P@ssw0rd!#$%^&*()" });
+      const res = await request(app).post("/users").send({
+        username: "passspecial",
+        password: "P@ssw0rd!#$%^&*()",
+        email: "passspecial@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -338,9 +353,112 @@ describe("POST /users/ - Integration Tests", () => {
     });
   });
 
+  describe("Uniqueness validation", () => {
+    it("returns 409 for duplicate username", async () => {
+      // First, create a user
+      const firstUser = {
+        username: "unique_user_001",
+        password: "FirstPassword123!",
+        email: "first@example.com",
+      };
+      await request(app).post("/users").send(firstUser);
+
+      // Try to create another user with the same username
+      const duplicateUsernameUser = {
+        username: "unique_user_001",
+        password: "DifferentPassword123!",
+        email: "different@example.com",
+      };
+      const res = await request(app).post("/users").send(duplicateUsernameUser);
+
+      expect(res.statusCode).toBe(409);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("username unique_user_001 already exists.");
+    });
+
+    it("handles concurrent duplicate username requests safely", async () => {
+      const userA = {
+        username: "race_user",
+        password: "Password123!",
+        email: "a@example.com",
+      };
+
+      const userB = {
+        username: "race_user",
+        password: "Password456!",
+        email: "b@example.com",
+      };
+
+      const results = await Promise.allSettled([
+        request(app).post("/users").send(userA),
+        request(app).post("/users").send(userB),
+      ]);
+
+      const statuses = results.map(r => r.value.statusCode);
+
+      // One should succeed, one should fail
+      expect(statuses).toContain(201);
+      expect(statuses).toContain(409);
+    });
+
+    it("returns 409 for duplicate email", async () => {
+      // First, create a user
+      const firstUser = {
+        username: "unique_user_002",
+        password: "FirstPassword123!",
+        email: "duplicate@example.com",
+      };
+      await request(app).post("/users").send(firstUser);
+
+      // Try to create another user with the same email
+      const duplicateEmailUser = {
+        username: "different_user",
+        password: "DifferentPassword123!",
+        email: "duplicate@example.com",
+      };
+      const res = await request(app).post("/users").send(duplicateEmailUser);
+
+      expect(res.statusCode).toBe(409);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe(
+        "email duplicate@example.com already exists.",
+      );
+    });
+    
+    it("handles concurrent duplicate email requests safely", async () => {
+      const userA = {
+        username: "email_race_1",
+        password: "Password123!",
+        email: "race@example.com",
+      };
+
+      const userB = {
+        username: "email_race_2",
+        password: "Password456!",
+        email: "race@example.com",
+      };
+
+      const results = await Promise.allSettled([
+        request(app).post("/users").send(userA),
+        request(app).post("/users").send(userB),
+      ]);
+
+      const statuses = results.map(r => r.value.statusCode);
+
+      expect(statuses).toContain(201);
+      expect(statuses).toContain(409);
+    });
+  });
+
   describe("Successful validation", () => {
     it("returns 201 for valid user data", async () => {
-      const res = await request(app).post("/users").send(validUserData);
+      const res = await request(app).post("/users").send({
+        username: "testuser123",
+        password: "SecurePassword123!",
+        email: "testuser123@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
