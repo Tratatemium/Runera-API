@@ -25,7 +25,7 @@ const dbErrorHandler = (err, req, res, next) => {
 
     return res.status(409).json({
       error: field
-        ? `${field} "${value}" already exists.`
+        ? `${field} ${value} already exists.`
         : "Duplicate key error",
     });
   }
