@@ -25,7 +25,8 @@
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "<rootDir>/test/jest.setup.js"
-    ]
+    ],
+    "testMatch": ["<rootDir>/test/__tests__/**/*.tests.js"]
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.0.1"

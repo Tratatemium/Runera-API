@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../src/app.js");
+const app = require("../../src/app.js");
 
 describe("GET /runs/:id - Integration Tests", () => {
   it("returns 200 and a run JSON for an existing ID", async () => {

@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../src/app.js");
+const app = require("../../src/app.js");
 
 describe("GET /", () => {
   it("checks server availability", async () => {
