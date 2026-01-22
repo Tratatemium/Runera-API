@@ -147,7 +147,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts valid username with letters, numbers, and underscores", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, username: "valid_user123" });
+        .send({ 
+          username: "valid_user123",
+          password: "SecurePassword123!",
+          email: "valid_user123@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -157,7 +161,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts username exactly 6 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, username: "user12" });
+        .send({ 
+          username: "user12",
+          password: "SecurePassword123!",
+          email: "user12@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -167,7 +175,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts username exactly 30 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, username: "a".repeat(30) });
+        .send({ 
+          username: "a".repeat(30),
+          password: "SecurePassword123!",
+          email: "thirtychar@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -246,7 +258,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts valid email address", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, email: "valid.email@example.com" });
+        .send({ 
+          username: "validemail",
+          password: "SecurePassword123!",
+          email: "valid.email@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -256,7 +272,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts email with subdomain", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, email: "user@mail.example.com" });
+        .send({ 
+          username: "subdomain",
+          password: "SecurePassword123!",
+          email: "user@mail.example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -305,7 +325,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts password exactly 12 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, password: "ValidPass123" });
+        .send({ 
+          username: "pass12char",
+          password: "ValidPass123",
+          email: "pass12char@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -315,7 +339,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts password exactly 128 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, password: "a".repeat(128) });
+        .send({ 
+          username: "pass128char",
+          password: "a".repeat(128),
+          email: "pass128char@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -325,7 +353,11 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts password with special characters", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ ...validUserData, password: "P@ssw0rd!#$%^&*()" });
+        .send({ 
+          username: "passspecial",
+          password: "P@ssw0rd!#$%^&*()",
+          email: "passspecial@example.com"
+        });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -383,7 +415,11 @@ describe("POST /users/ - Integration Tests", () => {
 
   describe("Successful validation", () => {
     it("returns 201 for valid user data", async () => {
-      const res = await request(app).post("/users").send(validUserData);
+      const res = await request(app).post("/users").send({
+        username: "testuser123",
+        password: "SecurePassword123!",
+        email: "testuser123@example.com"
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);

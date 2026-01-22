@@ -13,10 +13,10 @@ const parseAndValidateUser = async (req) => {
   const { username, password, email } = req.body;
 
   validators.validateUsername(username);
-  validators.assertUserFieldUnique("username", username);
+  await validators.assertUserFieldUnique("username", username);
 
   validators.validateEmail(email);
-  validators.assertUserFieldUnique("email", email);
+  await validators.assertUserFieldUnique("email", email);
 
   validators.validatePassword(password);
 
