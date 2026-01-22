@@ -1,4 +1,8 @@
-const { MongoServerSelectionError, MongoNetworkError } = require("mongodb");
+const {
+  MongoNetworkError,
+  MongoServerSelectionError,
+  MongoServerError,
+} = require("mongodb");
 
 // JSON syntax error filter
 const jsonSyntaxErrorHandler = (err, req, res, next) => {
@@ -13,6 +17,18 @@ const jsonSyntaxErrorHandler = (err, req, res, next) => {
 // Database error filter
 const dbErrorHandler = (err, req, res, next) => {
   console.error(err);
+
+  if (err instanceof MongoServerError && err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0];
+    const value = err.keyValue?.[field];
+
+    return res.status(409).json({
+      error: field
+        ? `${field} "${value}" already exists.`
+        : "Duplicate key error",
+    });
+  }
+
   if (
     err instanceof MongoServerSelectionError ||
     err instanceof MongoNetworkError
