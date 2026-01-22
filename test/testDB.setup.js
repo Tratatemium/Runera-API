@@ -1,4 +1,4 @@
-const { MongoMemoryServer } = require("mongdb-memory-server");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 const database = require("../src/database.js");
 
 let mongo;

@@ -1,10 +1,12 @@
 const testDb = require("./testDB.setup.js");
+const seeding = require("./seeds/seeding.js");
 
 beforeAll(async () => {
-  testDb.setup();
+  await testDb.setup();
+  await seeding.seedRuns();
 });
 
 afterAll(async () => {
-  testDb.clear();
-  testDb.teardown();
+  await testDb.clear();
+  await testDb.teardown();
 });

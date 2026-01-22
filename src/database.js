@@ -121,6 +121,7 @@ const addNewUser = async (newUser) => {
 
 module.exports = {
   connectDB,
+  getCollection,
   closeDB,
   clearDB,
   findRunByID,

@@ -1,10 +1,5 @@
 const request = require("supertest");
 const app = require("../src/app.js");
-const { connectDB } = require("../src/database.js");
-
-beforeAll(async () => {
-  await connectDB();
-});
 
 describe("POST /users/ - Integration Tests", () => {
   const validUserData = {
