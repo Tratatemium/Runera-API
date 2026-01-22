@@ -63,11 +63,11 @@ const getCollection = (collectionName) => {
 /*  DATABASE OPERATIONS                                                                              */
 /* ================================================================================================= */
 
-const findRunByID = async (runID) => {
+const findRunById = async (runId) => {
   const runs = getCollection("runs");
 
   const selectedRun = await runs.findOne({
-    runID: runID,
+    runId: runId,
   });
   return selectedRun || null;
 };
@@ -75,8 +75,8 @@ const findRunByID = async (runID) => {
 const addNewRun = async (newRun) => {
   const runs = getCollection("runs");
 
-  const newRunID = randomUUID();
-  const runToInsert = { runID: newRunID, ...newRun };
+  const newRunId = randomUUID();
+  const runToInsert = { runId: newRunId, ...newRun };
 
   const result = await runs.insertOne(runToInsert);
   if (!result.acknowledged) {
@@ -84,15 +84,15 @@ const addNewRun = async (newRun) => {
     err.status = 500;
     throw err;
   }
-  console.log("New run added to the database. ID:", newRunID);
-  return newRunID;
+  console.log("New run added to the database. ID:", newRunId);
+  return newRunId;
 };
 
-const findUserByID = async (userID) => {
+const findUserById = async (userId) => {
   const users = getCollection("users");
 
   const selectedUser = await users.findOne({
-    userID: userID,
+    userId: userId,
   });
   return selectedUser || null;
 };
@@ -100,8 +100,8 @@ const findUserByID = async (userID) => {
 const addNewUser = async (newUser) => {
   const users = getCollection("users");
   
-  const newUserID = randomUUID();
-  const userToInsert = { userID: newUserID, ...newUser };
+  const newUserId = randomUUID();
+  const userToInsert = { userId: newUserId, ...newUser };
   const result = await users.insertOne(userToInsert);
   if (!result.acknowledged) {
     const err = new Error("Failed to save new user.");
@@ -109,8 +109,8 @@ const addNewUser = async (newUser) => {
     throw err;
   }
   // To be implemented
-  console.log("New user added to the database. ID:", newUserID);
-  return newUserID;
+  console.log("New user added to the database. ID:", newUserId);
+  return newUserId;
 };
 
 
@@ -124,8 +124,8 @@ module.exports = {
   getCollection,
   closeDB,
   clearDB,
-  findRunByID,
+  findRunById,
   addNewRun,
-  findUserByID,
+  findUserById,
   addNewUser,
 };

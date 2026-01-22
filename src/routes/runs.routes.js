@@ -5,7 +5,7 @@ const router = express.Router();
 
 const runsController = require("../controllers/runs.controller.js");
 
-router.get("/:id", runsController.getRunByID);
+router.get("/:id", runsController.getRunById);
 router.post("/", runsController.postNewRun);
 
 module.exports = router;

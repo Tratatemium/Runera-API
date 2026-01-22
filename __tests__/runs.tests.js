@@ -3,15 +3,15 @@ const app = require("../src/app.js");
 
 describe("GET /runs/:id - Integration Tests", () => {
   it("returns 200 and a run JSON for an existing ID", async () => {
-    const runID = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+    const runId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
 
-    const res = await request(app).get(`/runs/${runID}`);
+    const res = await request(app).get(`/runs/${runId}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.headers["content-type"]).toMatch(/json/);
 
     expect(res.body).toBeDefined();
-    expect(res.body).toHaveProperty("runID", runID);
+    expect(res.body).toHaveProperty("runId", runId);
     expect(res.body).toHaveProperty("userId");
     expect(res.body).toHaveProperty("startTime");
     expect(res.body).toHaveProperty("durationSec");
@@ -23,9 +23,9 @@ describe("GET /runs/:id - Integration Tests", () => {
   });
 
   it("returns 404 for a non-existing ID", async () => {
-    const runID = "dc9811e7-72d6-4df8-b6da-c1c5219d6109";
+    const runId = "dc9811e7-72d6-4df8-b6da-c1c5219d6109";
 
-    const res = await request(app).get(`/runs/${runID}`);
+    const res = await request(app).get(`/runs/${runId}`);
 
     expect(res.statusCode).toBe(404);
     expect(res.headers["content-type"]).toMatch(/json/);
@@ -35,9 +35,9 @@ describe("GET /runs/:id - Integration Tests", () => {
   });
 
   it("returns 400 for non UUID", async () => {
-    const runID = "not-a-UUID";
+    const runId = "not-a-UUID";
 
-    const res = await request(app).get(`/runs/${runID}`);
+    const res = await request(app).get(`/runs/${runId}`);
 
     expect(res.statusCode).toBe(400);
     expect(res.headers["content-type"]).toMatch(/json/);
