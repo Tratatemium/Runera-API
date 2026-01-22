@@ -4,8 +4,8 @@ const { afterEach } = require("node:test");
 
 beforeAll(async () => {
   await testDb.setup();
-  await seeding.seedData("runs");
   await seeding.seedData("users");
+  await seeding.seedData("runs");  
 });
 
 afterAll(async () => {
