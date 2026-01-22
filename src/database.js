@@ -107,7 +107,7 @@ const findUserByField = async (field, value) => {
 
 const addNewUser = async (newUser) => {
   const users = getCollection("users");
-  
+
   const newUserId = randomUUID();
   const userToInsert = { userId: newUserId, ...newUser };
   const result = await users.insertOne(userToInsert);
@@ -116,12 +116,9 @@ const addNewUser = async (newUser) => {
     err.status = 500;
     throw err;
   }
-  // To be implemented
   console.log("New user added to the database. ID:", newUserId);
   return newUserId;
 };
-
-
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */

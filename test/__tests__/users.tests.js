@@ -145,13 +145,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid username with letters, numbers, and underscores", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "valid_user123",
-          password: "SecurePassword123!",
-          email: "valid_user123@example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "valid_user123",
+        password: "SecurePassword123!",
+        email: "valid_user123@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -159,13 +157,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts username exactly 6 characters long", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "user12",
-          password: "SecurePassword123!",
-          email: "user12@example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "user12",
+        password: "SecurePassword123!",
+        email: "user12@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -175,10 +171,10 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts username exactly 30 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ 
+        .send({
           username: "a".repeat(30),
           password: "SecurePassword123!",
-          email: "thirtychar@example.com"
+          email: "thirtychar@example.com",
         });
 
       expect(res.statusCode).toBe(201);
@@ -256,13 +252,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts valid email address", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "validemail",
-          password: "SecurePassword123!",
-          email: "valid.email@example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "validemail",
+        password: "SecurePassword123!",
+        email: "valid.email@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -270,13 +264,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts email with subdomain", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "subdomain",
-          password: "SecurePassword123!",
-          email: "user@mail.example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "subdomain",
+        password: "SecurePassword123!",
+        email: "user@mail.example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -323,13 +315,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password exactly 12 characters long", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "pass12char",
-          password: "ValidPass123",
-          email: "pass12char@example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "pass12char",
+        password: "ValidPass123",
+        email: "pass12char@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -339,10 +329,10 @@ describe("POST /users/ - Integration Tests", () => {
     it("accepts password exactly 128 characters long", async () => {
       const res = await request(app)
         .post("/users")
-        .send({ 
+        .send({
           username: "pass128char",
           password: "a".repeat(128),
-          email: "pass128char@example.com"
+          email: "pass128char@example.com",
         });
 
       expect(res.statusCode).toBe(201);
@@ -351,13 +341,11 @@ describe("POST /users/ - Integration Tests", () => {
     });
 
     it("accepts password with special characters", async () => {
-      const res = await request(app)
-        .post("/users")
-        .send({ 
-          username: "passspecial",
-          password: "P@ssw0rd!#$%^&*()",
-          email: "passspecial@example.com"
-        });
+      const res = await request(app).post("/users").send({
+        username: "passspecial",
+        password: "P@ssw0rd!#$%^&*()",
+        email: "passspecial@example.com",
+      });
 
       expect(res.statusCode).toBe(201);
       expect(res.headers["content-type"]).toMatch(/json/);
@@ -409,7 +397,9 @@ describe("POST /users/ - Integration Tests", () => {
       expect(res.statusCode).toBe(409);
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("email duplicate@example.com already exists.");
+      expect(res.body.error).toBe(
+        "email duplicate@example.com already exists.",
+      );
     });
   });
 
@@ -418,7 +408,7 @@ describe("POST /users/ - Integration Tests", () => {
       const res = await request(app).post("/users").send({
         username: "testuser123",
         password: "SecurePassword123!",
-        email: "testuser123@example.com"
+        email: "testuser123@example.com",
       });
 
       expect(res.statusCode).toBe(201);

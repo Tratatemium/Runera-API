@@ -126,7 +126,6 @@ const assertUserFieldUnique = async (field, value) => {
   }
 };
 
-
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -141,5 +140,5 @@ module.exports = {
   validateUsername,
   validateEmail,
   validatePassword,
-  assertUserFieldUnique
+  assertUserFieldUnique,
 };
