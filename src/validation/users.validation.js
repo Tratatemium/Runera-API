@@ -1,4 +1,3 @@
-const { assert } = require("node:console");
 const validators = require("./validators.js");
 
 const parseAndValidateUser = async (req) => {
