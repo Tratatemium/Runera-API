@@ -67,12 +67,32 @@ const addNewRun = async (newRun) => {
   return newRunID;
 };
 
+const findUserByID = async (userID) => {
+  const users = getCollection("users");
+
+  const selectedUser = await users.findOne({
+    userID: userID,
+  });
+  return selectedUser || null;
+};
+
 const addNewUser = async (newUser) => {
-  // To be implemented
+  const users = getCollection("users");
+  
   const newUserID = randomUUID();
+  const userToInsert = { userID: newUserID, ...newUser };
+  const result = await users.insertOne(userToInsert);
+  if (!result.acknowledged) {
+    const err = new Error("Failed to save new user.");
+    err.status = 500;
+    throw err;
+  }
+  // To be implemented
   console.log("New user added to the database. ID:", newUserID);
   return newUserID;
 };
+
+
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
@@ -82,5 +102,6 @@ module.exports = {
   connectDB,
   findRunByID,
   addNewRun,
+  findUserByID,
   addNewUser,
 };
