@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../database.js");
+const { createToken } = require("./jwt.js");
 
 const saltRounds = 10;
 const algorithm = "bcrypt";
@@ -18,17 +19,22 @@ const createPasswordHash = async (plainTextPassword) => {
 };
 
 const login = async (email, password) => {
-  const foundUser = db.findUserByField("email", email);
+  const foundUser = await db.findUserByField("email", email);
 
   const passwordHash = foundUser ? foundUser.passwordHash : DUMMY_HASH;
   const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
 
-  if (foundUser && isPasswordCorrect) {
-    
+  if (!foundUser || !isPasswordCorrect) {
+    const err = new Error("Wrong email & password combination");
+    err.status = 401;
+    throw err;
   }
 
+  const token = createToken(foundUser);
+  return token;
 };
 
 module.exports = {
   createPasswordHash,
+  login
 };
