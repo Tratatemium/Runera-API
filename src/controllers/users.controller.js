@@ -16,7 +16,7 @@ const postNewUser = async (req, res) => {
 const login = async (req, res) => {
   const { userData, plainTextPassword } = await parseAndValidateUser(req);
   const token = await auth.login(userData.email, plainTextPassword);
-  res.status(200).json({ token: token });
+  res.status(200).json({ token });
 };
 
 module.exports = { postNewUser, login };

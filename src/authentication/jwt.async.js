@@ -33,3 +33,5 @@ const verifyToken = async (token) => {
     );
   });
 };
+
+module.exports = { createToken, verifyToken };
