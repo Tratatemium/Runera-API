@@ -3,11 +3,16 @@
 /* ================================================================================================= */
 
 const { MongoClient } = require("mongodb");
+const dotenv = require("dotenv");
 const { randomUUID } = require("crypto");
 
 /* ================================================================================================= */
 /*  CONFIGURATION                                                                                    */
 /* ================================================================================================= */
+
+if (!process.env.MONGO_URI) {
+  dotenv.config();
+}
 
 const MONGO_URI = process.env.MONGO_URI;
 
