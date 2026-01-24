@@ -14,9 +14,9 @@ const jsonSyntaxErrorHandler = (err, req, res, next) => {
 
 // Database error filter
 const dbErrorHandler = (err, req, res, next) => {
-  const isDuplikateKey = err instanceof MongoServerError && err.code === 11000;
+  const isDuplicateKey = err instanceof MongoServerError && err.code === 11000;
 
-  if (isDuplikateKey) {
+  if (isDuplicateKey) {
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
 
@@ -35,7 +35,7 @@ const dbErrorHandler = (err, req, res, next) => {
     console.error(err);
     return res.status(500).json({ error: "Failed to connect to database." });
   }
-  
+
   next(err);
 };
 
