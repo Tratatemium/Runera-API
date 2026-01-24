@@ -4,29 +4,44 @@
 
 const dotenv = require("dotenv");
 
+const loadEnv = () => dotenv.config();
+
 const requireEnv = (key, purpose) => {
   const value = process.env[key];
 
   if (!value) {
     throw new Error(
-      `${key} environment variable is not set. Required ${purpose}.`
+      `${key} environment variable is not set. Required ${purpose}.`,
     );
   }
 
   return value;
 };
 
-const configEnv = () => {
-  dotenv.config();
+const getPort = () => {
+  const portValue = requireEnv("PORT", "to run express API");
+  const port = Number(portValue);
 
-  requireEnv("MONGO_URI", "to connect to MongoDB");
-  requireEnv("TOKEN_KEY", "to sign and verify JWTs");
+  const isValidPort = Number.isInteger(port) && port >= 0 && port < 65536;
+
+  if (!isValidPort) {
+    throw new Error(
+      `PORT environment variable must be an integer between 0 and 65535.`,
+    );
+  }
+
+  return port;
 };
 
+let PORT;
+
 try {
-  configEnv();
+  loadEnv();
+  requireEnv("MONGO_URI", "to connect to MongoDB");
+  requireEnv("TOKEN_KEY", "to sign and verify JWTs");
+  PORT = getPort();
 } catch (err) {
-  console.error("Configuration error:", err);
+  console.error("Configuration error:", err.message);
   process.exit(1);
 }
 
@@ -36,8 +51,6 @@ try {
 
 const app = require("./app");
 const { connectDB } = require("./database");
-
-const PORT = Number(process.env.PORT) || 3000;
 
 const startServer = async () => {
   try {
