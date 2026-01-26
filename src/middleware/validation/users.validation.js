@@ -36,6 +36,16 @@ const validateLoginRequest = async (req, res, next) => {
   next()
 };
 
+const validateUUID = (param = "id") => {
+  return (req, res, next) => {
+    validators.validateUUID(req.params[param]);
+    next()
+  };
+};
+
+
+
+
 // TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
 //      "firstName": "Alex",
@@ -52,4 +62,5 @@ const validateLoginRequest = async (req, res, next) => {
 module.exports = {
   validateRegisterRequest,
   validateLoginRequest,
+  validateUUID
 };

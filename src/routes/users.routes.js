@@ -16,6 +16,7 @@ router.post("/login", validation.validateLoginRequest, usersController.login);
 router.get(
   "/:id",
   authentication.checkAuth,
+  validation.validateUUID("id"),
   authentication.checkOwnership("id"),
   usersController.getUserById,
 );

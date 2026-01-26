@@ -22,8 +22,8 @@ const postNewUser = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, plainTextPassword } = await parseAndValidateUser(req);
-  const token = await auth.login(email, plainTextPassword);
+  const { email, username, password } = req.body;
+  const token = await auth.login(email, password);
   res.status(200).json({ token });
 };
 
