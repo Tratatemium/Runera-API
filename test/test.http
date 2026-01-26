@@ -212,3 +212,16 @@ Content-Type: application/json
 {
   "title": "[not today] Deploying api server on cloud service."
 }
+
+
+
+
+### Good Login
+POST http://localhost:3000/users/
+Content-Type: application/json
+
+{
+  "username": "test_runner_02",
+  "password": "SecurePass456!",
+  "email": "runner02@test.com"
+}
