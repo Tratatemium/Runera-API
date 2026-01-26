@@ -45,14 +45,14 @@ const authErrorHandler = (err, req, res, next) => {
     return res.status(401).json({ error: "Invalid token." });
   }
   if (err.name === "TokenExpiredError") {
-    return res.status(401).json({ error: "Token expired" });
+    return res.status(401).json({ error: "Token expired." });
   }
   if (err.name === "NotBeforeError") {
     return res.status(401).json({ error: err.message });
   }
   // Malformed JWT payload (JSON.parse failed)
   if (err instanceof SyntaxError && err.message.includes("Unexpected token")) {
-    return res.status(401).json({ error: "Malformed token payload" });
+    return res.status(401).json({ error: "Malformed token payload." });
   }  
   next(err);
 };
