@@ -17,7 +17,7 @@ const dbErrorHandler = (err, req, res, next) => {
   const isDuplicateKey = err instanceof MongoServerError && err.code === 11000;
 
   if (isDuplicateKey) {
-    console.error(err)
+    console.error(err);
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
 
@@ -53,7 +53,7 @@ const authErrorHandler = (err, req, res, next) => {
   // Malformed JWT payload (JSON.parse failed)
   if (err instanceof SyntaxError && err.message.includes("Unexpected token")) {
     return res.status(401).json({ error: "Malformed token payload." });
-  }  
+  }
   next(err);
 };
 
@@ -70,4 +70,9 @@ const finalErrorHandler = (err, req, res, next) => {
   res.status(status).json({ error: message });
 };
 
-module.exports = { jsonSyntaxErrorHandler, dbErrorHandler, authErrorHandler, finalErrorHandler };
+module.exports = {
+  jsonSyntaxErrorHandler,
+  dbErrorHandler,
+  authErrorHandler,
+  finalErrorHandler,
+};

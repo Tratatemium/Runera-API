@@ -29,14 +29,12 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
   await client.connect();
   db = client.db("runners-app");
 
-  await db.collection("users").createIndex(
-    { "account.username": 1 },
-    { unique: true }
-  );
-  await db.collection("users").createIndex(
-    { "account.email": 1 },
-    { unique: true }
-  );
+  await db
+    .collection("users")
+    .createIndex({ "account.username": 1 }, { unique: true });
+  await db
+    .collection("users")
+    .createIndex({ "account.email": 1 }, { unique: true });
 
   console.log("Connected to database.");
 };
@@ -119,8 +117,8 @@ const updateLastLogin = async (foundUser) => {
   const email = foundUser.account.email;
   const users = getCollection("users");
   const result = await users.updateOne(
-    { "account.email": email },  // filter
-    { $set: { "account.lastLogin": new Date().toISOString() } }     // update
+    { "account.email": email }, // filter
+    { $set: { "account.lastLogin": new Date().toISOString() } }, // update
   );
   return result;
 };

@@ -3,19 +3,20 @@ const auth = require("../authentication/auth.service.js");
 const db = require("../database.js");
 
 const postNewUser = async (req, res) => {
-  const { email, username, plainTextPassword } = await parseAndValidateUser(req);
+  const { email, username, plainTextPassword } =
+    await parseAndValidateUser(req);
 
   const { passwordHash, passwordMetadata } =
     await auth.createPasswordHash(plainTextPassword);
-  const newUser = { 
+  const newUser = {
     credentials: { passwordHash, passwordMetadata },
     account: {
       username,
       email,
       createdAt: new Date().toISOString(),
-      lastLogin: null
+      lastLogin: null,
     },
-    profile: {}
+    profile: {},
   };
 
   const newUserId = await db.addNewUser(newUser);
