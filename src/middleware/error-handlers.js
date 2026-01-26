@@ -39,6 +39,23 @@ const dbErrorHandler = (err, req, res, next) => {
   next(err);
 };
 
+const authErrorHandler = (err, req, res, next) => {
+  if (err.name === "JsonWebTokenError") {
+    return res.status(401).json({ error: "Invalid token." });
+  }
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({ error: "Token expired." });
+  }
+  if (err.name === "NotBeforeError") {
+    return res.status(401).json({ error: err.message });
+  }
+  // Malformed JWT payload (JSON.parse failed)
+  if (err instanceof SyntaxError && err.message.includes("Unexpected token")) {
+    return res.status(401).json({ error: "Malformed token payload." });
+  }
+  next(err);
+};
+
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
   const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
@@ -52,4 +69,9 @@ const finalErrorHandler = (err, req, res, next) => {
   res.status(status).json({ error: message });
 };
 
-module.exports = { jsonSyntaxErrorHandler, dbErrorHandler, finalErrorHandler };
+module.exports = {
+  jsonSyntaxErrorHandler,
+  dbErrorHandler,
+  authErrorHandler,
+  finalErrorHandler,
+};
