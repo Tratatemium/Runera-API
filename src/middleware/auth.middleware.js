@@ -6,7 +6,7 @@ const throwAuthError = (message, status = 401) => {
   throw err;
 };
 
-const authMiddleware = (req, res, next) => {
+const checkAuth = (req, res, next) => {
   const header = req.headers.authorization;
   // Expected format: "Bearer <token>"
   if (!header || !header.startsWith("Bearer ")) {
@@ -15,9 +15,22 @@ const authMiddleware = (req, res, next) => {
 
   const token = header.slice(7);
 
-  const decodedUser = verifyToken(token);
-  req.decodedUser = decodedUser;
+  const authUser = verifyToken(token);
+  req.authUser = authUser;
   next();
 };
 
-module.exports = { authMiddleware };
+const checkOwnership = (param = "id") => {
+  return (req, res, next) => {
+    const resourceId = req.params[param];
+    const providedId = req.authUser.userId;
+    if (providedId !== resourceId) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to perform this action." });
+    }
+    next();
+  };
+};
+
+module.exports = { checkAuth, checkOwnership };

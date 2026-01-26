@@ -20,7 +20,7 @@ const login = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
-  res.status(200).send(req.decodedUser);
+  res.status(200).send(req.authUser);
 };
 
 module.exports = { postNewUser, login, getUserById };
