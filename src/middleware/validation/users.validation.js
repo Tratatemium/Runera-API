@@ -18,6 +18,24 @@ const validateRegisterRequest = async (req, res, next) => {
   next()
 };
 
+const validateLoginRequest = async (req, res, next) => {
+  validators.validateJsonContentType(req);
+
+  validators.assertRequestFields(
+    req,
+    ["username", "password", "email"],
+    "User data",
+  );
+
+  const { username, password, email } = req.body;
+
+  validators.validateUsername(username);
+  validators.validateEmail(email);
+  validators.validatePassword(password);
+
+  next()
+};
+
 // TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
 //      "firstName": "Alex",
@@ -33,4 +51,5 @@ const validateRegisterRequest = async (req, res, next) => {
 
 module.exports = {
   validateRegisterRequest,
+  validateLoginRequest,
 };

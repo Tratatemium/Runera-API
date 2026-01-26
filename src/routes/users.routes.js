@@ -11,7 +11,7 @@ router.post(
   usersController.postNewUser,
 );
 
-router.post("/login", usersController.login);
+router.post("/login", validation.validateLoginRequest, usersController.login);
 
 router.get(
   "/:id",
