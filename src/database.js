@@ -119,8 +119,8 @@ const updateLastLogin = async (foundUser) => {
   const email = foundUser.account.email;
   const users = getCollection("users");
   const result = await users.updateOne(
-    { email: email },  // filter
-    { $set: { lastLogin: new Date().toISOString() } }     // update
+    { "account.email": email },  // filter
+    { $set: { "account.lastLogin": new Date().toISOString() } }     // update
   );
   return result;
 };
