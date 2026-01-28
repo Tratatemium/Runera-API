@@ -3,6 +3,7 @@ const router = express.Router();
 
 const usersController = require("../controllers/users.controller.js");
 const authentication = require("../middleware/authentication/auth.middleware.js");
+const guard = require("../middleware/authentication/guard.middleware.js");
 const validation = require("../middleware/validation/users.validation.js");
 
 router.post(
@@ -18,7 +19,7 @@ router.get(
   "/:id",
   authentication.checkAuth,
   validation.validateUUID("id"),
-  authentication.checkOwnership("id"),
+  guard.checkOwnership("id"),
   usersController.getUserById,
 ); // TODO: this functionality is moved to GET users/me, this should be refactored into admin route
 
