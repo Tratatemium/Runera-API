@@ -27,7 +27,7 @@ const login = async (email, password) => {
 
   await comparePasswordHash(foundUser, password);
 
-  //TODO: implement faild login attempts check
+  //TODO: implement failed login attempts check
 
   const token = createToken(foundUser);
   await db.updateLastLogin(foundUser);
