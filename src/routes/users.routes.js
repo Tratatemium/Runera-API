@@ -24,12 +24,12 @@ router.get(
 );
 
 // TODO: this functionality is moved to GET users/me, this should be refactored into admin route
-router.get(
-  "/:id",
-  validation.validateUUID("id"),
-  authentication.checkAuth, 
-  guard.checkOwnership("id"),
-  usersController.getUserById,
-);
+// router.get(
+//   "/:id",
+//   validation.validateUUID("id"),
+//   authentication.checkAuth, 
+//   guard.checkOwnership("id"),
+//   usersController.getUserById,
+// );
 
 module.exports = router;
