@@ -11,4 +11,8 @@ const checkOwnership = (param = "id") => {
   };
 };
 
-module.exports = { checkOwnership };
+const checkUserExists = async () => {
+
+}
+
+module.exports = { checkOwnership, checkUserExists };
