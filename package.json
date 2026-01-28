@@ -25,7 +25,7 @@
     "silent": true,
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
-      "<rootDir>/test/jest.setup.js"
+      "<rootDir>/test/setup/jest.setup.js"
     ],
     "testMatch": [
       "<rootDir>/test/__tests__/**/*.tests.js"
