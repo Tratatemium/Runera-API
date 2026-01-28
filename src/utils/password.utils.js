@@ -1,6 +1,4 @@
 const bcrypt = require("bcrypt");
-const db = require("../database.js");
-const { createToken } = require("./jwt.js");
 
 const saltRounds = 10;
 const algorithm = "bcrypt";
@@ -11,16 +9,14 @@ const createPasswordHash = async (plainTextPassword) => {
   const passwordHash = await bcrypt.hash(plainTextPassword, saltRounds);
   const passwordMetadata = {
     algorithm,
-    updatedAt: new Date(),
+    updatedAt: new Date().toISOString(),
     failedLoginAttempts: 0,
     lockUntil: null,
   };
   return { passwordHash, passwordMetadata };
 };
 
-const login = async (email, password) => {
-  const foundUser = await db.findUserByField("account.email", email);
-
+const comparePasswordHash = async (foundUser, password) => {
   const passwordHash = foundUser
     ? foundUser.credentials.passwordHash
     : DUMMY_HASH;
@@ -31,13 +27,6 @@ const login = async (email, password) => {
     err.status = 401;
     throw err;
   }
-
-  const token = createToken(foundUser);
-  await db.updateLastLogin(foundUser);
-  return token;
 };
 
-module.exports = {
-  createPasswordHash,
-  login,
-};
+module.exports = { createPasswordHash, comparePasswordHash };

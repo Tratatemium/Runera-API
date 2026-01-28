@@ -1,6 +1,5 @@
 const testDb = require("./testDB.setup.js");
-const seeding = require("./seeds/seeding.js");
-const { afterEach } = require("node:test");
+const seeding = require("../helpers/seeding.js");
 
 beforeAll(async () => {
   await testDb.setup();

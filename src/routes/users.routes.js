@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const validation = require("../middleware/validation/users.validation.js");
-const authentication = require("../middleware/authentication/auth.middleware.js");
-const guard = require("../middleware/authentication/guard.middleware.js");
+const authentication = require("../middleware/auth.middleware.js");
+// const guard = require("../middleware/guard.middleware.js");
 const usersMiddleware = require("../middleware/users.middleware.js");
 const usersController = require("../controllers/users.controller.js");
 
@@ -13,7 +13,11 @@ router.post(
   usersController.createUser,
 );
 
-router.post("/login", validation.validateLoginRequest, usersController.login);
+router.post(
+  "/login",
+  validation.validateLoginRequest,
+  usersController.loginUser,
+);
 
 router.get(
   "/me",

@@ -5,7 +5,7 @@ const { getCollection } = require("../../src/database");
 const seedData = async (collectionName) => {
   const collection = getCollection(collectionName);
 
-  const filePath = path.join(__dirname, `${collectionName}.seeds.json`);
+  const filePath = path.join(__dirname, "..", "fixtures", `${collectionName}.fixture.json`);
   const rawData = fs.readFileSync(filePath, "utf8");
   const documents = JSON.parse(rawData);
 
