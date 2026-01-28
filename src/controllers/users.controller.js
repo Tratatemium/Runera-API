@@ -7,7 +7,7 @@ const createUser = async (req, res) => {
   res.status(201).json({ id: newUserId });
 };
 
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
   const { email, username, password } = req.body;
   const token = await auth.login(email, password);
   res.status(200).json({ token });
@@ -26,4 +26,4 @@ const getUserById = async (req, res) => {
   res.status(200).json(safeData);
 };
 
-module.exports = { createUser, login, getUserById, getMe };
+module.exports = { createUser, loginUser, getMe, getUserById};

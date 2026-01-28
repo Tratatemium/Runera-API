@@ -13,7 +13,11 @@ router.post(
   usersController.createUser,
 );
 
-router.post("/login", validation.validateLoginRequest, usersController.login);
+router.post(
+  "/login",
+  validation.validateLoginRequest,
+  usersController.loginUser,
+);
 
 router.get(
   "/me",
