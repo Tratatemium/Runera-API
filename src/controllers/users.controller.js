@@ -3,7 +3,7 @@ const db = require("../database.js");
 
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
-  const newUserId = auth.signup(email, username, password)  
+  const newUserId = auth.signup(email, username, password);
   res.status(201).json({ id: newUserId });
 };
 
@@ -26,4 +26,4 @@ const getUserById = async (req, res) => {
   res.status(200).json(safeData);
 };
 
-module.exports = { createUser, loginUser, getMe, getUserById};
+module.exports = { createUser, loginUser, getMe, getUserById };
