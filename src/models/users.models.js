@@ -100,6 +100,11 @@ const UserSchema = new mongoose.Schema(
 /* ================================================================================================= */
 
 UserSchema.index(
+  { userId: 1 },
+  { unique: true }
+);
+
+UserSchema.index(
   { "account.username": 1 },
   { unique: true }
 );
