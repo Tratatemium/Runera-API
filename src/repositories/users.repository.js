@@ -2,8 +2,8 @@ const User = require("../models/users.models.js");
 const { randomUUID } = require("crypto");
 
 const findUserById = async (userId) => {
-  const selectedRun = await User.findOne({ userId });
-  return selectedRun || null;
+  const selectedUser = await User.findOne({ userId });
+  return selectedUser || null;
 };
 
 const findUserByField = async (field, value) => {
