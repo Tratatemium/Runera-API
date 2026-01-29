@@ -15,10 +15,7 @@ const findUserByField = async (field, value) => {
 
 const findUserByEmailOrUsername = async (identifier) => {
   const selectedUser = await User.findOne({
-    $or: [
-      { "account.email": identifier },
-      { "account.username": identifier }
-    ]
+    $or: [{ "account.email": identifier }, { "account.username": identifier }],
   });
   return selectedUser || null;
 };

@@ -30,7 +30,6 @@ module.exports = router;
 
 // TODO: PATCH users/me
 
-
 // TODO: PATCH users/me/password
 // {
 //   "currentPassword": "old_password",
@@ -53,4 +52,3 @@ module.exports = router;
 //   "token": "reset_token",
 //   "newPassword": "new_password"
 // }
-

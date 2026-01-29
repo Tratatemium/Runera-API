@@ -32,9 +32,13 @@ const validateLoginRequest = (req, res, next) => {
 
   const { username, password, email } = req.body;
 
-  if (email && username) validators.throwValidationError("Provide either email or username, but not both.");
+  if (email && username)
+    validators.throwValidationError(
+      "Provide either email or username, but not both.",
+    );
 
-  if (username !== undefined && username !== null) validators.validateUsername(username);
+  if (username !== undefined && username !== null)
+    validators.validateUsername(username);
   if (email !== undefined && email !== null) validators.validateEmail(email);
   validators.validatePassword(password);
 
