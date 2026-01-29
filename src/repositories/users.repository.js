@@ -13,6 +13,16 @@ const findUserByField = async (field, value) => {
   return selectedUser || null;
 };
 
+const findUserByEmailOrUsername = async (identifier) => {
+  const selectedUser = await User.findOne({
+    $or: [
+      { "account.email": identifier },
+      { "account.username": identifier }
+    ]
+  });
+  return selectedUser || null;
+};
+
 const updateLastLogin = async (foundUser) => {
   const email = foundUser.account.email;
   const result = await User.updateOne(
@@ -37,6 +47,7 @@ const addNewUser = async (newUser) => {
 module.exports = {
   findUserById,
   findUserByField,
+  findUserByEmailOrUsername,
   updateLastLogin,
   addNewUser,
 };
