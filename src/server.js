@@ -1,7 +1,8 @@
 const app = require("./app");
 const { connectDB } = require("./utils/db.utils.js");
+let PORT;
 try {
-  const { PORT } = require("./config/env.config");
+  ({ PORT } = require("./config/env.config"));
 } catch (err) {
   console.error("Configuration error:", err.message);
   process.exit(1);

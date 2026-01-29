@@ -1,12 +1,13 @@
 const validators = require("./validators.js");
 
-const validateRegisterRequest = async (req, res, next) => {
+const validateRegisterRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
   validators.assertRequestFields(
     req,
     ["username", "password", "email"],
     "User data",
+    "require_all",
   );
 
   const { username, password, email } = req.body;
@@ -15,36 +16,41 @@ const validateRegisterRequest = async (req, res, next) => {
   validators.validateEmail(email);
   validators.validatePassword(password);
 
-  next()
+  next();
 };
 
-const validateLoginRequest = async (req, res, next) => {
+const validateLoginRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
+  validators.assertRequestFields(req, ["password"], "User data", "require_all");
   validators.assertRequestFields(
     req,
-    ["username", "password", "email"],
+    ["username", "email"],
     "User data",
+    "require_some",
   );
 
   const { username, password, email } = req.body;
 
-  validators.validateUsername(username);
-  validators.validateEmail(email);
+  if (email && username)
+    validators.throwValidationError(
+      "Provide either email or username, but not both.",
+    );
+
+  if (username !== undefined && username !== null)
+    validators.validateUsername(username);
+  if (email !== undefined && email !== null) validators.validateEmail(email);
   validators.validatePassword(password);
 
-  next()
+  next();
 };
 
 const validateUUID = (param = "id") => {
   return (req, res, next) => {
     validators.validateUUID(req.params[param]);
-    next()
+    next();
   };
 };
-
-
-
 
 // TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
@@ -62,5 +68,5 @@ const validateUUID = (param = "id") => {
 module.exports = {
   validateRegisterRequest,
   validateLoginRequest,
-  validateUUID
+  validateUUID,
 };
