@@ -18,4 +18,4 @@ const getMe = (req, res) => {
   res.status(200).json(safeData);
 };
 
-module.exports = { createUser, loginUser, getMe, getUserById };
+module.exports = { createUser, loginUser, getMe };
