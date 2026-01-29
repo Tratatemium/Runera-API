@@ -209,6 +209,31 @@ describe("POST /users/login - Integration Tests", () => {
       expect(res1.body).toHaveProperty("token");
       expect(res2.body).toHaveProperty("token");
     });
+
+    it("allows login with email in different case (case-insensitive)", async () => {
+      const res = await request(app).post("/users/login").send({
+        email: testUser1.email.toUpperCase(),
+        password: testUser1.password,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("token");
+      expect(typeof res.body.token).toBe("string");
+      expect(res.body.token.length).toBeGreaterThan(0);
+    });
+
+    it("allows login with mixed case email", async () => {
+      const mixedCaseEmail = "RuNnEr02@TeSt.CoM";
+      const res = await request(app).post("/users/login").send({
+        email: mixedCaseEmail,
+        password: testUser2.password,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("token");
+    });
   });
 });
 
