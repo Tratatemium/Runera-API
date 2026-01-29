@@ -1,15 +1,12 @@
-const findUserById = async (userId) => {
-  const users = getCollection("users");
+const User = require("../models/User");
 
-  const selectedUser = await users.findOne({
-    userId: userId,
-  });
-  return selectedUser || null;
+const findUserById = async (userId) => {
+  const selectedRun = await User.findOne({ userId });
+  return selectedRun || null;
 };
 
 const findUserByField = async (field, value) => {
-  const users = getCollection("users");
-  const selectedUser = await users.findOne({
+  const selectedUser = await User.findOne({
     [field]: value,
   });
   return selectedUser || null;
@@ -17,27 +14,19 @@ const findUserByField = async (field, value) => {
 
 const updateLastLogin = async (foundUser) => {
   const email = foundUser.account.email;
-  const users = getCollection("users");
-  const result = await users.updateOne(
-    { "account.email": email }, // filter
-    { $set: { "account.lastLogin": new Date().toISOString() } }, // update
+  const result = await User.updateOne(
+    { "account.email": email },
+    { $set: { "account.lastLogin": new Date() } },
   );
   return result;
 };
 
 const addNewUser = async (newUser) => {
-  const users = getCollection("users");
-
   const newUserId = randomUUID();
   const userToInsert = { userId: newUserId, ...newUser };
-  const result = await users.insertOne(userToInsert);
-  if (!result.acknowledged) {
-    const err = new Error("Failed to save new user.");
-    err.status = 500;
-    throw err;
-  }
+  const savedUser = await User.create(userToInsert);
   console.log("New user added to the database. ID:", newUserId);
-  return newUserId;
+  return savedUser;
 };
 
 /* ================================================================================================= */
