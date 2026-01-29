@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-// const { MONGO_URI } = require("../config/env.config.js");
+const { MONGO_URI } = require("../config/env.config.js");
 
-const connectDB = async (uri = process.env.MONGO_URI) => {
+const connectDB = async (uri = MONGO_URI) => {
   if (!uri) {
     throw new Error("MongoDB URI not provided");
   }
