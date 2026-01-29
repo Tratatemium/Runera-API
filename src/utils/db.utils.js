@@ -1,9 +1,5 @@
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-
-if (!process.env.MONGO_URI) {
-  dotenv.config();
-}
+// const { MONGO_URI } = require("../config/env.config.js");
 
 const connectDB = async (uri = process.env.MONGO_URI) => {
   if (!uri) {
