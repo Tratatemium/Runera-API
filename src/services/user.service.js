@@ -10,4 +10,8 @@ const updateProfile = async (userId, profilePatch) => {
   return savedProfile;
 };
 
-module.exports = { updateProfile };
+const updateAccount = () => {
+
+};
+
+module.exports = { updateProfile, updateAccount };

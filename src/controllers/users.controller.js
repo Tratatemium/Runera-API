@@ -28,29 +28,19 @@ const updateProfile = async (req, res) => {
 };
 
 const updateAccount = (fieldToUpdate) => {
+  const acceptebleFields = ["password", "email", "username"];
+  if (!acceptebleFields.includes(fieldToUpdate)) {
+    throw new Error(
+      `fieldToUpdate must be "password", "email", or "username".`,
+    );
+  }
+
   return async (req, res) => {
     const email = req.user.email;
     const currentPassword = req.body.currentPassword;
     await auth.login(email, currentPassword);
-
-    switch (fieldToUpdate) {
-      case "password":
-
-        break;
-
-      case "email":
-
-        break;
-
-      case "username":
-
-        break;
-
-      default:
-        throw new Error(
-          `fieldToUpdate must be "password", "email", or "username".`,
-        );
-    }
+    await userService.updateAccount(req, fieldToUpdate);
+    res.sendStatus(200);    
   };
 };
 
