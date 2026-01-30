@@ -82,13 +82,13 @@ const validateProfile = (req, res, next) => {
     validators.validateName(lastName, "lastName");
 
   if (dateOfBirth !== undefined && dateOfBirth !== null)
-    validators.validateISODate(dateOfBirth);
+    validators.validateISODate(dateOfBirth, "dateOfBirth");
 
   if (heightCm !== undefined && heightCm !== null)
-    validators.validatePositiveNumber(heightCm);
+    validators.validatePositiveNumber(heightCm, "heightCm");
 
   if (weightKg !== undefined && weightKg !== null)
-    validators.validatePositiveNumber(weightKg);
+    validators.validatePositiveNumber(weightKg, "heightCm");
 
   next();
 };

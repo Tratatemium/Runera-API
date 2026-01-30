@@ -70,7 +70,7 @@ const validateUUID = (ID, IDname = "ID") => {
 };
 
 const validateISODate = (timestamp, timestampName) => {
-  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+  const isoRegex = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)?$/;
   if (!isoRegex.test(timestamp)) {
     throwValidationError(
       `${timestampName} must be a valid date in the ISO 8601 format.`,

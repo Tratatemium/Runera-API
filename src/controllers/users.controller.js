@@ -22,9 +22,10 @@ const getMe = (req, res) => {
 
 const updateProfile = async (req, res) => {
   const userId = req.user.userId;
-  const profile = req.profile;
+  const profile = req.body.profile;
+  console.log(req.profile)
   const savedProfile = await userService.updateProfile(userId, profile);
-  res.status(200).json(savedProfile);
+  res.sendStatus(200);
 };
 
 module.exports = { createUser, loginUser, getMe, updateProfile };

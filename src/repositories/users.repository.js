@@ -38,7 +38,7 @@ const addNewUser = async (newUser) => {
 };
 
 const updateProfile = async (userId, profilePatch) => {
-  const update = {};
+    const update = {};
   for (const [key, value] of Object.entries(profilePatch)) {
     update[`profile.${key}`] = value;
   }
