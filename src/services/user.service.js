@@ -1,7 +1,8 @@
 const usersRepo = require("../repositories/users.repository.js")
 
-const updateProfile = () => {
-
+const updateProfile = (userId, profile) => {
+    const savedProfile = null;
+    return savedProfile;
 };
 
 module.exports = { updateProfile };
