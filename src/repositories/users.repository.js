@@ -42,8 +42,8 @@ const updateProfile = async (userId, profilePatch) => {
   for (const [key, value] of Object.entries(profilePatch)) {
     update[`profile.${key}`] = value;
   }
-  const result = await User.updateOne({ userId: userId }, { $set: update });
-  return result;
+  const result = await User.findOneAndUpdate({ userId }, { $set: update }, { new: true });
+  return result.profile;
 };
 
 /* ================================================================================================= */
