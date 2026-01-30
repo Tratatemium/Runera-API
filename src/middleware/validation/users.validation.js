@@ -83,7 +83,7 @@ const validateProfile = (req, res, next) => {
   next();
 };
 
-const validateAccountPatch = (fieldToPatch) => {
+const validateAccountUpdate = (fieldToUpdate) => {
   return (req, res, next) => {
     validators.validateJsonContentType(req);
 
@@ -93,7 +93,7 @@ const validateAccountPatch = (fieldToPatch) => {
       validators.throwValidationError("currentPassword must be provided.");
     }
 
-    switch (fieldToPatch) {
+    switch (fieldToUpdate) {
       case "password":
         if (newPassword == null) {
           validators.throwValidationError("newPassword must be provided.");
@@ -117,7 +117,7 @@ const validateAccountPatch = (fieldToPatch) => {
 
       default:
         throw new Error(
-          `fieldToPatch must be "password", "email", or "username".`,
+          `fieldToUpdate must be "password", "email", or "username".`,
         );
     }
     next();
@@ -133,5 +133,5 @@ module.exports = {
   validateLoginRequest,
   validateUUID,
   validateProfile,
-  validateAccountPatch,
+  validateAccountUpdate,
 };

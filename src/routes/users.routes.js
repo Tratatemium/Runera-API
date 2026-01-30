@@ -36,8 +36,9 @@ router.patch(
 
 router.patch(
   "/password",
-  validation.validateAccountPatch("password"),
+  validation.validateAccountUpdate("password"),
   authentication.checkAuth,
+  usersController.updateAccount("password"),
 );
 
 module.exports = router;
