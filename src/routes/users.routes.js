@@ -28,15 +28,13 @@ router.get(
 );
 
 router.patch(
-  "/me",  
+  "/me",
   validation.validateProfile,
   authentication.checkAuth,
-  usersController.updateProfile
+  usersController.updateProfile,
 );
 
 module.exports = router;
-
-
 
 // TODO: PATCH users/me/password
 // {

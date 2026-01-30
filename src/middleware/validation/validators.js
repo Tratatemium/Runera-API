@@ -143,7 +143,9 @@ const validateName = (name, fieldName) => {
     throwValidationError(`${fieldName} cannot be empty.`);
   }
   if (trimmed.length < 2 || trimmed.length > 50) {
-    throwValidationError(`${fieldName} must contain between 2 and 50 characters.`);
+    throwValidationError(
+      `${fieldName} must contain between 2 and 50 characters.`,
+    );
   }
 
   const nameRegex = /^\p{L}+([ '-]\p{L}+)*$/u;
