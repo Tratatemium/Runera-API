@@ -37,9 +37,8 @@ const validateLoginRequest = (req, res, next) => {
       "Provide either email or username, but not both.",
     );
 
-  if (username !== undefined && username !== null)
-    validators.validateUsername(username);
-  if (email !== undefined && email !== null) validators.validateEmail(email);
+  if (username != null) validators.validateUsername(username);
+  if (email != null) validators.validateEmail(email);
   validators.validatePassword(password);
 
   next();
@@ -75,20 +74,16 @@ const validateProfile = (req, res, next) => {
 
   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
 
-  if (firstName !== undefined && firstName !== null)
-    validators.validateName(firstName, "firstName");
+  if (firstName != null) validators.validateName(firstName, "firstName");
 
-  if (lastName !== undefined && lastName !== null)
-    validators.validateName(lastName, "lastName");
+  if (lastName != null) validators.validateName(lastName, "lastName");
 
-  if (dateOfBirth !== undefined && dateOfBirth !== null)
+  if (dateOfBirth != null)
     validators.validateISODate(dateOfBirth, "dateOfBirth");
 
-  if (heightCm !== undefined && heightCm !== null)
-    validators.validatePositiveNumber(heightCm, "heightCm");
+  if (heightCm != null) validators.validatePositiveNumber(heightCm, "heightCm");
 
-  if (weightKg !== undefined && weightKg !== null)
-    validators.validatePositiveNumber(weightKg, "weightKg");
+  if (weightKg != null) validators.validatePositiveNumber(weightKg, "weightKg");
 
   next();
 };
@@ -127,7 +122,7 @@ const validateAccountPatch = (fieldToPatch) => {
 
       default:
         throw new Error(
-          `fieldToPatch must be "password", "email", or "username".`
+          `fieldToPatch must be "password", "email", or "username".`,
         );
     }
     next();
