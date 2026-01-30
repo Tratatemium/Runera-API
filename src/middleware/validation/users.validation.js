@@ -93,6 +93,47 @@ const validateProfile = (req, res, next) => {
   next();
 };
 
+const validateAccountPatch = (fieldToPatch) => {
+  return (req, res, next) => {
+    validators.validateJsonContentType(req);
+
+    const { currentPassword, newPassword, newEmail, newUsername } = req.body;
+
+    if (currentPassword == null) {
+      validators.throwValidationError("currentPassword must be provided.");
+    }
+
+    switch (fieldToPatch) {
+      case "password":
+        if (newPassword == null) {
+          validators.throwValidationError("newPassword must be provided.");
+        }
+        validators.validatePassword(newPassword);
+        break;
+
+      case "email":
+        if (newEmail == null) {
+          validators.throwValidationError("newEmail must be provided.");
+        }
+        validators.validateEmail(newEmail);
+        break;
+
+      case "username":
+        if (newUsername == null) {
+          validators.throwValidationError("newUsername must be provided.");
+        }
+        validators.validateUsername(newUsername);
+        break;
+
+      default:
+        throw new Error(
+          `fieldToPatch must be "password", "email", or "username".`
+        );
+    }
+    next();
+  };
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -102,4 +143,5 @@ module.exports = {
   validateLoginRequest,
   validateUUID,
   validateProfile,
+  validateAccountPatch,
 };
