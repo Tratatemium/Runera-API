@@ -134,6 +134,21 @@ const validatePassword = (password) => {
   }
 };
 
+const vaildateName = (name, fieldName) => {
+  if (typeof name !== "string")
+    throwValidationError(`${fieldName} must be a string.`);
+
+  const trimmed = name.trim();
+  if (trimmed.length === 0) {
+    throwValidationError(`${fieldName} cannot be empty.`);
+  }
+
+  const nameRegex = /^\p{L}+([ '-]\p{L}+)*$/u;
+  if (!nameRegex.test(trimmed)) {
+    throwValidationError(`${fieldName} contains forbidden characters.`);
+  }
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -149,4 +164,5 @@ module.exports = {
   validateUsername,
   validateEmail,
   validatePassword,
+  vaildateName,
 };
