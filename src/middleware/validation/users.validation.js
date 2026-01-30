@@ -52,6 +52,10 @@ const validateUUID = (param = "id") => {
   };
 };
 
+const validateProfile = () => {
+
+};
+
 // TODO: Add profile field validation here if/when profile data is supported.
 //  "profile": {
 //      "firstName": "Alex",
@@ -69,4 +73,5 @@ module.exports = {
   validateRegisterRequest,
   validateLoginRequest,
   validateUUID,
+  validateProfile
 };
