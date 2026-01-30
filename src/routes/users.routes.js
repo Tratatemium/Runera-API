@@ -41,19 +41,21 @@ router.patch(
   usersController.updateAccount("password"),
 );
 
+router.patch(
+  "/email",
+  validation.validateAccountUpdate("email"),
+  authentication.checkAuth,
+  usersController.updateAccount("email"),
+);
+
+router.patch(
+  "/username",
+  validation.validateAccountUpdate("username"),
+  authentication.checkAuth,
+  usersController.updateAccount("username"),
+);
+
 module.exports = router;
-
-// TODO: PATCH users/me/password
-// {
-//   "currentPassword": "old_password",
-//   "newPassword": "new_password"
-// }
-
-// TODO: PATCH users/me/email
-// {
-//   "currentPassword": "old_password",
-//   "newEmail": "new@example.com"
-// }
 
 // IDEA: POST /users/password-reset
 // {

@@ -42,8 +42,28 @@ const updateProfile = async (userId, profilePatch) => {
   for (const [key, value] of Object.entries(profilePatch)) {
     update[`profile.${key}`] = value;
   }
-  const result = await User.findOneAndUpdate({ userId }, { $set: update }, { new: true });
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { $set: update },
+    { new: true },
+  );
   return result.profile;
+};
+
+const updateAccount = async (userId, identifierName, newValue) => {
+  const result = await User.updateOne(
+    { userId },
+    { $set: { [`account.${identifierName}`]: newValue } },
+  );
+  return result;
+};
+
+const updateCredentials = async (userId, newCredentials) => {
+  const result = await User.updateOne(
+    { userId },
+    { $set: { credentials: newCredentials } },
+  );
+  return result;
 };
 
 /* ================================================================================================= */
@@ -57,4 +77,6 @@ module.exports = {
   updateLastLogin,
   addNewUser,
   updateProfile,
+  updateAccount,
+  updateCredentials,
 };

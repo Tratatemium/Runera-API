@@ -21,6 +21,12 @@ const signup = async (email, username, password) => {
   return newUserId;
 };
 
+const updatePassword = async (userId, newPassword) => {
+  const newCredentials = await createPasswordHash(newPassword);
+  const result = await userRepo.updateCredentials(userId, newCredentials);
+  return result;
+};
+
 const login = async (identifier, password) => {
   const foundUser = await userRepo.findUserByEmailOrUsername(identifier);
 
@@ -35,5 +41,6 @@ const login = async (identifier, password) => {
 
 module.exports = {
   signup,
+  updatePassword,
   login,
 };
