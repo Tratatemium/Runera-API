@@ -442,12 +442,12 @@ describe("PATCH /users/me - Integration Tests", () => {
       const res1 = await request(app)
         .patch("/users/me")
         .set("Authorization", `Bearer ${user1Token}`)
-        .send({ profile: { firstName: "User1Name" } });
+        .send({ profile: { firstName: "Anna" } });
 
       const res2 = await request(app)
         .patch("/users/me")
         .set("Authorization", `Bearer ${user2Token}`)
-        .send({ profile: { firstName: "User2Name" } });
+        .send({ profile: { firstName: "Boris" } });
 
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);

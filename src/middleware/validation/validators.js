@@ -85,7 +85,7 @@ const validateISODate = (timestamp, timestampName) => {
 };
 
 const validatePositiveNumber = (number, numberName) => {
-  if (isNaN(number) || number <= 0) {
+  if (isNaN(number) || number <= 0 || typeof number !== "number") {
     throwValidationError(`${numberName} must be a positive number.`);
   }
 };
@@ -141,6 +141,9 @@ const validateName = (name, fieldName) => {
   const trimmed = name.trim();
   if (trimmed.length === 0) {
     throwValidationError(`${fieldName} cannot be empty.`);
+  }
+  if (trimmed.length < 2 || trimmed.length > 50) {
+    throwValidationError(`${fieldName} must contain between 2 and 50 characters.`);
   }
 
   const nameRegex = /^\p{L}+([ '-]\p{L}+)*$/u;
