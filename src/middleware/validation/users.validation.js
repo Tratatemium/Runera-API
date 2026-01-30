@@ -88,7 +88,7 @@ const validateProfile = (req, res, next) => {
     validators.validatePositiveNumber(heightCm, "heightCm");
 
   if (weightKg !== undefined && weightKg !== null)
-    validators.validatePositiveNumber(weightKg, "heightCm");
+    validators.validatePositiveNumber(weightKg, "weightKg");
 
   next();
 };
