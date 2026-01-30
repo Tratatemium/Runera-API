@@ -65,17 +65,14 @@ const ProfileSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: true,
       trim: true,
     },
     lastName: {
       type: String,
-      required: true,
       trim: true,
     },
     dateOfBirth: {
       type: Date,
-      required: true,
     },
     heightCm: {
       type: Number,
