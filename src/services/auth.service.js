@@ -4,11 +4,15 @@ const {
   comparePasswordHash,
 } = require("../utils/password.utils.js");
 const { createToken } = require("../utils/jwt.utils.js");
+const { access } = require("node:fs");
 
 const signup = async (email, username, password) => {
   const { passwordHash, passwordMetadata } = await createPasswordHash(password);
   const newUser = {
     credentials: { passwordHash, passwordMetadata },
+    auth: {
+      accessTokenVersion: 0,
+    },
     account: {
       username,
       email,
