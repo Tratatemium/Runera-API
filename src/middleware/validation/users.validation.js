@@ -37,9 +37,8 @@ const validateLoginRequest = (req, res, next) => {
       "Provide either email or username, but not both.",
     );
 
-  if (username !== undefined && username !== null)
-    validators.validateUsername(username);
-  if (email !== undefined && email !== null) validators.validateEmail(email);
+  if (username != null) validators.validateUsername(username);
+  if (email != null) validators.validateEmail(email);
   validators.validatePassword(password);
 
   next();
@@ -75,22 +74,56 @@ const validateProfile = (req, res, next) => {
 
   const { firstName, lastName, dateOfBirth, heightCm, weightKg } = profile;
 
-  if (firstName !== undefined && firstName !== null)
-    validators.validateName(firstName, "firstName");
-
-  if (lastName !== undefined && lastName !== null)
-    validators.validateName(lastName, "lastName");
-
-  if (dateOfBirth !== undefined && dateOfBirth !== null)
+  if (firstName != null) validators.validateName(firstName, "firstName");
+  if (lastName != null) validators.validateName(lastName, "lastName");
+  if (dateOfBirth != null)
     validators.validateISODate(dateOfBirth, "dateOfBirth");
-
-  if (heightCm !== undefined && heightCm !== null)
-    validators.validatePositiveNumber(heightCm, "heightCm");
-
-  if (weightKg !== undefined && weightKg !== null)
-    validators.validatePositiveNumber(weightKg, "weightKg");
+  if (heightCm != null) validators.validatePositiveNumber(heightCm, "heightCm");
+  if (weightKg != null) validators.validatePositiveNumber(weightKg, "weightKg");
 
   next();
+};
+
+const validateAccountUpdate = (fieldToUpdate) => {
+  return (req, res, next) => {
+    validators.validateJsonContentType(req);
+
+    const { currentPassword, newPassword, newEmail, newUsername } = req.body;
+
+    if (currentPassword == null) {
+      validators.throwValidationError("currentPassword must be provided.");
+    }
+    validators.validatePassword(currentPassword);
+
+    switch (fieldToUpdate) {
+      case "password":
+        if (newPassword == null) {
+          validators.throwValidationError("newPassword must be provided.");
+        }
+        validators.validatePassword(newPassword);
+        break;
+
+      case "email":
+        if (newEmail == null) {
+          validators.throwValidationError("newEmail must be provided.");
+        }
+        validators.validateEmail(newEmail);
+        break;
+
+      case "username":
+        if (newUsername == null) {
+          validators.throwValidationError("newUsername must be provided.");
+        }
+        validators.validateUsername(newUsername);
+        break;
+
+      default:
+        throw new Error(
+          `fieldToUpdate must be "password", "email", or "username".`,
+        );
+    }
+    next();
+  };
 };
 
 /* ================================================================================================= */
@@ -102,4 +135,5 @@ module.exports = {
   validateLoginRequest,
   validateUUID,
   validateProfile,
+  validateAccountUpdate,
 };

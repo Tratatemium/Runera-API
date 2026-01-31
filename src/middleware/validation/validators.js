@@ -27,12 +27,11 @@ const assertRequestFields = (
   if (!["require_all", "require_some"].includes(mode)) {
     throw new Error(`Invalid validation mode: ${mode}`);
   }
-  if (typeof req.body !== "object" || req.body === null) {
+  if (typeof req.body !== "object" || req.body == null) {
     throwValidationError(`${objectName} must be an object`);
   }
 
-  const hasValue = (field) =>
-    req.body[field] !== undefined && req.body[field] !== null;
+  const hasValue = (field) => req.body[field] != null;
 
   if (mode === "require_all") {
     const missingFields = requiredFields.filter((field) => !hasValue(field));

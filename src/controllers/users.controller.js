@@ -27,4 +27,21 @@ const updateProfile = async (req, res) => {
   res.status(200).json(savedProfile);
 };
 
-module.exports = { createUser, loginUser, getMe, updateProfile };
+const updateAccount = (fieldToUpdate) => {
+  const acceptableFields = ["password", "email", "username"];
+  if (!acceptableFields.includes(fieldToUpdate)) {
+    throw new Error(
+      `fieldToUpdate must be "password", "email", or "username".`,
+    );
+  }
+
+  return async (req, res) => {
+    const email = req.user.email;
+    const currentPassword = req.body.currentPassword;
+    await auth.authenticateUser(email, currentPassword);
+    await userService.updateAccount(req, fieldToUpdate);
+    res.sendStatus(200);
+  };
+};
+
+module.exports = { createUser, loginUser, getMe, updateProfile, updateAccount };
