@@ -93,6 +93,7 @@ const validateAccountUpdate = (fieldToUpdate) => {
     if (currentPassword == null) {
       validators.throwValidationError("currentPassword must be provided.");
     }
+    validators.validatePassword(currentPassword);
 
     switch (fieldToUpdate) {
       case "password":
