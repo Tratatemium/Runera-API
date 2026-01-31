@@ -23,7 +23,9 @@ describe("PATCH /users/password - Integration Tests", () => {
     const loginRes = await request(app).post("/users/login").send({
       email: testUser1.email,
       password: testUser1.password,
-    });
+        });
+    expect(loginRes.statusCode).toBe(200);
+    expect(loginRes.body).toHaveProperty("token");
     user1Token = loginRes.body.token;
   });
 
