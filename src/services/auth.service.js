@@ -27,19 +27,23 @@ const updatePassword = async (userId, newPassword) => {
   return result;
 };
 
+const authenticateUser = async (identifier, password) => {
+  const user = await userRepo.findUserByEmailOrUsername(identifier);
+  await comparePasswordHash(user, password);
+  return user;
+};
+
 const login = async (identifier, password) => {
-  const foundUser = await userRepo.findUserByEmailOrUsername(identifier);
-  await comparePasswordHash(foundUser, password);
-
+  const user = await authenticateUser(identifier, password);
   //TODO: implement failed login attempts check
-
-  const token = createToken(foundUser);
-  await userRepo.updateLastLogin(foundUser);
+  const token = createToken(user);
+  await userRepo.updateLastLogin(user);
   return token;
 };
 
 module.exports = {
   signup,
   updatePassword,
+  authenticateUser,
   login,
 };
