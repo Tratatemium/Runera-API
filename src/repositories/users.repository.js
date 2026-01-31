@@ -47,7 +47,7 @@ const updateProfile = async (userId, profilePatch) => {
     { $set: update },
     { new: true },
   );
-  return result.profile;
+  return result?.profile ?? null;
 };
 
 const updateAccount = async (userId, identifierName, newValue) => {
