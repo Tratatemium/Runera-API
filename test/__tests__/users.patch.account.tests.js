@@ -194,6 +194,58 @@ describe("PATCH /users/password - Integration Tests", () => {
       expect(res.statusCode).toBe(200);
     });
 
+    it("invalidates previous token after password update", async () => {
+      // Get current token
+      const oldToken = user1Token;
+
+      // Update password
+      await request(app)
+        .patch("/users/password")
+        .set("Authorization", `Bearer ${oldToken}`)
+        .send({
+          currentPassword: testUser1.password,
+          newPassword: "BrandNewPassword123!",
+        });
+
+      // Try to use old token to access protected endpoint
+      const res = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${oldToken}`);
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("allows successful login with new token after password update", async () => {
+      // Update password
+      await request(app)
+        .patch("/users/password")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          currentPassword: testUser1.password,
+          newPassword: "FreshPassword999!",
+        });
+
+      // Login with new password to get new token
+      const loginRes = await request(app).post("/users/login").send({
+        email: testUser1.email,
+        password: "FreshPassword999!",
+      });
+
+      expect(loginRes.statusCode).toBe(200);
+      expect(loginRes.body).toHaveProperty("token");
+
+      const newToken = loginRes.body.token;
+
+      // Use new token to access protected endpoint
+      const res = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${newToken}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("account");
+    });
+
     it("allows login with new password after update", async () => {
       // Update password
       await request(app)
@@ -406,6 +458,28 @@ describe("PATCH /users/email - Integration Tests", () => {
         });
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("invalidates previous token after email update", async () => {
+      // Get current token
+      const oldToken = user2Token;
+
+      // Update email
+      await request(app)
+        .patch("/users/email")
+        .set("Authorization", `Bearer ${oldToken}`)
+        .send({
+          currentPassword: testUser2.password,
+          newEmail: "completely_new_email@test.com",
+        });
+
+      // Try to use old token to access protected endpoint
+      const res = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${oldToken}`);
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty("error");
     });
 
     it("allows login with new email after update", async () => {
@@ -643,6 +717,28 @@ describe("PATCH /users/username - Integration Tests", () => {
         });
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it("invalidates previous token after username update", async () => {
+      // Get current token
+      const oldToken = user1Token;
+
+      // Update username
+      await request(app)
+        .patch("/users/username")
+        .set("Authorization", `Bearer ${oldToken}`)
+        .send({
+          currentPassword: testUser1.password,
+          newUsername: "totally_new_username",
+        });
+
+      // Try to use old token to access protected endpoint
+      const res = await request(app)
+        .get("/users/me")
+        .set("Authorization", `Bearer ${oldToken}`);
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty("error");
     });
 
     it("allows login with new username after update", async () => {
