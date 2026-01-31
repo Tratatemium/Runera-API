@@ -41,6 +41,17 @@ const CredentialsSchema = new mongoose.Schema(
   { _id: false },
 );
 
+const AuthSchema = new mongoose.Schema(
+  {
+    accessTokenVersion: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+  },
+  { _id: false },
+);
+
 const AccountSchema = new mongoose.Schema(
   {
     username: {
@@ -83,7 +94,7 @@ const ProfileSchema = new mongoose.Schema(
       min: 0,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 /* ================================================================================================= */
@@ -99,6 +110,11 @@ const UserSchema = new mongoose.Schema(
 
     credentials: {
       type: CredentialsSchema,
+      required: true,
+    },
+
+    auth: {
+      type: AuthSchema,
       required: true,
     },
 
@@ -119,20 +135,11 @@ const UserSchema = new mongoose.Schema(
 /*  INDEXES                                                                                          */
 /* ================================================================================================= */
 
-UserSchema.index(
-  { userId: 1 },
-  { unique: true }
-);
+UserSchema.index({ userId: 1 }, { unique: true });
 
-UserSchema.index(
-  { "account.username": 1 },
-  { unique: true }
-);
+UserSchema.index({ "account.username": 1 }, { unique: true });
 
-UserSchema.index(
-  { "account.email": 1 },
-  { unique: true }
-);
+UserSchema.index({ "account.email": 1 }, { unique: true });
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                         */
