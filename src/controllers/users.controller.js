@@ -39,10 +39,8 @@ const updateAccount = async (req, res) => {
   await auth.authenticateUser(currentEmail, currentPassword);
 
   const fieldToUpdate = req.fieldToUpdate;
-  if (!req.fieldToUpdate) {
-    throw new Error(
-      'req.fieldToUpdate must be "password", "email", or "username".',
-    );
+  if (!fieldToUpdate) {
+    throw new Error("req.fieldToUpdate must be provided in middleware.");
   }
   await userService.updateAccount(userId, fieldToUpdate, req.body);
   await auth.invalidatePreviousAccessTokens(userId);
