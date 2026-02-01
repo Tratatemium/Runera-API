@@ -30,14 +30,3 @@ router.patch(
 );
 
 module.exports = router;
-
-// IDEA: POST /users/password-reset
-// {
-//   "email": "user@example.com"
-// }
-
-// IDEA: POST /users/password-reset/confirm
-// {
-//   "token": "reset_token",
-//   "newPassword": "new_password"
-// }

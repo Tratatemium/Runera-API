@@ -20,3 +20,15 @@ router.post(
 router.post("/logout-all", authorization.checkAuth, authController.logoutAll);
 
 module.exports = router;
+
+
+// IDEA: POST /auth/password-reset
+// {
+//   "email": "user@example.com"
+// }
+
+// IDEA: POST /auth/password-reset/confirm
+// {
+//   "token": "reset_token",
+//   "newPassword": "new_password"
+// }
