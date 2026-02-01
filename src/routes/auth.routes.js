@@ -3,20 +3,20 @@ const router = express.Router();
 
 const validation = require("../middleware/validation/auth.validation.js");
 const authentication = require("../middleware/auth.middleware.js");
-const usersController = require("../controllers/users.controller.js");
+const authController = require("../controllers/auth.controller.js");
 
 router.post(
   "/signup",
   validation.validateRegisterRequest,
-  usersController.createUser,
+  authController.createUser,
 );
 
 router.post(
   "/login",
   validation.validateLoginRequest,
-  usersController.loginUser,
+  authController.loginUser,
 );
 
-router.post("/logout-all", authentication.checkAuth, usersController.logoutAll);
+router.post("/logout-all", authentication.checkAuth, authController.logoutAll);
 
 module.exports = router;
