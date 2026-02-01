@@ -1,21 +1,15 @@
-const { validateUUID } = require("../middleware/validation/validators.js");
-const runsRepo = require("../repositories/runs.repository.js");
+const runsService = require("../services/runs.service.js")
 
 const postNewRun = async (req, res) => {
   const userId = req.user.userId;
   const newRun = { userId, ... req.runData }
-  const newRunId = await runsRepo.addNewRun(newRun);
+  const newRunId = await runsService.createRun(newRun);
   res.status(201).json({ id: newRunId });
 };
 
 const getRunById = async (req, res) => {
-  const data = await runsRepo.findRunById(req.params.id);
-  if (!data) {
-    const err = new Error(`No run with ID ${req.params.id} found!`);
-    err.status = 404;
-    throw err;
-  }
-  res.status(200).json(data);
+  const runData = await runsService.getRunById(req.params.id)
+  res.status(200).json(runData);
 };
 
 module.exports = { getRunById, postNewRun };
