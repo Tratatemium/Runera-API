@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const validation = require("../middleware/validation/users.validation.js");
-const authorization = require("../middleware/auth.middleware.js");
+const authMiddleware = require("../middleware/auth.middleware.js");
 const usersMiddleware = require("../middleware/users.middleware.js");
 const usersController = require("../controllers/users.controller.js");
 
@@ -10,7 +10,7 @@ const usersController = require("../controllers/users.controller.js");
 
 router.get(
   "/me",
-  authorization.checkAuth,
+  authMiddleware.checkAuth,
   usersMiddleware.attachUser,
   usersController.getMe,
 );
@@ -18,14 +18,14 @@ router.get(
 router.patch(
   "/me/profile",
   validation.validateProfileUpdate,
-  authorization.checkAuth,
+  authMiddleware.checkAuth,
   usersController.updateProfile,
 );
 
 router.patch(
   "/me/account",
   validation.validateAccountUpdate,
-  authorization.checkAuth,
+  authMiddleware.checkAuth,
   usersController.updateAccount,
 );
 
