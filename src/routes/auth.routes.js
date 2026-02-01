@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const validation = require("../middleware/validation/auth.validation.js");
-const authentication = require("../middleware/auth.middleware.js");
+const authorization = require("../middleware/auth.middleware.js");
 const authController = require("../controllers/auth.controller.js");
 
 router.post(
@@ -17,6 +17,6 @@ router.post(
   authController.loginUser,
 );
 
-router.post("/logout-all", authentication.checkAuth, authController.logoutAll);
+router.post("/logout-all", authorization.checkAuth, authController.logoutAll);
 
 module.exports = router;
