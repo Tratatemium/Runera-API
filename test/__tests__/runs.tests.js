@@ -253,7 +253,7 @@ describe("POST /runs/ - Integration Tests", () => {
       expect(res.headers["content-type"]).toMatch(/json/);
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe(
-        "startTime must be a valid ISO 8601 timestamp with timezone (UTC).",
+        "startTime must be a real calendar date and time.",
       );
     });
 

@@ -124,6 +124,7 @@ const validateISO = (value, name, mode = "datetime") => {
       .replace("Z", "")
       .split(":")
       .map(Number);
+    const secondWhole = Math.floor(second);
 
     const isValid =
       date.getUTCFullYear() === year &&
@@ -131,7 +132,7 @@ const validateISO = (value, name, mode = "datetime") => {
       date.getUTCDate() === day &&
       date.getUTCHours() === hour &&
       date.getUTCMinutes() === minute &&
-      date.getUTCSeconds() === second;
+      date.getUTCSeconds() === secondWhole;
 
     if (!isValid) {
       throwValidationError(`${name} must be a real calendar date and time.`);
