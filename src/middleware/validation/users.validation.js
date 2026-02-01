@@ -51,7 +51,7 @@ const validateUUID = (param = "id") => {
   };
 };
 
-const validateProfile = (req, res, next) => {
+const validateProfileUpdate = (req, res, next) => {
   validators.validateJsonContentType(req);
   const profile = req.body.profile;
   if (!profile || typeof profile !== "object" || Array.isArray(profile)) {
@@ -123,6 +123,6 @@ module.exports = {
   validateRegisterRequest,
   validateLoginRequest,
   validateUUID,
-  validateProfile,
+  validateProfileUpdate,
   validateAccountUpdate,
 };
