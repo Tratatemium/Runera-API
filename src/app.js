@@ -44,7 +44,6 @@ app.get("/server-runtime", (req, res) => {
   });
 });
 
-// Runs routes
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
 app.use("/runs", runsRoutes);
