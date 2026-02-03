@@ -1,9 +1,7 @@
 const request = require("supertest");
 const app = require("../../../src/app.js");
 const { TEST_USERS } = require("../../helpers/test-data");
-const {
-  expectErrorResponse,
-} = require("../../helpers/request.helpers");
+const { expectErrorResponse } = require("../../helpers/request.helpers");
 const {
   expectValidJwtToken,
   expect400WithMessage,
