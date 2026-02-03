@@ -58,7 +58,7 @@ describe("POST /users/me/runs", () => {
 
       expect400WithMessage(
         res,
-        "Run data is missing required fields: startTime, durationSec, distanceMeters."
+        "Run data is missing required fields: startTime, durationSec, distanceMeters.",
       );
     });
 
@@ -75,7 +75,7 @@ describe("POST /users/me/runs", () => {
 
         expect400WithMessage(
           res,
-          `Run data is missing required fields: ${field}.`
+          `Run data is missing required fields: ${field}.`,
         );
       });
     });
@@ -144,7 +144,10 @@ describe("POST /users/me/runs", () => {
     const invalidDurationCases = [
       { value: 0, message: "durationSec must be a positive number." },
       { value: -100, message: "durationSec must be a positive number." },
-      { value: "not-a-number", message: "durationSec must be a positive number." },
+      {
+        value: "not-a-number",
+        message: "durationSec must be a positive number.",
+      },
     ];
 
     invalidDurationCases.forEach(({ value, message }) => {
@@ -182,7 +185,10 @@ describe("POST /users/me/runs", () => {
     const invalidDistanceCases = [
       { value: 0, message: "distanceMeters must be a positive number." },
       { value: -5000, message: "distanceMeters must be a positive number." },
-      { value: "invalid", message: "distanceMeters must be a positive number." },
+      {
+        value: "invalid",
+        message: "distanceMeters must be a positive number.",
+      },
     ];
 
     invalidDistanceCases.forEach(({ value, message }) => {

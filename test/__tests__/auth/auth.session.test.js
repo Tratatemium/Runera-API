@@ -7,9 +7,7 @@ const {
   expect401Error,
   expectJsonResponse,
 } = require("../../helpers/assertions");
-const {
-  getAuthValidationTests,
-} = require("../../helpers/request.helpers");
+const { getAuthValidationTests } = require("../../helpers/request.helpers");
 
 describe("GET /users/me", () => {
   let user1Token;

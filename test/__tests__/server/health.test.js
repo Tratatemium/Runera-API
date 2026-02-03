@@ -18,7 +18,9 @@ describe("Server Health Endpoints", () => {
 
       expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toMatch(/^Server is running for \d+(\.\d)? s\.$/);
+      expect(res.body.message).toMatch(
+        /^Server is running for \d+(\.\d)? s\.$/,
+      );
     });
   });
 });

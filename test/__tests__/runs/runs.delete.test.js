@@ -1,6 +1,10 @@
 const request = require("supertest");
 const app = require("../../../src/app.js");
-const { TEST_USERS, TEST_RUN_IDS, VALID_RUN_DATA } = require("../../helpers/test-data");
+const {
+  TEST_USERS,
+  TEST_RUN_IDS,
+  VALID_RUN_DATA,
+} = require("../../helpers/test-data");
 const { getAuthToken } = require("../../helpers/auth.helpers");
 const {
   expect400WithMessage,
@@ -170,7 +174,7 @@ describe("DELETE /runs/:id", () => {
 
       expect(countAfter).toBe(countBefore - 1);
       expect(
-        getRunsAfter.body.find((run) => run.runId === newRunId)
+        getRunsAfter.body.find((run) => run.runId === newRunId),
       ).toBeUndefined();
     });
 

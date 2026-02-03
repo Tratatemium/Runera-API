@@ -6,7 +6,6 @@ const { TEST_USERS } = require("../../helpers/test-data");
 const { getAuthToken } = require("../../helpers/auth.helpers");
 const {
   expect400WithMessage,
-  expectJsonResponse,
   expect401Error,
 } = require("../../helpers/assertions");
 const {
@@ -58,12 +57,10 @@ describe("PATCH /users/me/account", () => {
     describe("Authentication validation", () => {
       getAuthValidationTests().forEach(({ name, setupAuth }) => {
         it(name, async () => {
-          const req = request(app)
-            .patch("/users/me/account")
-            .send({
-              currentPassword: TEST_USERS.user1.password,
-              newPassword: "NewPassword456!",
-            });
+          const req = request(app).patch("/users/me/account").send({
+            currentPassword: TEST_USERS.user1.password,
+            newPassword: "NewPassword456!",
+          });
           const res = await setupAuth(req);
 
           expect401Error(res);
@@ -128,7 +125,7 @@ describe("PATCH /users/me/account", () => {
 
           expect400WithMessage(
             res,
-            "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername."
+            "Request body must include currentPassword and only one of: newPassword, newEmail, newUsername.",
           );
         });
       });
@@ -137,8 +134,14 @@ describe("PATCH /users/me/account", () => {
 
   describe("Password updates", () => {
     const passwordValidationCases = [
-      { password: "Short1!", message: "Password must be at least 12 characters long." },
-      { password: "A".repeat(129), message: "Password must be at most 128 characters long." },
+      {
+        password: "Short1!",
+        message: "Password must be at least 12 characters long.",
+      },
+      {
+        password: "A".repeat(129),
+        message: "Password must be at most 128 characters long.",
+      },
       { password: 123456789012, message: "Password must be a string." },
     ];
 
@@ -225,7 +228,10 @@ describe("PATCH /users/me/account", () => {
   describe("Email updates", () => {
     const emailValidationCases = [
       { email: "notanemail", message: "Email must be a valid email address." },
-      { email: "new email@test.com", message: "Email must not contain whitespace." },
+      {
+        email: "new email@test.com",
+        message: "Email must not contain whitespace.",
+      },
       { email: "a".repeat(250) + "@test.com", message: "Email is too long." },
       { email: 12345, message: "Email must be a string." },
     ];
@@ -312,10 +318,22 @@ describe("PATCH /users/me/account", () => {
 
   describe("Username updates", () => {
     const usernameValidationCases = [
-      { username: "short", message: "Username must be between 6 and 30 characters long." },
-      { username: "a".repeat(31), message: "Username must be between 6 and 30 characters long." },
-      { username: "user@name", message: "Username may only contain letters, numbers, and underscores." },
-      { username: "user name", message: "Username may only contain letters, numbers, and underscores." },
+      {
+        username: "short",
+        message: "Username must be between 6 and 30 characters long.",
+      },
+      {
+        username: "a".repeat(31),
+        message: "Username must be between 6 and 30 characters long.",
+      },
+      {
+        username: "user@name",
+        message: "Username may only contain letters, numbers, and underscores.",
+      },
+      {
+        username: "user name",
+        message: "Username may only contain letters, numbers, and underscores.",
+      },
       { username: 123456, message: "Username must be a string." },
     ];
 
