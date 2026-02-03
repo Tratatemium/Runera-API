@@ -1,10 +1,6 @@
 const request = require("supertest");
 const app = require("../../../src/app.js");
-const {
-  TEST_USERS,
-  TEST_RUN_IDS,
-  VALID_RUN_DATA,
-} = require("../../helpers/test-data");
+const { TEST_USERS, TEST_RUN_IDS } = require("../../helpers/test-data");
 const { getAuthToken } = require("../../helpers/auth.helpers");
 const {
   expect400WithMessage,
