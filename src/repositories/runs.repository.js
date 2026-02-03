@@ -16,7 +16,14 @@ const addNewRun = async (newRun) => {
   return savedRun.runId;
 };
 
+const findRunsByUserId = async (userId) => {
+    return await Run.find({ userId: userId })
+    .sort({ startTime: -1, runId: 1 })  // most recent first
+    .lean();
+};
+
 module.exports = {
   findRunById,
   addNewRun,
+  findRunsByUserId,
 };

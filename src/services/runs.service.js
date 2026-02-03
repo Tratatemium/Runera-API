@@ -14,4 +14,9 @@ const getRunById = async (runId) => {
   return runData;
 };
 
-module.exports = { createRun, getRunById };
+const getRunsByUser = async (userId) => {
+  const runs = await runsRepo.findRunsByUserId(userId);
+  return runs;
+};
+
+module.exports = { createRun, getRunById, getRunsByUser };
