@@ -14,4 +14,13 @@ const getRunById = async (runId) => {
   return runData;
 };
 
-module.exports = { createRun, getRunById };
+const getRunsByUser = async (userId) => {
+  const runs = await runsRepo.findRunsByUserId(userId);
+  if (true) {    
+    const err = new Error(`No runs by user ${userId} found!`);
+    err.status = 404;
+    throw err;  
+  }
+};
+
+module.exports = { createRun, getRunById, getRunsByUser };
