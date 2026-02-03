@@ -691,3 +691,283 @@ describe("GET /users/me/runs - Integration Tests", () => {
     });
   });
 });
+
+describe("DELETE /runs/:id - Integration Tests", () => {
+  let user1Token;
+  let user2Token;
+
+  beforeAll(async () => {
+    // Login as user1 and get token
+    const loginRes1 = await request(app).post("/auth/login").send({
+      email: testUser1.email,
+      password: testUser1.password,
+    });
+    user1Token = loginRes1.body.token;
+
+    // Login as user2 and get token
+    const loginRes2 = await request(app).post("/auth/login").send({
+      email: testUser2.email,
+      password: testUser2.password,
+    });
+    user2Token = loginRes2.body.token;
+  });
+
+  describe("Authentication", () => {
+    it("returns 401 when no authorization header is provided", async () => {
+      const runId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+      const res = await request(app).delete(`/runs/${runId}`);
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 when authorization header doesn't start with Bearer", async () => {
+      const runId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+      const res = await request(app)
+        .delete(`/runs/${runId}`)
+        .set("Authorization", "InvalidToken");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 401 for invalid token", async () => {
+      const runId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+      const res = await request(app)
+        .delete(`/runs/${runId}`)
+        .set("Authorization", "Bearer invalid.token.here");
+
+      expect(res.statusCode).toBe(401);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Authorization (permissions)", () => {
+    it("returns 403 when user tries to delete another user's run", async () => {
+      // user2 tries to delete user1's run
+      const user1RunId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+      const res = await request(app)
+        .delete(`/runs/${user1RunId}`)
+        .set("Authorization", `Bearer ${user2Token}`);
+
+      expect(res.statusCode).toBe(403);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 403 with appropriate error message for permission denial", async () => {
+      const user1RunId = "dc9822e7-72d6-4cc8-b6da-c1c5208d6109";
+      const res = await request(app)
+        .delete(`/runs/${user1RunId}`)
+        .set("Authorization", `Bearer ${user2Token}`);
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body.error).toContain("not allowed");
+    });
+  });
+
+  describe("Validation", () => {
+    it("returns 400 for invalid UUID format", async () => {
+      const invalidId = "not-a-valid-uuid";
+      const res = await request(app)
+        .delete(`/runs/${invalidId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("returns 400 for malformed UUID", async () => {
+      const malformedId = "000000zdg000000000000000000";
+      const res = await request(app)
+        .delete(`/runs/${malformedId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Not found", () => {
+    it("returns 404 for non-existent run ID", async () => {
+      const nonExistentId = "dc9811e7-72d6-4df8-b6da-c1c5219d6109";
+      const res = await request(app)
+        .delete(`/runs/${nonExistentId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.headers["content-type"]).toMatch(/json/);
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("Successful deletion", () => {
+    it("returns 204 when user successfully deletes their own run", async () => {
+      // First, create a new run to delete
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T10:00:00.000Z",
+          durationSec: 600,
+          distanceMeters: 2000,
+        });
+
+      const newRunId = createRes.body.id;
+
+      // Now delete it
+      const deleteRes = await request(app)
+        .delete(`/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(deleteRes.statusCode).toBe(204);
+      expect(deleteRes.body).toEqual({});
+    });
+
+    it("actually removes the run from the database", async () => {
+      // Create a run
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T11:00:00.000Z",
+          durationSec: 700,
+          distanceMeters: 2500,
+        });
+
+      const newRunId = createRes.body.id;
+
+      // Verify it exists
+      const getBeforeDelete = await request(app).get(`/runs/${newRunId}`);
+      expect(getBeforeDelete.statusCode).toBe(200);
+
+      // Delete it
+      await request(app)
+        .delete(`/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      // Verify it no longer exists
+      const getAfterDelete = await request(app).get(`/runs/${newRunId}`);
+      expect(getAfterDelete.statusCode).toBe(404);
+    });
+
+    it("removes the run from user's runs list", async () => {
+      // Create a run
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T12:00:00.000Z",
+          durationSec: 800,
+          distanceMeters: 3000,
+        });
+
+      const newRunId = createRes.body.id;
+
+      // Get runs before deletion
+      const getRunsBefore = await request(app)
+        .get("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      const countBefore = getRunsBefore.body.length;
+
+      // Delete the run
+      await request(app)
+        .delete(`/runs/${newRunId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      // Get runs after deletion
+      const getRunsAfter = await request(app)
+        .get("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      const countAfter = getRunsAfter.body.length;
+
+      expect(countAfter).toBe(countBefore - 1);
+      expect(
+        getRunsAfter.body.find((run) => run.runId === newRunId),
+      ).toBeUndefined();
+    });
+
+    it("allows user to delete multiple runs sequentially", async () => {
+      // Create two runs
+      const createRes1 = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T13:00:00.000Z",
+          durationSec: 900,
+          distanceMeters: 3500,
+        });
+
+      const createRes2 = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T14:00:00.000Z",
+          durationSec: 1000,
+          distanceMeters: 4000,
+        });
+
+      const runId1 = createRes1.body.id;
+      const runId2 = createRes2.body.id;
+
+      // Delete first run
+      const deleteRes1 = await request(app)
+        .delete(`/runs/${runId1}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(deleteRes1.statusCode).toBe(204);
+
+      // Delete second run
+      const deleteRes2 = await request(app)
+        .delete(`/runs/${runId2}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(deleteRes2.statusCode).toBe(204);
+
+      // Verify both are deleted
+      const get1 = await request(app).get(`/runs/${runId1}`);
+      const get2 = await request(app).get(`/runs/${runId2}`);
+
+      expect(get1.statusCode).toBe(404);
+      expect(get2.statusCode).toBe(404);
+    });
+  });
+
+  describe("Idempotency", () => {
+    it("returns 404 when trying to delete an already deleted run", async () => {
+      // Create a run
+      const createRes = await request(app)
+        .post("/users/me/runs")
+        .set("Authorization", `Bearer ${user1Token}`)
+        .send({
+          startTime: "2026-02-03T15:00:00.000Z",
+          durationSec: 1100,
+          distanceMeters: 4500,
+        });
+
+      const runId = createRes.body.id;
+
+      // Delete it once
+      const deleteRes1 = await request(app)
+        .delete(`/runs/${runId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(deleteRes1.statusCode).toBe(204);
+
+      // Try to delete it again
+      const deleteRes2 = await request(app)
+        .delete(`/runs/${runId}`)
+        .set("Authorization", `Bearer ${user1Token}`);
+
+      expect(deleteRes2.statusCode).toBe(404);
+      expect(deleteRes2.body).toHaveProperty("error");
+    });
+  });
+});
