@@ -50,9 +50,7 @@
       "passwordHash": "$2b$10$z3C8HHgYfWCv/4Nvs9nhUex6HbuFM1Zwfk7eLO67mENJ2MGyIQQTm",
       "passwordMetadata": {
         "algorithm": "bcrypt",
-        "updatedAt": {
-          "$date": "2026-02-03T18:25:22.433Z"
-        },
+        "updatedAt": "2026-02-03T18:25:22.433Z",
         "failedLoginAttempts": 0,
         "lockUntil": null
       }
