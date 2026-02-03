@@ -40,9 +40,9 @@ Get server uptime in seconds.
 
 ---
 
-## Users
+## Authentication
 
-### POST /users/signup
+### POST /auth/signup
 Register a new user account.
 
 **Request Body**
@@ -72,7 +72,7 @@ Register a new user account.
 
 ---
 
-### POST /users/login
+### POST /auth/login
 Authenticate and receive a JWT token.
 
 **Request Body**
@@ -97,6 +97,28 @@ Authenticate and receive a JWT token.
 - `404 Not Found`: User not found
 
 ---
+
+### POST /auth/logout-all
+Invalidate all tokens for the current user.
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Success Response** (200 OK)
+```json
+{
+  "message": "Logged out from all devices"
+}
+```
+
+**Error Responses**
+- `401 Unauthorized`: Missing or invalid token
+
+---
+
+## Users
 
 ### GET /users/me
 Get current authenticated user's profile.
@@ -133,7 +155,7 @@ Authorization: Bearer <token>
 
 ---
 
-### PATCH /users/me
+### PATCH /users/me/profile
 Update current user's profile information.
 
 **Headers**
@@ -145,13 +167,11 @@ Content-Type: application/json
 **Request Body**
 ```json
 {
-  "profile": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "dateOfBirth": "1990-01-15",
-    "heightCm": 180,
-    "weightKg": 75
-  }
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1990-01-15",
+  "heightCm": 180,
+  "weightKg": 75
 }
 ```
 
@@ -179,15 +199,54 @@ Content-Type: application/json
 
 ---
 
-## Runs
+### PATCH /users/me/account
+Update current user's account information (username/email).
 
-### POST /runs
-Create a new running activity record.
+**Headers**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
 
 **Request Body**
 ```json
 {
-  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "username": "newusername",
+  "email": "newemail@example.com"
+}
+```
+
+**Field Descriptions**
+- `username`: New username (optional, 3-30 characters)
+- `email`: New email address (optional, valid email format)
+
+**Success Response** (200 OK)
+```json
+{
+  "username": "newusername",
+  "email": "newemail@example.com"
+}
+```
+
+**Error Responses**
+- `400 Bad Request`: Validation error or username/email already exists
+- `401 Unauthorized`: Missing or invalid token
+
+---
+
+## Runs
+
+### POST /users/me/runs
+Create a new running activity record for the authenticated user.
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Request Body**
+```json
+{
   "startTime": "2026-01-30T08:00:00.000Z",
   "durationSec": 1800,
   "distanceMeters": 5000
@@ -195,7 +254,6 @@ Create a new running activity record.
 ```
 
 **Field Descriptions**
-- `userId`: UUID of the user who completed the run
 - `startTime`: ISO 8601 datetime when the run started
 - `durationSec`: Duration in seconds (must be ≥ 0)
 - `distanceMeters`: Distance covered in meters (must be ≥ 0)
@@ -209,6 +267,36 @@ Create a new running activity record.
 
 **Error Responses**
 - `400 Bad Request`: Validation error
+- `401 Unauthorized`: Missing or invalid token
+- `500 Internal Server Error`: Server error
+
+---
+
+### GET /users/me/runs
+Retrieve all runs for the authenticated user.
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Success Response** (200 OK)
+```json
+[
+  {
+    "runId": "660e8400-e29b-41d4-a716-446655440001",
+    "userId": "550e8400-e29b-41d4-a716-446655440000",
+    "startTime": "2026-01-30T08:00:00.000Z",
+    "durationSec": 1800,
+    "distanceMeters": 5000,
+    "createdAt": "2026-01-30T08:30:00.000Z",
+    "updatedAt": "2026-01-30T08:30:00.000Z"
+  }
+]
+```
+
+**Error Responses**
+- `401 Unauthorized`: Missing or invalid token
 - `500 Internal Server Error`: Server error
 
 ---
@@ -243,6 +331,33 @@ GET /runs/660e8400-e29b-41d4-a716-446655440001
 
 **Error Responses**
 - `400 Bad Request`: Invalid UUID format
+- `404 Not Found`: Run not found
+- `500 Internal Server Error`: Server error
+
+---
+
+### DELETE /runs/:id
+Delete a specific run by its ID (must be the owner).
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**URL Parameters**
+- `id`: UUID of the run to delete
+
+**Success Response** (200 OK)
+```json
+{
+  "message": "Run deleted successfully"
+}
+```
+
+**Error Responses**
+- `400 Bad Request`: Invalid UUID format
+- `401 Unauthorized`: Missing or invalid token
+- `403 Forbidden`: Not authorized to delete this run
 - `404 Not Found`: Run not found
 - `500 Internal Server Error`: Server error
 
@@ -313,7 +428,7 @@ All error responses follow this structure:
 
 **Register a user**
 ```bash
-curl -X POST http://localhost:3000/users/signup \
+curl -X POST http://localhost:3000/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
     "username": "runner123",
@@ -324,7 +439,7 @@ curl -X POST http://localhost:3000/users/signup \
 
 **Login**
 ```bash
-curl -X POST http://localhost:3000/users/login \
+curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "runner@example.com",
@@ -338,16 +453,34 @@ curl -X GET http://localhost:3000/users/me \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
-**Create a run**
+**Update user profile**
 ```bash
-curl -X POST http://localhost:3000/runs \
+curl -X PATCH http://localhost:3000/users/me/profile \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -H "Content-Type: application/json" \
   -d '{
-    "userId": "550e8400-e29b-41d4-a716-446655440000",
+    "firstName": "John",
+    "lastName": "Doe",
+    "heightCm": 180
+  }'
+```
+
+**Create a run**
+```bash
+curl -X POST http://localhost:3000/users/me/runs \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{
     "startTime": "2026-01-30T08:00:00.000Z",
     "durationSec": 1800,
     "distanceMeters": 5000
   }'
+```
+
+**Get all my runs**
+```bash
+curl -X GET http://localhost:3000/users/me/runs \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
 **Get a run**

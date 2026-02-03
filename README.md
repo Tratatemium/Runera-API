@@ -73,15 +73,21 @@ See [API_DOCS.md](API_DOCS.md) for detailed endpoint documentation.
 - `GET /` - Server status
 - `GET /server-runtime` - Server uptime
 
+#### Authentication
+- `POST /auth/signup` - Register a new user
+- `POST /auth/login` - Login and receive JWT token
+- `POST /auth/logout-all` - Logout from all devices (requires auth)
+
 #### Users
-- `POST /users/signup` - Register a new user
-- `POST /users/login` - Login and receive JWT token
 - `GET /users/me` - Get current user profile (requires auth)
-- `PATCH /users/me` - Update user profile (requires auth)
+- `PATCH /users/me/profile` - Update user profile (requires auth)
+- `PATCH /users/me/account` - Update account info (requires auth)
 
 #### Runs
-- `POST /runs` - Create a new run record
+- `POST /users/me/runs` - Create a new run record (requires auth)
+- `GET /users/me/runs` - Get all runs for authenticated user (requires auth)
 - `GET /runs/:id` - Get run by ID
+- `DELETE /runs/:id` - Delete run by ID (requires auth, must be owner)
 
 ## 🏗️ Project Structure
 
