@@ -9,6 +9,10 @@ const runsController = require("../controllers/runs.controller.js");
 
 // NOTE: possibly add guard middleware to check if user is active / banned / etc.
 
+/* ================================================================================================= */
+/*  User (me)                                                                                        */
+/* ================================================================================================= */
+
 router.get("/me", authMiddleware.checkAuth, usersController.getMe);
 
 router.patch(
@@ -24,6 +28,10 @@ router.patch(
   authMiddleware.checkAuth,
   usersController.updateAccount,
 );
+
+/* ================================================================================================= */
+/*  My runs                                                                                          */
+/* ================================================================================================= */
 
 router.post(
   "/me/runs",
