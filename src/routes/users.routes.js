@@ -7,11 +7,7 @@ const usersController = require("../controllers/users.controller.js");
 
 // NOTE: possibly add guard middleware to check if user is active / banned / etc.
 
-router.get(
-  "/me",
-  authMiddleware.checkAuth,
-  usersController.getMe,
-);
+router.get("/me", authMiddleware.checkAuth, usersController.getMe);
 
 router.patch(
   "/me/profile",

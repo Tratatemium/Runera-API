@@ -1,10 +1,10 @@
 const usersService = require("../services/users.service.js");
 const authService = require("../services/auth.service.js");
 
-const getMe = (req, res) => {
+const getMe = async (req, res) => {
   const userId = req.user.userId;
-  const userData = usersService.getUser(userId);
-  const { _id, credentials, ...safeData } = userData._doc;
+  const userData = await usersService.getUser(userId);
+  const { _id, credentials, auth, ...safeData } = userData._doc;
   res.status(200).json(safeData);
 };
 
