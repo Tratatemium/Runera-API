@@ -9,6 +9,7 @@ const throwGuardError = (
   throw err;
 };
 
+// NOTE: add role check for admin rights
 const checkPremissions = (param = "id", idType) => {
   return async (req, res, next) => {
     const providedId = req.user.userId;
