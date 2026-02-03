@@ -12,8 +12,8 @@ router.post(
   runsController.postNewRun,
 );
 
-router.get("/:id", validation.validateUUID("id"), runsController.getRunById);
+router.get("/my", authMiddleware.checkAuth, runsController.getMyRuns)
 
-router.get("/my", authMiddleware.checkAuth, runsController.getMyRuns,)
+router.get("/:id", validation.validateUUID("id"), runsController.getRunById);
 
 module.exports = router;
