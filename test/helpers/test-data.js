@@ -16,6 +16,12 @@ const TEST_USERS = {
     email: "runner02@test.com",
     userId: "86642e8c-d288-450b-aa92-b83dc18abcaf",
   },
+  admin: {
+    username: "angry_admin",
+    password: "TheMostSecurePassword!@19",
+    email: "admin@test.com",
+    userId: "f7a076d4-361b-49bb-9b31-145302e83484",
+  }
 };
 
 // Valid run data template
