@@ -16,7 +16,12 @@ const addNewRun = async (newRun) => {
   return savedRun.runId;
 };
 
+const findRunsByUserId = async (userId) => {
+  return await Run.find({ userId: userId }).lean();
+};
+
 module.exports = {
   findRunById,
   addNewRun,
+  findRunsByUserId,
 };
