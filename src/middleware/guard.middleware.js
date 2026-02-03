@@ -10,7 +10,7 @@ const throwGuardError = (
 };
 
 // NOTE: add role check for admin rights
-const checkPremissions = (param = "id", idType) => {
+const checkPermissions = (param = "id", idType) => {
   return async (req, res, next) => {
     const providedId = req.user.userId;
 
@@ -36,4 +36,4 @@ const checkPremissions = (param = "id", idType) => {
   };
 };
 
-module.exports = { checkPremissions };
+module.exports = { checkPermissions };
