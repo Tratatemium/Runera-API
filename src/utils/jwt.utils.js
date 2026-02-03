@@ -4,6 +4,7 @@ const { TOKEN_KEY } = require("../config/env.config.js");
 const createToken = (user) => {
   const payload = {
     userId: user.userId,
+    role: user.role,
     username: user.account.username,
     email: user.account.email,
     accessTokenVersion: user.auth.accessTokenVersion,
