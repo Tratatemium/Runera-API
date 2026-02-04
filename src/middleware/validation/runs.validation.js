@@ -42,10 +42,12 @@ const validateRun = ({ mode = "require_all" }) => {
   return (req, res, next) => {
     validators.validateJsonContentType(req);
 
+    const fieldKeys = runFields.map((f) => f.key);
     validators.assertRequestFields({
       object: req.body,
       objectName: "Run data",
-      requiredFields: runFields.map((field) => field.key),
+      requiredFields: fieldKeys,
+      allowedFields: fieldKeys,
       mode: mode,
     });
 

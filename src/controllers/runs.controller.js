@@ -19,7 +19,7 @@ const getRunById = async (req, res) => {
   sendSuccess(res, 200, runData);
 };
 
-const updateRunByIdRunById = async (req, res) => {
+const updateRunById = async (req, res) => {
   const runData = await runsService.updateRunById(req.params.id);
   sendSuccess(res, 200, runData);
 };

@@ -29,6 +29,7 @@ const validateLoginRequest = (req, res, next) => {
     object: req.body,
     objectName: "Login request",
     requiredFields: ["username", "email"],
+    allowedFields: ["username", "email", "password"],
     mode: "require_some",
   });
 

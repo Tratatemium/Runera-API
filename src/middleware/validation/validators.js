@@ -22,6 +22,7 @@ const assertRequestFields = ({
   object,
   objectName = "Request body",
   requiredFields,
+  allowedFields,
   mode = "require_all",
 }) => {
   if (!["require_all", "require_some"].includes(mode)) {
@@ -30,13 +31,21 @@ const assertRequestFields = ({
   if (!Array.isArray(requiredFields) || requiredFields.length === 0) {
     throw new Error("requiredFields must be a non-empty array.");
   }
+  if (
+    allowedFields != null &&
+    (!Array.isArray(allowedFields) || allowedFields.length === 0)
+  ) {
+    throw new Error("allowedFields must be a non-empty array.");
+  }
   if (typeof object !== "object" || object == null) {
     throwValidationError(`${objectName} must be provided as an object.`);
   }
 
-  for (const key of Object.keys(object)) {
-    if (!requiredFields.includes(key)) {
-      throwValidationError(`Unknown field: ${key}`);
+  if (allowedFields != null) {
+    for (const key of Object.keys(object)) {
+      if (!allowedFields.includes(key)) {
+        throwValidationError(`Unknown field: ${key}`);
+      }
     }
   }
 
