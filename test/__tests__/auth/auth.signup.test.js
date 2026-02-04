@@ -8,11 +8,11 @@ const {
   expectJsonResponse,
 } = require("../../helpers/assertions");
 
-describe("POST /auth/signup", () => {
+describe("POST /api/v1/auth/signup", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .set("Content-Type", "text/plain")
         .send("not json");
 
@@ -23,7 +23,7 @@ describe("POST /auth/signup", () => {
 
 describe("Required fields validation", () => {
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/auth/signup").send({});
+    const res = await request(app).post("/api/v1/auth/signup").send({});
 
     expect400WithMessage(
       res,
@@ -36,7 +36,7 @@ describe("Required fields validation", () => {
     async (field) => {
       const { [field]: omitted, ...dataWithoutField } = VALID_USER_DATA;
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .send(dataWithoutField);
 
       expect400WithMessage(
@@ -48,7 +48,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 when field is null", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username: null });
 
     expect400WithMessage(res, /username/);
@@ -58,7 +58,7 @@ describe("Required fields validation", () => {
 describe("Username validation", () => {
   it("returns 400 for non-string username", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username: 12345 });
 
     expect400WithMessage(res, "Username must be a string.");
@@ -77,7 +77,7 @@ describe("Username validation", () => {
     "returns 400 for invalid username length: $username",
     async ({ username, message }) => {
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .send({ ...VALID_USER_DATA, username });
 
       expect400WithMessage(res, message);
@@ -89,7 +89,7 @@ describe("Username validation", () => {
     { username: "user name", desc: "spaces" },
   ])("returns 400 for username with $desc", async ({ username }) => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username });
 
     expect400WithMessage(
@@ -103,7 +103,7 @@ describe("Username validation", () => {
     { username: "user12", email: "user12@example.com" }, // Exactly 6 chars
     { username: "a".repeat(30), email: "thirtychar@example.com" }, // Exactly 30 chars
   ])("accepts valid username: $username", async ({ username, email }) => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       username,
       password: "SecurePassword123!",
       email,
@@ -117,7 +117,7 @@ describe("Username validation", () => {
 describe("Email validation", () => {
   it("returns 400 for non-string email", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, email: 12345 });
 
     expect400WithMessage(res, "Email must be a string.");
@@ -126,7 +126,7 @@ describe("Email validation", () => {
   it("returns 400 for email longer than 254 characters", async () => {
     const longEmail = "a".repeat(250) + "@test.com";
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, email: longEmail });
 
     expect400WithMessage(res, "Email is too long.");
@@ -145,7 +145,7 @@ describe("Email validation", () => {
     { email: "", message: "Email must be a valid email address." },
   ])("returns 400 for invalid email: $email", async ({ email, message }) => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, email });
 
     expect400WithMessage(res, message);
@@ -155,7 +155,7 @@ describe("Email validation", () => {
     { email: "valid.email@example.com", username: "validemail" },
     { email: "user@mail.example.com", username: "subdomain" },
   ])("accepts valid email: $email", async ({ email, username }) => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       username,
       password: "SecurePassword123!",
       email,
@@ -169,7 +169,7 @@ describe("Email validation", () => {
 describe("Password validation", () => {
   it("returns 400 for non-string password", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, password: 12345 });
 
     expect400WithMessage(res, "Password must be a string.");
@@ -188,7 +188,7 @@ describe("Password validation", () => {
     "returns 400 for password with invalid length",
     async ({ password, message }) => {
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .send({ ...VALID_USER_DATA, password });
 
       expect400WithMessage(res, message);
@@ -212,7 +212,7 @@ describe("Password validation", () => {
       email: "passspecial@example.com",
     },
   ])("accepts valid password", async ({ password, username, email }) => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       username,
       password,
       email,
@@ -230,7 +230,7 @@ describe("Uniqueness validation", () => {
       password: "FirstPassword123!",
       email: "first@example.com",
     };
-    await request(app).post("/auth/signup").send(firstUser);
+    await request(app).post("/api/v1/auth/signup").send(firstUser);
 
     const duplicateUsernameUser = {
       username: "unique_user_001",
@@ -238,7 +238,7 @@ describe("Uniqueness validation", () => {
       email: "different@example.com",
     };
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send(duplicateUsernameUser);
 
     expect409Error(res);
@@ -250,7 +250,7 @@ describe("Uniqueness validation", () => {
       password: "FirstPassword123!",
       email: "duplicate@example.com",
     };
-    await request(app).post("/auth/signup").send(firstUser);
+    await request(app).post("/api/v1/auth/signup").send(firstUser);
 
     const duplicateEmailUser = {
       username: "different_user",
@@ -258,7 +258,7 @@ describe("Uniqueness validation", () => {
       email: "duplicate@example.com",
     };
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send(duplicateEmailUser);
 
     expect409Error(res);
@@ -277,8 +277,8 @@ describe("Uniqueness validation", () => {
     };
 
     const results = await Promise.allSettled([
-      request(app).post("/auth/signup").send(userA),
-      request(app).post("/auth/signup").send(userB),
+      request(app).post("/api/v1/auth/signup").send(userA),
+      request(app).post("/api/v1/auth/signup").send(userB),
     ]);
 
     const statuses = results.map((r) => r.value.statusCode);
@@ -289,7 +289,7 @@ describe("Uniqueness validation", () => {
 
 describe("Successful registration", () => {
   it("returns 201 for valid user data", async () => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       username: "newuser123",
       password: "SecurePassword123!",
       email: "newuser123@example.com",
@@ -300,7 +300,7 @@ describe("Successful registration", () => {
   });
 
   it("returns 201 for valid user with all allowed characters", async () => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       username: "user_name_123",
       password: "SecureP@ssw0rd!",
       email: "user.name+tag@example.co.uk",

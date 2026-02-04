@@ -9,11 +9,11 @@ const {
   expect415Error,
 } = require("../../helpers/assertions");
 
-describe("POST /auth/login", () => {
+describe("POST /api/v1/auth/login", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .post("/auth/login")
+        .post("/api/v1/auth/login")
         .set("Content-Type", "text/plain")
         .send("not json");
 
@@ -24,7 +24,7 @@ describe("POST /auth/login", () => {
 
 describe("Required fields validation", () => {
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/auth/login").send({});
+    const res = await request(app).post("/api/v1/auth/login").send({});
 
     expect400WithMessage(
       res,
@@ -34,7 +34,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 for missing password field", async () => {
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send({ username: TEST_USERS.user1.username });
 
     expect400WithMessage(
@@ -45,7 +45,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 when both username and email are missing", async () => {
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send({ password: TEST_USERS.user1.password });
 
     expect400WithMessage(
@@ -55,7 +55,7 @@ describe("Required fields validation", () => {
   });
 
   it("returns 400 when both username and email are provided", async () => {
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post("/api/v1/auth/login").send({
       username: TEST_USERS.user1.username,
       email: TEST_USERS.user1.email,
       password: TEST_USERS.user1.password,
@@ -77,7 +77,7 @@ describe("Required fields validation", () => {
     if (field !== "username" && field !== "email")
       data.username = TEST_USERS.user1.username;
 
-    const res = await request(app).post("/auth/login").send(data);
+    const res = await request(app).post("/api/v1/auth/login").send(data);
 
     expectErrorResponse(res, 400);
   });
@@ -94,7 +94,7 @@ describe("Authentication validation", () => {
         [type]: identifier,
         password: "WrongPassword123!",
       };
-      const res = await request(app).post("/auth/login").send(data);
+      const res = await request(app).post("/api/v1/auth/login").send(data);
 
       expect401Error(res);
     },
@@ -105,7 +105,7 @@ describe("Authentication validation", () => {
     { type: "email", identifier: "nonexistent@example.com" },
   ])("returns 401 for non-existent $type", async ({ identifier, type }) => {
     const data = { [type]: identifier, password: "ValidPassword123!" };
-    const res = await request(app).post("/auth/login").send(data);
+    const res = await request(app).post("/api/v1/auth/login").send(data);
 
     expect401Error(res);
   });
@@ -128,7 +128,7 @@ describe("Successful login", () => {
       },
     },
   ])("returns 200 and valid JWT token $name", async ({ credentials }) => {
-    const res = await request(app).post("/auth/login").send(credentials);
+    const res = await request(app).post("/api/v1/auth/login").send(credentials);
 
     expectValidJwtToken(res);
   });
@@ -139,8 +139,8 @@ describe("Successful login", () => {
       password: TEST_USERS.user1.password,
     };
 
-    const res1 = await request(app).post("/auth/login").send(loginData);
-    const res2 = await request(app).post("/auth/login").send(loginData);
+    const res1 = await request(app).post("/api/v1/auth/login").send(loginData);
+    const res2 = await request(app).post("/api/v1/auth/login").send(loginData);
 
     expect(res1.statusCode).toBe(200);
     expect(res2.statusCode).toBe(200);
@@ -150,7 +150,7 @@ describe("Successful login", () => {
 
   it("allows login with case-insensitive email", async () => {
     const email = TEST_USERS.user2.email.toLowerCase();
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post("/api/v1/auth/login").send({
       email,
       password: TEST_USERS.user2.password,
     });

@@ -9,7 +9,7 @@ const {
 } = require("../../helpers/assertions");
 const { getAuthValidationTests } = require("../../helpers/request.helpers");
 
-describe("DELETE /runs/:id", () => {
+describe("DELETE /api/v1/runs/:id", () => {
   let user1Token;
   let user2Token;
   let adminToken;
@@ -33,7 +33,7 @@ describe("DELETE /runs/:id", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
         const runId = TEST_RUN_IDS.user1Run1;
-        const req = request(app).delete(`/runs/${runId}`);
+        const req = request(app).delete(`/api/v1/runs/${runId}`);
         const res = await setupAuth(req);
 
         expect(res.statusCode).toBe(401);
@@ -46,7 +46,7 @@ describe("DELETE /runs/:id", () => {
     it("returns 403 when user tries to delete another user's run", async () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
-        .delete(`/runs/${user1RunId}`)
+        .delete(`/api/v1/runs/${user1RunId}`)
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect403Error(res);
@@ -55,7 +55,7 @@ describe("DELETE /runs/:id", () => {
     it("returns 403 with appropriate error message for permission denial", async () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
-        .delete(`/runs/${user1RunId}`)
+        .delete(`/api/v1/runs/${user1RunId}`)
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect403Error(res);
@@ -67,7 +67,7 @@ describe("DELETE /runs/:id", () => {
     it("allows admin to delete another user's run", async () => {
       // Create a run as user1
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T09:00:00.000Z",
@@ -78,12 +78,12 @@ describe("DELETE /runs/:id", () => {
       const newRunId = createRes.body.id;
 
       // Verify the run exists
-      const getBeforeDelete = await request(app).get(`/runs/${newRunId}`);
+      const getBeforeDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
       expect(getBeforeDelete.statusCode).toBe(200);
 
       // Delete it as admin
       const deleteRes = await request(app)
-        .delete(`/runs/${newRunId}`)
+        .delete(`/api/v1/runs/${newRunId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(deleteRes.statusCode).toBe(204);
@@ -93,7 +93,7 @@ describe("DELETE /runs/:id", () => {
     it("admin deletion actually removes the run from database", async () => {
       // Create a run as user2
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           startTime: "2026-02-03T09:30:00.000Z",
@@ -105,18 +105,18 @@ describe("DELETE /runs/:id", () => {
 
       // Admin deletes the run
       await request(app)
-        .delete(`/runs/${newRunId}`)
+        .delete(`/api/v1/runs/${newRunId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       // Verify it no longer exists
-      const getAfterDelete = await request(app).get(`/runs/${newRunId}`);
+      const getAfterDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
       expect404Error(getAfterDelete);
     });
 
     it("allows admin to delete their own runs", async () => {
       // Create a run as admin
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           startTime: "2026-02-03T10:30:00.000Z",
@@ -128,13 +128,13 @@ describe("DELETE /runs/:id", () => {
 
       // Admin deletes their own run
       const deleteRes = await request(app)
-        .delete(`/runs/${adminRunId}`)
+        .delete(`/api/v1/runs/${adminRunId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(deleteRes.statusCode).toBe(204);
 
       // Verify it's deleted
-      const getAfterDelete = await request(app).get(`/runs/${adminRunId}`);
+      const getAfterDelete = await request(app).get(`/api/v1/runs/${adminRunId}`);
       expect404Error(getAfterDelete);
     });
   });
@@ -148,7 +148,7 @@ describe("DELETE /runs/:id", () => {
     invalidIdCases.forEach(({ id, desc }) => {
       it(`returns 400 for ${desc}`, async () => {
         const res = await request(app)
-          .delete(`/runs/${id}`)
+          .delete(`/api/v1/runs/${id}`)
           .set("Authorization", `Bearer ${user1Token}`);
 
         expect400WithMessage(res, /invalid|UUID/i);
@@ -160,7 +160,7 @@ describe("DELETE /runs/:id", () => {
     it("returns 404 for non-existent run ID", async () => {
       const nonExistentId = TEST_RUN_IDS.nonExistent;
       const res = await request(app)
-        .delete(`/runs/${nonExistentId}`)
+        .delete(`/api/v1/runs/${nonExistentId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect404Error(res);
@@ -171,7 +171,7 @@ describe("DELETE /runs/:id", () => {
     it("returns 204 when user successfully deletes their own run", async () => {
       // First, create a new run to delete
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T10:00:00.000Z",
@@ -183,7 +183,7 @@ describe("DELETE /runs/:id", () => {
 
       // Now delete it
       const deleteRes = await request(app)
-        .delete(`/runs/${newRunId}`)
+        .delete(`/api/v1/runs/${newRunId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(deleteRes.statusCode).toBe(204);
@@ -193,7 +193,7 @@ describe("DELETE /runs/:id", () => {
     it("actually removes the run from the database", async () => {
       // Create a run
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T11:00:00.000Z",
@@ -204,23 +204,23 @@ describe("DELETE /runs/:id", () => {
       const newRunId = createRes.body.id;
 
       // Verify it exists
-      const getBeforeDelete = await request(app).get(`/runs/${newRunId}`);
+      const getBeforeDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
       expect(getBeforeDelete.statusCode).toBe(200);
 
       // Delete it
       await request(app)
-        .delete(`/runs/${newRunId}`)
+        .delete(`/api/v1/runs/${newRunId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       // Verify it no longer exists
-      const getAfterDelete = await request(app).get(`/runs/${newRunId}`);
+      const getAfterDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
       expect404Error(getAfterDelete);
     });
 
     it("removes the run from user's runs list", async () => {
       // Create a run
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T12:00:00.000Z",
@@ -232,19 +232,19 @@ describe("DELETE /runs/:id", () => {
 
       // Get runs before deletion
       const getRunsBefore = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       const countBefore = getRunsBefore.body.length;
 
       // Delete the run
       await request(app)
-        .delete(`/runs/${newRunId}`)
+        .delete(`/api/v1/runs/${newRunId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       // Get runs after deletion
       const getRunsAfter = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       const countAfter = getRunsAfter.body.length;
@@ -258,7 +258,7 @@ describe("DELETE /runs/:id", () => {
     it("allows user to delete multiple runs sequentially", async () => {
       // Create two runs
       const createRes1 = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T13:00:00.000Z",
@@ -267,7 +267,7 @@ describe("DELETE /runs/:id", () => {
         });
 
       const createRes2 = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T14:00:00.000Z",
@@ -280,21 +280,21 @@ describe("DELETE /runs/:id", () => {
 
       // Delete first run
       const deleteRes1 = await request(app)
-        .delete(`/runs/${runId1}`)
+        .delete(`/api/v1/runs/${runId1}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(deleteRes1.statusCode).toBe(204);
 
       // Delete second run
       const deleteRes2 = await request(app)
-        .delete(`/runs/${runId2}`)
+        .delete(`/api/v1/runs/${runId2}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(deleteRes2.statusCode).toBe(204);
 
       // Verify both are deleted
-      const get1 = await request(app).get(`/runs/${runId1}`);
-      const get2 = await request(app).get(`/runs/${runId2}`);
+      const get1 = await request(app).get(`/api/v1/runs/${runId1}`);
+      const get2 = await request(app).get(`/api/v1/runs/${runId2}`);
 
       expect404Error(get1);
       expect404Error(get2);
@@ -305,7 +305,7 @@ describe("DELETE /runs/:id", () => {
     it("returns 404 when trying to delete an already deleted run", async () => {
       // Create a run
       const createRes = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "2026-02-03T15:00:00.000Z",
@@ -317,14 +317,14 @@ describe("DELETE /runs/:id", () => {
 
       // Delete it once
       const deleteRes1 = await request(app)
-        .delete(`/runs/${runId}`)
+        .delete(`/api/v1/runs/${runId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect(deleteRes1.statusCode).toBe(204);
 
       // Try to delete it again
       const deleteRes2 = await request(app)
-        .delete(`/runs/${runId}`)
+        .delete(`/api/v1/runs/${runId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect404Error(deleteRes2);
