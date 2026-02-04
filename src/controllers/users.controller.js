@@ -8,7 +8,7 @@ const getUserById = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  const usersData = await usersServise.getAllUsers();
+  const usersData = await usersService.getAllUsers();
   res.status(200).json(usersData);
 };
 

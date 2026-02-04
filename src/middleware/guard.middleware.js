@@ -39,7 +39,7 @@ const checkPermissions = ({ mode = "either", param = "id", type }) => {
     if (mode === "admin" && !isAdmin) throwGuardError("Admins only.");    
     else if (mode === "owner" && !isOwner) throwGuardError("Owners only.");
     else if (mode === "either" && !isAdmin && !isOwner) throwGuardError();
-    
+
     next();
   };
 };
