@@ -10,7 +10,7 @@ const validateUUID = (param = "id") => {
 const runFields = [
   {
     key: "startTime",
-    input: startTime,
+    input: null,
     validate: (input) => {
       validators.assertString(input, "startTime");
       const trimmed = input.trim();
@@ -20,7 +20,7 @@ const runFields = [
   },
   {
     key: "durationSec",
-    input: durationSec,
+    input: null,
     validate: (input) => {
       const normalized = Number(String(input).trim());
       validators.validatePositiveNumber(normalized, "durationSec");
@@ -29,7 +29,7 @@ const runFields = [
   },
   {
     key: "distanceMeters",
-    input: distanceMeters,
+    input: null,
     validate: (input) => {
       const normalized = Number(String(input).trim());
       validators.validatePositiveNumber(normalized, "distanceMeters");
