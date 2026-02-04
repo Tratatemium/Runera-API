@@ -12,6 +12,18 @@ runsRouter.get(
   runsController.getRunById,
 );
 
+runsRouter.patch(
+  "/:id",
+  runsValidation.validateUUID("id"),
+  authMiddleware.checkAuth,
+  guardMiddleware.checkPermissions({
+    mode: "either",
+    param: "id",
+    type: "runId",
+  }),
+  runsController.updateRunById,
+);
+
 runsRouter.delete(
   "/:id",
   runsValidation.validateUUID("id"),
