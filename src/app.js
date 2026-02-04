@@ -39,12 +39,10 @@ const usersRouter = require("./routers/users.router.js");
 const runsRouter = require("./routers/runs.router.js");
 
 /* ================================================================================================= */
-/*  ROUTER PREFIX                                                                                    */
+/*  HEALTH CHECK                                                                                     */
 /* ================================================================================================= */
 
-const apiRouter = express.Router();
-
-apiRouter.get("/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
@@ -52,11 +50,17 @@ apiRouter.get("/health", (req, res) => {
   });
 });
 
-apiRouter.use("/auth", authRouter);
-apiRouter.use("/users", usersRouter);
-apiRouter.use("/runs", runsRouter);
+/* ================================================================================================= */
+/*  API ROUTERS (VERSIONED)                                                                          */
+/* ================================================================================================= */
 
-app.use("/api/v1", apiRouter);
+const v1Router = express.Router();
+
+v1Router.use("/auth", authRouter);
+v1Router.use("/users", usersRouter);
+v1Router.use("/runs", runsRouter);
+
+app.use("/api/v1", v1Router);
 
 /* ================================================================================================= */
 /*  ERROR HANDLERS                                                                                   */
