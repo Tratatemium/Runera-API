@@ -34,9 +34,9 @@ app.use(express.json());
 /*  ROUTE IMPORTS                                                                                    */
 /* ================================================================================================= */
 
-const authRouter = require("./routes/auth.routes.js");
-const usersRouter = require("./routes/users.routes.js");
-const runsRouter = require("./routes/runs.routes.js");
+const authRouter = require("./routers/auth.router.js");
+const usersRouter = require("./routers/users.router.js");
+const runsRouter = require("./routers/runs.router.js");
 
 /* ================================================================================================= */
 /*  ROUTER PREFIX                                                                                    */
