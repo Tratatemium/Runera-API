@@ -25,13 +25,13 @@ const assertRequestFields = ({
   mode = "require_all",
 }) => {
   if (!["require_all", "require_some"].includes(mode)) {
-    throw new Error(`Invalid validation mode: ${mode}`);
+    throw new Error(`Invalid validation mode: ${mode}.`);
   }
   if (!Array.isArray(requiredFields) || requiredFields.length === 0) {
-    throw new Error("requiredFields must be a non-empty array");
+    throw new Error("requiredFields must be a non-empty array.");
   }
   if (typeof object !== "object" || object == null) {
-    throwValidationError(`${objectName} must be an object`);
+    throwValidationError(`${objectName} must be provided as an object.`);
   }
 
   for (const key of Object.keys(object)) {
