@@ -14,7 +14,7 @@ runsRouter.get(
 
 runsRouter.patch(
   "/:id",
-  runsValidation.validateUUID("id"),
+  runsValidation.validateRun({ mode: "require_some" }),
   authMiddleware.checkAuth,
   guardMiddleware.checkPermissions({
     mode: "either",
