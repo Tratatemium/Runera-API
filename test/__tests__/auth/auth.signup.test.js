@@ -8,11 +8,11 @@ const {
   expectJsonResponse,
 } = require("../../helpers/assertions");
 
-describe("POST /auth/signup", () => {
+describe("POST /api/v1/auth/signup", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .set("Content-Type", "text/plain")
         .send("not json");
 
@@ -23,7 +23,7 @@ describe("POST /auth/signup", () => {
 
 describe("Required fields validation", () => {
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/auth/signup").send({});
+    const res = await request(app).post("/api/v1/auth/signup").send({});
 
     expect400WithMessage(
       res,
@@ -36,7 +36,7 @@ describe("Required fields validation", () => {
     async (field) => {
       const { [field]: omitted, ...dataWithoutField } = VALID_USER_DATA;
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .send(dataWithoutField);
 
       expect400WithMessage(
@@ -48,7 +48,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 when field is null", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username: null });
 
     expect400WithMessage(res, /username/);
@@ -58,7 +58,7 @@ describe("Required fields validation", () => {
 describe("Username validation", () => {
   it("returns 400 for non-string username", async () => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username: 12345 });
 
     expect400WithMessage(res, "Username must be a string.");
@@ -77,7 +77,7 @@ describe("Username validation", () => {
     "returns 400 for invalid username length: $username",
     async ({ username, message }) => {
       const res = await request(app)
-        .post("/auth/signup")
+        .post("/api/v1/auth/signup")
         .send({ ...VALID_USER_DATA, username });
 
       expect400WithMessage(res, message);
@@ -89,7 +89,7 @@ describe("Username validation", () => {
     { username: "user name", desc: "spaces" },
   ])("returns 400 for username with $desc", async ({ username }) => {
     const res = await request(app)
-      .post("/auth/signup")
+      .post("/api/v1/auth/signup")
       .send({ ...VALID_USER_DATA, username });
 
     expect400WithMessage(

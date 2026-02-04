@@ -15,10 +15,10 @@ const {
 } = require("../../helpers/request.helpers");
 
 /**
- * Test suite for PATCH /users/me/account endpoint
+ * Test suite for PATCH /api/v1/users/me/account endpoint
  * Covers password, email, and username updates
  */
-describe("PATCH /users/me/account", () => {
+describe("PATCH /api/v1/users/me/account", () => {
   let user1Token;
   let user2Token;
 
@@ -44,7 +44,7 @@ describe("PATCH /users/me/account", () => {
       getContentTypeTests().forEach(({ name, contentType, body }) => {
         it(name, async () => {
           const res = await request(app)
-            .patch("/users/me/account")
+            .patch("/api/v1/users/me/account")
             .set("Content-Type", contentType)
             .set("Authorization", `Bearer ${user1Token}`)
             .send(body);
@@ -57,7 +57,7 @@ describe("PATCH /users/me/account", () => {
     describe("Authentication validation", () => {
       getAuthValidationTests().forEach(({ name, setupAuth }) => {
         it(name, async () => {
-          const req = request(app).patch("/users/me/account").send({
+          const req = request(app).patch("/api/v1/users/me/account").send({
             currentPassword: TEST_USERS.user1.password,
             newPassword: "NewPassword456!",
           });
@@ -71,7 +71,7 @@ describe("PATCH /users/me/account", () => {
     describe("currentPassword validation", () => {
       it("returns 400 when currentPassword is missing", async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ newPassword: "NewPassword456!" });
 
@@ -80,7 +80,7 @@ describe("PATCH /users/me/account", () => {
 
       it("returns 401 when currentPassword is incorrect", async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({
             currentPassword: "WrongPassword123!",
@@ -119,7 +119,7 @@ describe("PATCH /users/me/account", () => {
       invalidFieldCombinations.forEach(({ data, desc }) => {
         it(`returns 400 when ${desc} provided`, async () => {
           const res = await request(app)
-            .patch("/users/me/account")
+            .patch("/api/v1/users/me/account")
             .set("Authorization", `Bearer ${user1Token}`)
             .send(data);
 
@@ -148,7 +148,7 @@ describe("PATCH /users/me/account", () => {
     passwordValidationCases.forEach(({ password, message }) => {
       it(`returns 400 for invalid newPassword: ${message}`, async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({
             currentPassword: TEST_USERS.user1.password,
@@ -161,7 +161,7 @@ describe("PATCH /users/me/account", () => {
 
     it("successfully updates password", async () => {
       const res = await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
@@ -175,7 +175,7 @@ describe("PATCH /users/me/account", () => {
       const oldToken = user1Token;
 
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
@@ -183,7 +183,7 @@ describe("PATCH /users/me/account", () => {
         });
 
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${oldToken}`);
 
       expect401Error(res);
@@ -191,14 +191,14 @@ describe("PATCH /users/me/account", () => {
 
     it("allows login with new password after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "UpdatedPassword789!",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: TEST_USERS.user1.email,
         password: "UpdatedPassword789!",
       });
@@ -209,14 +209,14 @@ describe("PATCH /users/me/account", () => {
 
     it("rejects login with old password after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "AnotherPassword321!",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: TEST_USERS.user1.email,
         password: TEST_USERS.user1.password,
       });
@@ -239,7 +239,7 @@ describe("PATCH /users/me/account", () => {
     emailValidationCases.forEach(({ email, message }) => {
       it(`returns 400 for invalid newEmail: ${message}`, async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user2Token}`)
           .send({
             currentPassword: TEST_USERS.user2.password,
@@ -252,7 +252,7 @@ describe("PATCH /users/me/account", () => {
 
     it("successfully updates email", async () => {
       const res = await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: TEST_USERS.user2.password,
@@ -266,7 +266,7 @@ describe("PATCH /users/me/account", () => {
       const oldToken = user2Token;
 
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: TEST_USERS.user2.password,
@@ -274,7 +274,7 @@ describe("PATCH /users/me/account", () => {
         });
 
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${oldToken}`);
 
       expect401Error(res);
@@ -282,14 +282,14 @@ describe("PATCH /users/me/account", () => {
 
     it("allows login with new email after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "new_runner02@test.com",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: "new_runner02@test.com",
         password: TEST_USERS.user2.password,
       });
@@ -300,14 +300,14 @@ describe("PATCH /users/me/account", () => {
 
     it("rejects login with old email after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "latest_runner02@test.com",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: TEST_USERS.user2.email,
         password: TEST_USERS.user2.password,
       });
@@ -340,7 +340,7 @@ describe("PATCH /users/me/account", () => {
     usernameValidationCases.forEach(({ username, message }) => {
       it(`returns 400 for invalid newUsername: ${message}`, async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({
             currentPassword: TEST_USERS.user1.password,
@@ -353,7 +353,7 @@ describe("PATCH /users/me/account", () => {
 
     it("successfully updates username", async () => {
       const res = await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
@@ -367,7 +367,7 @@ describe("PATCH /users/me/account", () => {
       const oldToken = user1Token;
 
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${oldToken}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
@@ -375,7 +375,7 @@ describe("PATCH /users/me/account", () => {
         });
 
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${oldToken}`);
 
       expect401Error(res);
@@ -383,14 +383,14 @@ describe("PATCH /users/me/account", () => {
 
     it("allows login with new username after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "newest_runner_01",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         username: "newest_runner_01",
         password: TEST_USERS.user1.password,
       });
@@ -401,14 +401,14 @@ describe("PATCH /users/me/account", () => {
 
     it("rejects login with old username after update", async () => {
       await request(app)
-        .patch("/users/me/account")
+        .patch("/api/v1/users/me/account")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "final_runner_01",
         });
 
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         username: TEST_USERS.user1.username,
         password: TEST_USERS.user1.password,
       });
@@ -424,7 +424,7 @@ describe("PATCH /users/me/account", () => {
     validUsernames.forEach(({ username, desc }) => {
       it(`accepts valid username ${desc}`, async () => {
         const res = await request(app)
-          .patch("/users/me/account")
+          .patch("/api/v1/users/me/account")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({
             currentPassword: TEST_USERS.user1.password,

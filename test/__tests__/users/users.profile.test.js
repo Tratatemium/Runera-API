@@ -13,7 +13,7 @@ const {
   getContentTypeTests,
 } = require("../../helpers/request.helpers");
 
-describe("PATCH /users/me/profile", () => {
+describe("PATCH /api/v1/users/me/profile", () => {
   let user1Token;
   let user2Token;
 
@@ -32,7 +32,7 @@ describe("PATCH /users/me/profile", () => {
     getContentTypeTests().forEach(({ name, contentType, body }) => {
       it(name, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Content-Type", contentType)
           .set("Authorization", `Bearer ${user1Token}`)
           .send(body);
@@ -46,7 +46,7 @@ describe("PATCH /users/me/profile", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
         const req = request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .send({ profile: { firstName: "John" } });
         const res = await setupAuth(req);
 
@@ -66,7 +66,7 @@ describe("PATCH /users/me/profile", () => {
     invalidProfileCases.forEach(({ profile, desc }) => {
       it(`returns 400 when profile is ${desc}`, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile });
 
@@ -76,7 +76,7 @@ describe("PATCH /users/me/profile", () => {
 
     it("returns 400 for unknown field in profile", async () => {
       const res = await request(app)
-        .patch("/users/me/profile")
+        .patch("/api/v1/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { unknownField: "value" } });
 
@@ -85,7 +85,7 @@ describe("PATCH /users/me/profile", () => {
 
     it("returns 400 for multiple unknown fields", async () => {
       const res = await request(app)
-        .patch("/users/me/profile")
+        .patch("/api/v1/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { age: 25, city: "Stockholm" } });
 
@@ -109,7 +109,7 @@ describe("PATCH /users/me/profile", () => {
     nameValidationCases.forEach(({ field, value, error }) => {
       it(`returns 400 for invalid ${field}: ${value.slice(0, 20)}`, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile: { [field]: value } });
 
@@ -126,7 +126,7 @@ describe("PATCH /users/me/profile", () => {
     dateValidationCases.forEach(({ value, desc }) => {
       it(`returns 400 for dateOfBirth: ${desc}`, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile: { dateOfBirth: value } });
 
@@ -146,7 +146,7 @@ describe("PATCH /users/me/profile", () => {
     numericValidationCases.forEach(({ field, value, desc }) => {
       it(`returns 400 for ${field}: ${desc}`, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile: { [field]: value } });
 
@@ -173,7 +173,7 @@ describe("PATCH /users/me/profile", () => {
     successCases.forEach(({ profile, desc }) => {
       it(`returns 200 when updating ${desc}`, async () => {
         const res = await request(app)
-          .patch("/users/me/profile")
+          .patch("/api/v1/users/me/profile")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ profile });
 
@@ -183,12 +183,12 @@ describe("PATCH /users/me/profile", () => {
 
     it("allows different users to update their own profiles", async () => {
       const res1 = await request(app)
-        .patch("/users/me/profile")
+        .patch("/api/v1/users/me/profile")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ profile: { firstName: "Anna" } });
 
       const res2 = await request(app)
-        .patch("/users/me/profile")
+        .patch("/api/v1/users/me/profile")
         .set("Authorization", `Bearer ${user2Token}`)
         .send({ profile: { firstName: "Boris" } });
 

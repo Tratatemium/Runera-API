@@ -9,11 +9,11 @@ const {
   expect415Error,
 } = require("../../helpers/assertions");
 
-describe("POST /auth/login", () => {
+describe("POST /api/v1/auth/login", () => {
   describe("Content-Type validation", () => {
     it("returns 415 when Content-Type is not JSON", async () => {
       const res = await request(app)
-        .post("/auth/login")
+        .post("/api/v1/auth/login")
         .set("Content-Type", "text/plain")
         .send("not json");
 
@@ -24,7 +24,7 @@ describe("POST /auth/login", () => {
 
 describe("Required fields validation", () => {
   it("returns 400 for empty JSON", async () => {
-    const res = await request(app).post("/auth/login").send({});
+    const res = await request(app).post("/api/v1/auth/login").send({});
 
     expect400WithMessage(
       res,
@@ -34,7 +34,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 for missing password field", async () => {
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send({ username: TEST_USERS.user1.username });
 
     expect400WithMessage(
@@ -45,7 +45,7 @@ describe("Required fields validation", () => {
 
   it("returns 400 when both username and email are missing", async () => {
     const res = await request(app)
-      .post("/auth/login")
+      .post("/api/v1/auth/login")
       .send({ password: TEST_USERS.user1.password });
 
     expect400WithMessage(
@@ -55,7 +55,7 @@ describe("Required fields validation", () => {
   });
 
   it("returns 400 when both username and email are provided", async () => {
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post("/api/v1/auth/login").send({
       username: TEST_USERS.user1.username,
       email: TEST_USERS.user1.email,
       password: TEST_USERS.user1.password,
@@ -94,7 +94,7 @@ describe("Authentication validation", () => {
         [type]: identifier,
         password: "WrongPassword123!",
       };
-      const res = await request(app).post("/auth/login").send(data);
+      const res = await request(app).post("/api/v1/auth/login").send(data);
 
       expect401Error(res);
     },

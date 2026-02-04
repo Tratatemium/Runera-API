@@ -12,7 +12,7 @@ const {
 } = require("../../helpers/assertions");
 const { getAuthValidationTests } = require("../../helpers/request.helpers");
 
-describe("GET /users/:id (Admin Route)", () => {
+describe("GET /api/v1/users/:id (Admin Route)", () => {
   let user1Token;
   let user2Token;
   let adminToken;
@@ -35,7 +35,7 @@ describe("GET /users/:id (Admin Route)", () => {
   describe("Authentication validation", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).get(`/users/${TEST_USERS.user1.userId}`);
+        const req = request(app).get(`/api/v1/users/${TEST_USERS.user1.userId}`);
         const res = await setupAuth(req);
 
         expect401Error(res);
@@ -57,7 +57,7 @@ describe("GET /users/:id (Admin Route)", () => {
     invalidUUIDs.forEach(({ id, desc }) => {
       it(`returns 400 when id is ${desc}`, async () => {
         const res = await request(app)
-          .get(`/users/${id}`)
+          .get(`/api/v1/users/${id}`)
           .set("Authorization", `Bearer ${adminToken}`);
 
         expect400WithMessage(res, /id.*valid UUID/i);
@@ -68,7 +68,7 @@ describe("GET /users/:id (Admin Route)", () => {
   describe("Authorization/Permission checks", () => {
     it("allows admin to access any user's data", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user1.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user1.userId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
@@ -80,7 +80,7 @@ describe("GET /users/:id (Admin Route)", () => {
 
     it("allows user to access their own data", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user1.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user1.userId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
@@ -92,7 +92,7 @@ describe("GET /users/:id (Admin Route)", () => {
 
     it("denies user access to another user's data", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user2.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user2.userId}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
       expect403Error(res);
@@ -103,7 +103,7 @@ describe("GET /users/:id (Admin Route)", () => {
   describe("Successful user retrieval", () => {
     it("returns complete user data for user1", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user1.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user1.userId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
@@ -115,7 +115,7 @@ describe("GET /users/:id (Admin Route)", () => {
 
     it("returns complete user data for user2", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user2.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user2.userId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
@@ -127,7 +127,7 @@ describe("GET /users/:id (Admin Route)", () => {
 
     it("returns admin user data when admin requests their own data", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.admin.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.admin.userId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
@@ -139,7 +139,7 @@ describe("GET /users/:id (Admin Route)", () => {
 
     it("does not expose sensitive credentials in response", async () => {
       const res = await request(app)
-        .get(`/users/${TEST_USERS.user1.userId}`)
+        .get(`/api/v1/users/${TEST_USERS.user1.userId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expectJsonResponse(res, 200);
@@ -152,7 +152,7 @@ describe("GET /users/:id (Admin Route)", () => {
     it("returns 404 for non-existent user ID", async () => {
       const nonExistentId = "e970bb08-3470-41de-be0b-753df9ec6562";
       const res = await request(app)
-        .get(`/users/${nonExistentId}`)
+        .get(`/api/v1/users/${nonExistentId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect404Error(res);

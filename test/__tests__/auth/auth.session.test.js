@@ -9,7 +9,7 @@ const {
 } = require("../../helpers/assertions");
 const { getAuthValidationTests } = require("../../helpers/request.helpers");
 
-describe("GET /users/me", () => {
+describe("GET /api/v1/users/me", () => {
   let user1Token;
   let user2Token;
 
@@ -27,7 +27,7 @@ describe("GET /users/me", () => {
   describe("Authentication validation", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).get("/users/me");
+        const req = request(app).get("/api/v1/users/me");
         const res = await setupAuth(req);
 
         expect401Error(res);
@@ -38,7 +38,7 @@ describe("GET /users/me", () => {
   describe("Successful requests", () => {
     it("returns 200 and user data for authenticated user", async () => {
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
@@ -50,7 +50,7 @@ describe("GET /users/me", () => {
 
     it("returns correct data for different authenticated users", async () => {
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expectJsonResponse(res, 200);
@@ -62,11 +62,11 @@ describe("GET /users/me", () => {
   });
 });
 
-describe("POST /auth/logout-all", () => {
+describe("POST /api/v1/auth/logout-all", () => {
   describe("Authentication validation", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).post("/auth/logout-all");
+        const req = request(app).post("/api/v1/auth/logout-all");
         const res = await setupAuth(req);
 
         expect401Error(res);
@@ -82,7 +82,7 @@ describe("POST /auth/logout-all", () => {
       });
 
       const res = await request(app)
-        .post("/auth/logout-all")
+        .post("/api/v1/auth/logout-all")
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
@@ -96,18 +96,18 @@ describe("POST /auth/logout-all", () => {
 
       // Verify token works
       const beforeLogout = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token}`);
       expect(beforeLogout.statusCode).toBe(200);
 
       // Logout all sessions
       await request(app)
-        .post("/auth/logout-all")
+        .post("/api/v1/auth/logout-all")
         .set("Authorization", `Bearer ${token}`);
 
       // Try to use old token
       const afterLogout = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token}`);
 
       expect401Error(afterLogout);
@@ -126,28 +126,28 @@ describe("POST /auth/logout-all", () => {
 
       // Verify both tokens work
       const check1 = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token1}`);
       expect(check1.statusCode).toBe(200);
 
       const check2 = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token2}`);
       expect(check2.statusCode).toBe(200);
 
       // Logout all sessions using first token
       await request(app)
-        .post("/auth/logout-all")
+        .post("/api/v1/auth/logout-all")
         .set("Authorization", `Bearer ${token1}`);
 
       // Both tokens should now be invalid
       const afterLogout1 = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token1}`);
       expect401Error(afterLogout1);
 
       const afterLogout2 = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${token2}`);
       expect401Error(afterLogout2);
     });
@@ -160,7 +160,7 @@ describe("POST /auth/logout-all", () => {
       });
 
       await request(app)
-        .post("/auth/logout-all")
+        .post("/api/v1/auth/logout-all")
         .set("Authorization", `Bearer ${oldToken}`);
 
       // Login again to get new token
@@ -171,7 +171,7 @@ describe("POST /auth/logout-all", () => {
 
       // Use new token to access protected endpoint
       const res = await request(app)
-        .get("/users/me")
+        .get("/api/v1/users/me")
         .set("Authorization", `Bearer ${newToken}`);
 
       expectJsonResponse(res, 200);

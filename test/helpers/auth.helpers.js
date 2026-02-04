@@ -7,7 +7,7 @@ const app = require("../../src/app.js");
  * @returns {Promise<string>} JWT token
  */
 const getAuthToken = async (credentials) => {
-  const loginRes = await request(app).post("/auth/login").send(credentials);
+  const loginRes = await request(app).post("/api/v1/auth/login").send(credentials);
   
   if (loginRes.statusCode !== 200) {
     throw new Error(`Login failed with status ${loginRes.statusCode}: ${JSON.stringify(loginRes.body)}`);
@@ -22,7 +22,7 @@ const getAuthToken = async (credentials) => {
  * @returns {Promise<Object>} Created user response body
  */
 const createUser = async (userData) => {
-  const response = await request(app).post("/auth/signup").send(userData);
+  const response = await request(app).post("/api/v1/auth/signup").send(userData);
   
   if (response.statusCode !== 201) {
     throw new Error(`User creation failed with status ${response.statusCode}: ${JSON.stringify(response.body)}`);

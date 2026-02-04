@@ -8,10 +8,10 @@ const {
   expectJsonResponse
 } = require("../../helpers/assertions");
 
-describe("GET /runs/:id", () => {
+describe("GET /api/v1/runs/:id", () => {
   it("returns 200 and run JSON for an existing ID", async () => {
     const runId = TEST_RUN_IDS.user1Run1;
-    const res = await request(app).get(`/runs/${runId}`);
+    const res = await request(app).get(`/api/v1/runs/${runId}`);
 
     expectJsonResponse(res, 200);
     expect(res.body).toHaveProperty("runId", runId);
@@ -20,14 +20,14 @@ describe("GET /runs/:id", () => {
 
   it("returns 404 for a non-existing ID", async () => {
     const runId = TEST_RUN_IDS.nonExistent;
-    const res = await request(app).get(`/runs/${runId}`);
+    const res = await request(app).get(`/api/v1/runs/${runId}`);
 
     expect404Error(res);
   });
 
   it("returns 400 for non-UUID", async () => {
     const runId = "not-a-UUID";
-    const res = await request(app).get(`/runs/${runId}`);
+    const res = await request(app).get(`/api/v1/runs/${runId}`);
 
     expect400WithMessage(res, /invalid|UUID/i);
   });

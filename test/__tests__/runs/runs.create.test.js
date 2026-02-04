@@ -13,7 +13,7 @@ const {
   getMissingFieldTests,
 } = require("../../helpers/request.helpers");
 
-describe("POST /users/me/runs", () => {
+describe("POST /api/v1/users/me/runs", () => {
   let user1Token;
 
   beforeAll(async () => {
@@ -26,7 +26,7 @@ describe("POST /users/me/runs", () => {
   describe("Authentication", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).post("/users/me/runs").send(VALID_RUN_DATA);
+        const req = request(app).post("/api/v1/users/me/runs").send(VALID_RUN_DATA);
         const res = await setupAuth(req);
 
         expect(res.statusCode).toBe(401);
@@ -39,7 +39,7 @@ describe("POST /users/me/runs", () => {
     getContentTypeTests().forEach(({ name, contentType, body }) => {
       it(name, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .set("Content-Type", contentType)
           .send(body);
@@ -52,7 +52,7 @@ describe("POST /users/me/runs", () => {
   describe("Required fields validation", () => {
     it("returns 400 for empty JSON", async () => {
       const res = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({});
 
@@ -69,7 +69,7 @@ describe("POST /users/me/runs", () => {
     ]).forEach(({ name, data, field }) => {
       it(name, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send(data);
 
@@ -82,7 +82,7 @@ describe("POST /users/me/runs", () => {
 
     it("returns 400 when field is null", async () => {
       const res = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...VALID_RUN_DATA, startTime: null });
 
@@ -93,7 +93,7 @@ describe("POST /users/me/runs", () => {
   describe("Rejected fields validation", () => {
     it("userId in body is ignored and uses authenticated user's ID", async () => {
       const res = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({ ...VALID_RUN_DATA, userId: "some-other-uuid" });
 
@@ -113,7 +113,7 @@ describe("POST /users/me/runs", () => {
     invalidStartTimeCases.forEach(({ value, message }) => {
       it(`returns 400 for invalid startTime: ${JSON.stringify(value)}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, startTime: value });
 
@@ -130,7 +130,7 @@ describe("POST /users/me/runs", () => {
     validStartTimeCases.forEach(({ value, desc }) => {
       it(`accepts valid ISO 8601 format ${desc}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, startTime: value });
 
@@ -153,7 +153,7 @@ describe("POST /users/me/runs", () => {
     invalidDurationCases.forEach(({ value, message }) => {
       it(`returns 400 for invalid durationSec: ${value}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, durationSec: value });
 
@@ -171,7 +171,7 @@ describe("POST /users/me/runs", () => {
     validDurationCases.forEach(({ value, desc }) => {
       it(`accepts valid durationSec: ${desc}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, durationSec: value });
 
@@ -194,7 +194,7 @@ describe("POST /users/me/runs", () => {
     invalidDistanceCases.forEach(({ value, message }) => {
       it(`returns 400 for invalid distanceMeters: ${value}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, distanceMeters: value });
 
@@ -212,7 +212,7 @@ describe("POST /users/me/runs", () => {
     validDistanceCases.forEach(({ value, desc }) => {
       it(`accepts valid distanceMeters: ${desc}`, async () => {
         const res = await request(app)
-          .post("/users/me/runs")
+          .post("/api/v1/users/me/runs")
           .set("Authorization", `Bearer ${user1Token}`)
           .send({ ...VALID_RUN_DATA, distanceMeters: value });
 
@@ -225,7 +225,7 @@ describe("POST /users/me/runs", () => {
   describe("Successful validation", () => {
     it("returns 201 for valid run data", async () => {
       const res = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send(VALID_RUN_DATA);
 
@@ -235,7 +235,7 @@ describe("POST /users/me/runs", () => {
 
     it("handles data with whitespace and string numbers", async () => {
       const res = await request(app)
-        .post("/users/me/runs")
+        .post("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`)
         .send({
           startTime: "  2024-01-15T10:30:00.000Z  ",
@@ -249,7 +249,7 @@ describe("POST /users/me/runs", () => {
   });
 });
 
-describe("GET /users/me/runs", () => {
+describe("GET /api/v1/users/me/runs", () => {
   let user1Token;
   let user2Token;
 
@@ -267,7 +267,7 @@ describe("GET /users/me/runs", () => {
   describe("Authentication", () => {
     getAuthValidationTests().forEach(({ name, setupAuth }) => {
       it(name, async () => {
-        const req = request(app).get("/users/me/runs");
+        const req = request(app).get("/api/v1/users/me/runs");
         const res = await setupAuth(req);
 
         expect(res.statusCode).toBe(401);
@@ -279,7 +279,7 @@ describe("GET /users/me/runs", () => {
   describe("Successful retrieval", () => {
     it("returns 200 and an array of runs for user1 (has multiple runs)", async () => {
       const res = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       expectJsonResponse(res, 200);
@@ -294,7 +294,7 @@ describe("GET /users/me/runs", () => {
 
     it("returns 200 and an array of runs for user2", async () => {
       const res = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expectJsonResponse(res, 200);
@@ -308,11 +308,11 @@ describe("GET /users/me/runs", () => {
 
     it("returns only the authenticated user's runs, not other users' runs", async () => {
       const res1 = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user1Token}`);
 
       const res2 = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${user2Token}`);
 
       expect(res1.statusCode).toBe(200);
@@ -338,7 +338,7 @@ describe("GET /users/me/runs", () => {
         email: "noruns@test.com",
       };
 
-      await request(app).post("/auth/signup").send(newUser);
+      await request(app).post("/api/v1/auth/signup").send(newUser);
 
       const noRunsToken = await getAuthToken({
         email: newUser.email,
@@ -346,7 +346,7 @@ describe("GET /users/me/runs", () => {
       });
 
       const res = await request(app)
-        .get("/users/me/runs")
+        .get("/api/v1/users/me/runs")
         .set("Authorization", `Bearer ${noRunsToken}`);
 
       expectJsonResponse(res, 200);
