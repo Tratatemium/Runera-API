@@ -13,6 +13,11 @@ const getUser = async (userId) => {
   return userData;
 };
 
+const getAllUsers = async () => {
+  const usersData = await usersRepo.findAllUsers();
+  return usersData;
+};
+
 const updateProfile = async (userId, profilePatch) => {
   const savedProfile = await usersRepo.updateProfile(userId, profilePatch);
   if (!savedProfile) throwUserNotFoundError(userId);
@@ -38,4 +43,4 @@ const updateAccount = async (userId, fieldToUpdate, reqBody) => {
   if (result?.matchedCount === 0) throwUserNotFoundError(userId);
 };
 
-module.exports = { getUser, updateProfile, updateAccount };
+module.exports = { getUser, getAllUsers, updateProfile, updateAccount };
