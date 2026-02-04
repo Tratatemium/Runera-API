@@ -34,10 +34,13 @@ const checkPermissions = ({ mode = "either", param = "id", type }) => {
 
   return async (req, res, next) => {
     const isAdmin = req.user.role === "admin";
-    const isOwner = await checkOwnership(req, param, type);
+    if (mode === "admin") {
+      if (!isAdmin) throwGuardError("Admins only.");
+      return next();
+    }
 
-    if (mode === "admin" && !isAdmin) throwGuardError("Admins only.");    
-    else if (mode === "owner" && !isOwner) throwGuardError("Owners only.");
+    const isOwner = await checkOwnership(req, param, type);
+    if (mode === "owner" && !isOwner) throwGuardError("Owners only.");
     else if (mode === "either" && !isAdmin && !isOwner) throwGuardError();
 
     next();
