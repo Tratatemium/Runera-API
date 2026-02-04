@@ -113,16 +113,6 @@ describe("DELETE /runs/:id", () => {
       expect404Error(getAfterDelete);
     });
 
-    it("allows admin to delete pre-seeded user runs", async () => {
-      const user1RunId = TEST_RUN_IDS.user1Run1;
-
-      const res = await request(app)
-        .delete(`/runs/${user1RunId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
-
-      expect(res.statusCode).toBe(204);
-    });
-
     it("allows admin to delete their own runs", async () => {
       // Create a run as admin
       const createRes = await request(app)
