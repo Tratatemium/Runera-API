@@ -77,7 +77,7 @@ describe("Required fields validation", () => {
     if (field !== "username" && field !== "email")
       data.username = TEST_USERS.user1.username;
 
-    const res = await request(app).post("/auth/login").send(data);
+    const res = await request(app).post("/api/v1/auth/login").send(data);
 
     expectErrorResponse(res, 400);
   });
@@ -105,7 +105,7 @@ describe("Authentication validation", () => {
     { type: "email", identifier: "nonexistent@example.com" },
   ])("returns 401 for non-existent $type", async ({ identifier, type }) => {
     const data = { [type]: identifier, password: "ValidPassword123!" };
-    const res = await request(app).post("/auth/login").send(data);
+    const res = await request(app).post("/api/v1/auth/login").send(data);
 
     expect401Error(res);
   });
@@ -128,7 +128,7 @@ describe("Successful login", () => {
       },
     },
   ])("returns 200 and valid JWT token $name", async ({ credentials }) => {
-    const res = await request(app).post("/auth/login").send(credentials);
+    const res = await request(app).post("/api/v1/auth/login").send(credentials);
 
     expectValidJwtToken(res);
   });
@@ -139,8 +139,8 @@ describe("Successful login", () => {
       password: TEST_USERS.user1.password,
     };
 
-    const res1 = await request(app).post("/auth/login").send(loginData);
-    const res2 = await request(app).post("/auth/login").send(loginData);
+    const res1 = await request(app).post("/api/v1/auth/login").send(loginData);
+    const res2 = await request(app).post("/api/v1/auth/login").send(loginData);
 
     expect(res1.statusCode).toBe(200);
     expect(res2.statusCode).toBe(200);
@@ -150,7 +150,7 @@ describe("Successful login", () => {
 
   it("allows login with case-insensitive email", async () => {
     const email = TEST_USERS.user2.email.toLowerCase();
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post("/api/v1/auth/login").send({
       email,
       password: TEST_USERS.user2.password,
     });

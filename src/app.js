@@ -70,7 +70,7 @@ const {
   jsonSyntaxErrorHandler,
   dbErrorHandler,
   authErrorHandler,
-  finalErrorHandler
+  finalErrorHandler,
 } = require("./middleware/error.middleware.js");
 
 app.use(jsonSyntaxErrorHandler);
