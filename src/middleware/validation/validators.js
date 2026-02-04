@@ -18,12 +18,12 @@ const validateJsonContentType = (req) => {
   }
 };
 
-const assertRequestFields = (
+const assertRequestFields = ({
   req,
   requiredFields,
   objectName = "Request body",
   mode = "require_all",
-) => {
+}) => {
   if (!["require_all", "require_some"].includes(mode)) {
     throw new Error(`Invalid validation mode: ${mode}`);
   }
