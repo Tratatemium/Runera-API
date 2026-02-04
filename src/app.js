@@ -26,18 +26,33 @@ const usersRoutes = require("./routes/users.routes.js");
 const runsRoutes = require("./routes/runs.routes.js");
 
 /* ================================================================================================= */
-/*  ROUTES                                                                                           */
+/*  SERVER HEALTH                                                                                    */
 /* ================================================================================================= */
 
-app.get("/health", (req,res) => {
-  const serverTimeCurrent = (Date.now() - serverTimeStart) / 1000;
-  const serverTimeCurrentRounded = Math.round(serverTimeCurrent * 10) / 10;
+const getUptime = () => {
+  const uptime = Date.now() - serverTimeStart;
+  const uptimeSeconds = Math.floor(uptime / 1000);
+
+  const hrs = Math.floor(uptimeSeconds / 3600);
+  const mins = Math.floor((uptimeSeconds % 3600) / 60);
+  const secs = uptimeSeconds % 60;
+
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+};
+
+app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
-    message: `Server is running for ${serverTimeCurrentRounded} s.`,
-    version: "1.0.0"
+    uptime: getUptime(),
+    version: "1.0.0",
   });
-})
+});
+
+/* ================================================================================================= */
+/*  ROUTES                                                                                           */
+/* ================================================================================================= */
 
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
