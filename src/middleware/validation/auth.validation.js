@@ -3,12 +3,12 @@ const validators = require("./validators.js");
 const validateRegisterRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
-  validators.assertRequestFields(
+  validators.assertRequestFields({
     req,
-    ["username", "password", "email"],
-    "User data",
-    "require_all",
-  );
+    requiredFields: ["username", "password", "email"],
+    objectName: "User data",
+    mode: "require_all",
+  });
 
   const { username, password, email } = req.body;
 
@@ -22,13 +22,15 @@ const validateRegisterRequest = (req, res, next) => {
 const validateLoginRequest = (req, res, next) => {
   validators.validateJsonContentType(req);
 
-  validators.assertRequestFields(req, ["password"], "User data", "require_all");
-  validators.assertRequestFields(
+  if (req.body.password == null) {
+    validators.throwValidationError("Login request must include password.");
+  }
+  validators.assertRequestFields({
     req,
-    ["username", "email"],
-    "User data",
-    "require_some",
-  );
+    requiredFields: ["username", "email"],
+    objectName: "Login request",
+    mode: "require_some",
+  });
 
   const { username, password, email } = req.body;
 
