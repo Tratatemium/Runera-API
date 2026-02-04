@@ -139,7 +139,7 @@ const UserSchema = new mongoose.Schema(
 );
 
 /* ================================================================================================= */
-/*  Not leaking sensetive data to JSON                                                               */
+/*  Not leaking sensitive data to JSON                                                               */
 /* ================================================================================================= */
 
 UserSchema.set("toJSON", {
