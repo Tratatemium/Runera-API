@@ -2,48 +2,42 @@
 
 ## Base URL
 ```
-http://localhost:3000
+http://localhost:3000/api/v1
 ```
+
+**Note**: Health check endpoint is at `http://localhost:3000/health` (no `/api/v1` prefix).
 
 ## Authentication
 
-Protected endpoints require a JWT token in the Authorization header:
+Protected endpoints require a JWT token:
 ```
 Authorization: Bearer <token>
 ```
 
 ---
 
-## Endpoints
+## Health Check
 
-### Health Check
+### GET /health
+Get server status and uptime.
 
-#### GET /
-Get server status message.
+**Full URL**: `http://localhost:3000/health` (no `/api/v1` prefix)
 
-**Response**
+**Response** (200 OK)
 ```json
 {
-  "message": "Hi there! This is a runners app server."
-}
-```
-
-#### GET /server-runtime
-Get server uptime in seconds.
-
-**Response**
-```json
-{
-  "message": "Server is running for 123.4 s."
+  "status": "ok",
+  "uptime": "00:05:23",
+  "version": "1.0.0"
 }
 ```
 
 ---
 
-## Authentication
+## Authentication Endpoints
 
 ### POST /auth/signup
-Register a new user account.
+Register a new user.
 
 **Request Body**
 ```json
@@ -54,26 +48,31 @@ Register a new user account.
 }
 ```
 
-**Validation Rules**
-- `username`: 3-30 characters, alphanumeric with underscores/hyphens
+**Validation**
+- `username`: 3-30 chars, alphanumeric with underscores/hyphens
 - `email`: Valid email format
 - `password`: Minimum 8 characters
 
-**Success Response** (201 Created)
+**Response** (201 Created)
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000"
+  "status": "success",
+  "data": {
+    "userId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
-**Error Responses**
-- `400 Bad Request`: Validation error or user already exists
-- `500 Internal Server Error`: Server error
+**Errors**
+- `400`: Validation error or user exists
+- `409`: Username or email already exists
+- `415`: Content-Type must be application/json
+- `500`: Server error
 
 ---
 
 ### POST /auth/login
-Authenticate and receive a JWT token.
+Authenticate and receive JWT token.
 
 **Request Body**
 ```json
@@ -82,81 +81,88 @@ Authenticate and receive a JWT token.
   "password": "SecurePass123!"
 }
 ```
-*Note: You can use either `email` or `username`, but not both.*
+*Use either `email` or `username`, not both.*
 
-**Success Response** (200 OK)
+**Response** (200 OK)
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "status": "success",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": "1h"
+  }
 }
 ```
 
-**Error Responses**
-- `400 Bad Request`: Invalid credentials or validation error
-- `401 Unauthorized`: Incorrect password
-- `404 Not Found`: User not found
+**Errors**
+- `400`: Invalid credentials or validation error
+- `401`: Incorrect password
+- `404`: User not found
+- `415`: Content-Type must be application/json
 
 ---
 
 ### POST /auth/logout-all
-Invalidate all tokens for the current user.
+Invalidate all tokens for current user (increments token version).
 
 **Headers**
 ```
 Authorization: Bearer <token>
 ```
 
-**Success Response** (200 OK)
-```json
-{
-  "message": "Logged out from all devices"
-}
+**Response** (200 OK)
+```
+Status: 200 OK
+(No response body)
 ```
 
-**Error Responses**
-- `401 Unauthorized`: Missing or invalid token
+**Errors**
+- `401`: Invalid or missing token
 
 ---
 
-## Users
+## User Endpoints
 
 ### GET /users/me
-Get current authenticated user's profile.
+Get current user's profile.
 
 **Headers**
 ```
 Authorization: Bearer <token>
 ```
 
-**Success Response** (200 OK)
+**Response** (200 OK)
 ```json
 {
-  "userId": "550e8400-e29b-41d4-a716-446655440000",
-  "account": {
-    "username": "johndoe",
-    "email": "john@example.com",
-    "lastLogin": "2026-01-30T12:00:00.000Z"
-  },
-  "profile": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "dateOfBirth": "1990-01-15T00:00:00.000Z",
-    "heightCm": 180,
-    "weightKg": 75
-  },
-  "createdAt": "2026-01-20T10:00:00.000Z",
-  "updatedAt": "2026-01-30T12:00:00.000Z"
+  "status": "success",
+  "data": {
+    "userId": "550e8400-e29b-41d4-a716-446655440000",
+    "account": {
+      "username": "johndoe",
+      "email": "john@example.com",
+      "lastLogin": "2026-01-30T12:00:00.000Z"
+    },
+    "profile": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1990-01-15T00:00:00.000Z",
+      "heightCm": 180,
+      "weightKg": 75
+    },
+    "createdAt": "2026-01-20T10:00:00.000Z",
+    "updatedAt": "2026-01-30T12:00:00.000Z"
+  }
 }
 ```
 
-**Error Responses**
-- `401 Unauthorized`: Missing or invalid token
-- `404 Not Found`: User not found
+**Errors**
+- `401`: Invalid or missing token
+- `404`: User not found
 
 ---
 
 ### PATCH /users/me/profile
-Update current user's profile information.
+Update user profile.
 
 **Headers**
 ```
@@ -174,33 +180,31 @@ Content-Type: application/json
   "weightKg": 75
 }
 ```
+*All fields optional.*
 
-**Field Descriptions**
-- `firstName`: User's first name (optional)
-- `lastName`: User's last name (optional)
-- `dateOfBirth`: ISO date format (YYYY-MM-DD) (optional)
-- `heightCm`: Height in centimeters, positive number (optional)
-- `weightKg`: Weight in kilograms, positive number (optional)
-
-**Success Response** (200 OK)
+**Response** (200 OK)
 ```json
 {
-  "firstName": "John",
-  "lastName": "Doe",
-  "dateOfBirth": "1990-01-15T00:00:00.000Z",
-  "heightCm": 180,
-  "weightKg": 75
+  "status": "success",
+  "data": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1990-01-15T00:00:00.000Z",
+    "heightCm": 180,
+    "weightKg": 75
+  }
 }
 ```
 
-**Error Responses**
-- `400 Bad Request`: Validation error
-- `401 Unauthorized`: Missing or invalid token
+**Errors**
+- `400`: Validation error
+- `401`: Invalid or missing token
+- `415`: Content-Type must be application/json
 
 ---
 
 ### PATCH /users/me/account
-Update current user's account information (username/email).
+Update account information (username/email).
 
 **Headers**
 ```
@@ -215,29 +219,87 @@ Content-Type: application/json
   "email": "newemail@example.com"
 }
 ```
+*All fields optional. Must not conflict with existing users.*
 
-**Field Descriptions**
-- `username`: New username (optional, 3-30 characters)
-- `email`: New email address (optional, valid email format)
-
-**Success Response** (200 OK)
-```json
-{
-  "username": "newusername",
-  "email": "newemail@example.com"
-}
+**Response** (200 OK)
+```
+Status: 200 OK
+(No response body)
 ```
 
-**Error Responses**
-- `400 Bad Request`: Validation error or username/email already exists
-- `401 Unauthorized`: Missing or invalid token
+**Errors**
+- `400`: Validation error or username/email exists
+- `401`: Invalid or missing token
+- `409`: Username or email already exists
+- `415`: Content-Type must be application/json
 
 ---
 
-## Runs
+### GET /users
+Get all users (admin only).
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Response** (200 OK)
+```json
+{
+  "status": "success",
+  "results": 2,
+  "data": [
+    {
+      "userId": "...",
+      "account": {...},
+      "profile": {...},
+      "createdAt": "...",
+      "updatedAt": "..."
+    }
+  ]
+}
+```
+
+**Errors**
+- `401`: Invalid or missing token
+- `403`: Not admin
+
+---
+
+### GET /users/:id
+Get user by ID (admin or self only).
+
+**Headers**
+```
+Authorization: Bearer <token>
+```
+
+**Response** (200 OK)
+```json
+{
+  "status": "success",
+  "data": {
+    "userId": "...",
+    "account": {...},
+    "profile": {...},
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+}
+```
+
+**Errors**
+- `400`: Invalid UUID
+- `401`: Invalid or missing token
+- `403`: Not authorized
+- `404`: User not found
+
+---
+
+## Run Endpoints
 
 ### POST /users/me/runs
-Create a new running activity record for the authenticated user.
+Create a new run.
 
 **Headers**
 ```
@@ -253,37 +315,66 @@ Authorization: Bearer <token>
 }
 ```
 
-**Field Descriptions**
-- `startTime`: ISO 8601 datetime when the run started
-- `durationSec`: Duration in seconds (must be ≥ 0)
-- `distanceMeters`: Distance covered in meters (must be ≥ 0)
-
-**Success Response** (201 Created)
+**Response** (201 Created)
 ```json
 {
-  "id": "660e8400-e29b-41d4-a716-446655440001"
+  "status": "success",
+  "data": {
+    "runId": "660e8400-e29b-41d4-a716-446655440001"
+  }
 }
 ```
 
-**Error Responses**
-- `400 Bad Request`: Validation error
-- `401 Unauthorized`: Missing or invalid token
-- `500 Internal Server Error`: Server error
+**Errors**
+- `400`: Validation error
+- `401`: Invalid or missing token
+- `415`: Content-Type must be application/json
 
 ---
 
 ### GET /users/me/runs
-Retrieve all runs for the authenticated user.
+Get all runs for authenticated user.
 
 **Headers**
 ```
 Authorization: Bearer <token>
 ```
 
-**Success Response** (200 OK)
+**Response** (200 OK)
 ```json
-[
-  {
+{
+  "status": "success",
+  "results": 1,
+  "data": [
+    {
+      "runId": "660e8400-e29b-41d4-a716-446655440001",
+      "userId": "550e8400-e29b-41d4-a716-446655440000",
+      "startTime": "2026-01-30T08:00:00.000Z",
+      "durationSec": 1800,
+      "distanceMeters": 5000,
+      "createdAt": "2026-01-30T08:30:00.000Z",
+      "updatedAt": "2026-01-30T08:30:00.000Z"
+    }
+  ]
+}
+```
+
+**Errors**
+- `401`: Invalid or missing token
+
+---
+
+### GET /runs/:id
+Get run by ID (public).
+
+**URL Parameters**
+- `id`: UUID of the run
+
+**Response** (200 OK)
+```json
+{
+  "status": "success",
+  "data": {
     "runId": "660e8400-e29b-41d4-a716-446655440001",
     "userId": "550e8400-e29b-41d4-a716-446655440000",
     "startTime": "2026-01-30T08:00:00.000Z",
@@ -292,101 +383,83 @@ Authorization: Bearer <token>
     "createdAt": "2026-01-30T08:30:00.000Z",
     "updatedAt": "2026-01-30T08:30:00.000Z"
   }
-]
-```
-
-**Error Responses**
-- `401 Unauthorized`: Missing or invalid token
-- `500 Internal Server Error`: Server error
-
----
-
-### GET /runs/:id
-Retrieve a specific run by its ID.
-
-**URL Parameters**
-- `id`: UUID of the run
-
-**Example Request**
-```
-GET /runs/660e8400-e29b-41d4-a716-446655440001
-```
-
-**Success Response** (200 OK)
-```json
-{
-  "runId": "660e8400-e29b-41d4-a716-446655440001",
-  "userId": "550e8400-e29b-41d4-a716-446655440000",
-  "startTime": "2026-01-30T08:00:00.000Z",
-  "durationSec": 1800,
-  "distanceMeters": 5000,
-  "createdAt": "2026-01-30T08:30:00.000Z",
-  "updatedAt": "2026-01-30T08:30:00.000Z"
 }
 ```
 
-**Calculated Metrics** (you can calculate on client-side)
-- Average pace: `durationSec / (distanceMeters / 1000)` seconds per km
-- Speed: `(distanceMeters / 1000) / (durationSec / 3600)` km/h
-
-**Error Responses**
-- `400 Bad Request`: Invalid UUID format
-- `404 Not Found`: Run not found
-- `500 Internal Server Error`: Server error
+**Errors**
+- `400`: Invalid UUID
+- `404`: Run not found
 
 ---
 
-### DELETE /runs/:id
-Delete a specific run by its ID (must be the owner).
+### PATCH /runs/:id
+Update run (owner or admin only).
 
 **Headers**
 ```
 Authorization: Bearer <token>
 ```
 
-**URL Parameters**
-- `id`: UUID of the run to delete
-
-**Success Response** (200 OK)
+**Request Body**
 ```json
 {
-  "message": "Run deleted successfully"
+  "startTime": "2026-01-30T08:00:00.000Z",
+  "durationSec": 2000,
+  "distanceMeters": 5500
+}
+```
+*All fields optional.*
+
+**Response** (200 OK)
+```json
+{
+  "status": "success",
+  "data": {
+    "runId": "660e8400-e29b-41d4-a716-446655440001",
+    "userId": "550e8400-e29b-41d4-a716-446655440000",
+    "startTime": "2026-01-30T08:00:00.000Z",
+    "durationSec": 2000,
+    "distanceMeters": 5500,
+    "createdAt": "2026-01-30T08:30:00.000Z",
+    "updatedAt": "2026-01-30T10:00:00.000Z"
+  }
 }
 ```
 
-**Error Responses**
-- `400 Bad Request`: Invalid UUID format
-- `401 Unauthorized`: Missing or invalid token
-- `403 Forbidden`: Not authorized to delete this run
-- `404 Not Found`: Run not found
-- `500 Internal Server Error`: Server error
+**Errors**
+- `400`: Validation error or invalid UUID
+- `401`: Invalid or missing token
+- `403`: Not authorized
+- `404`: Run not found
+- `415`: Content-Type must be application/json
 
 ---
 
-## Error Response Format
+### DELETE /runs/:id
+Delete run (owner or admin only).
 
-All error responses follow this structure:
-
-```json
-{
-  "error": "Error message describing what went wrong"
-}
+**Headers**
+```
+Authorization: Bearer <token>
 ```
 
-### Common Error Codes
+**Response** (204 No Content)
+```
+Status: 204 No Content
+(No response body)
+```
 
-| Status Code | Description |
-|-------------|-------------|
-| 400 | Bad Request - Invalid input or validation error |
-| 401 | Unauthorized - Missing or invalid authentication token |
-| 404 | Not Found - Requested resource doesn't exist |
-| 500 | Internal Server Error - Server-side error |
+**Errors**
+- `400`: Invalid UUID
+- `401`: Invalid or missing token
+- `403`: Not authorized
+- `404`: Run not found
 
 ---
 
 ## Data Models
 
-### User Profile Schema
+### User
 ```javascript
 {
   userId: String (UUID),
@@ -407,7 +480,7 @@ All error responses follow this structure:
 }
 ```
 
-### Run Schema
+### Run
 ```javascript
 {
   runId: String (UUID),
@@ -422,78 +495,20 @@ All error responses follow this structure:
 
 ---
 
-## Usage Examples
+## Error Format
 
-### cURL Examples
-
-**Register a user**
-```bash
-curl -X POST http://localhost:3000/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "runner123",
-    "email": "runner@example.com",
-    "password": "MyPassword123"
-  }'
+All errors return:
+```json
+{
+  "error": "Error message"
+}
 ```
 
-**Login**
-```bash
-curl -X POST http://localhost:3000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "runner@example.com",
-    "password": "MyPassword123"
-  }'
-```
-
-**Get user profile**
-```bash
-curl -X GET http://localhost:3000/users/me \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
-
-**Update user profile**
-```bash
-curl -X PATCH http://localhost:3000/users/me/profile \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstName": "John",
-    "lastName": "Doe",
-    "heightCm": 180
-  }'
-```
-
-**Create a run**
-```bash
-curl -X POST http://localhost:3000/users/me/runs \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "startTime": "2026-01-30T08:00:00.000Z",
-    "durationSec": 1800,
-    "distanceMeters": 5000
-  }'
-```
-
-**Get all my runs**
-```bash
-curl -X GET http://localhost:3000/users/me/runs \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
-
-**Get a run**
-```bash
-curl -X GET http://localhost:3000/runs/660e8400-e29b-41d4-a716-446655440001
-```
-
----
-
-## Rate Limiting
-
-Currently, there is no rate limiting implemented. This may be added in future versions.
-
-## Versioning
-
-This is version 1.0.0 of the API. The API is currently unversioned in the URL structure.
+### HTTP Status Codes
+- `400` - Bad Request (validation error)
+- `401` - Unauthorized (missing/invalid token)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `409` - Conflict (duplicate username/email)
+- `415` - Unsupported Media Type (Content-Type not application/json)
+- `500` - Internal Server Error
