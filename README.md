@@ -2,154 +2,106 @@
 
 A RESTful API for tracking running activities and managing user profiles. Built with Node.js, Express, and MongoDB.
 
-## 📋 Features
+## Features
 
-- **User Authentication**: JWT-based authentication with secure password hashing
-- **User Management**: Register, login, and manage user profiles
-- **Run Tracking**: Create and retrieve running activity records
-- **Data Validation**: Comprehensive input validation and error handling
-- **Testing Suite**: Complete test coverage with Jest and Supertest
+- JWT-based authentication with bcrypt password hashing
+- User registration, login, and session management
+- User profile and account management
+- Running activity tracking (create, read, update, delete)
+- Admin-level access controls with permission guards
+- Input validation and error handling
+- Complete test coverage
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js
 - **Framework**: Express 5
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (JSON Web Tokens)
+- **Authentication**: JWT with token versioning
 - **Password Security**: bcrypt
 - **Testing**: Jest, Supertest, MongoDB Memory Server
-- **Environment Management**: dotenv
+- **Environment**: dotenv
 
-## 📦 Installation
+## Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd runners-api
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   PORT=3000
-   MONGO_URI=mongodb://localhost:27017/runners-db
-   TOKEN_KEY=your-secret-jwt-key-here
-   ```
-
-4. **Start the server**
-   ```bash
-   node src/server.js
-   ```
-
-## 🚀 Quick Start
-
-### Development
 ```bash
-# Run the server
+npm install
+```
+
+## Environment Variables
+
+Create a `.env` file:
+
+```env
+PORT=3000
+MONGO_URI=mongodb://localhost:27017/runners-db
+TOKEN_KEY=your-secret-jwt-key-here
+```
+
+## Usage
+
+```bash
+# Start server
 node src/server.js
 
 # Run tests
 npm test
 ```
 
-### Testing the API
-You can use REST Client extension in VS Code, or use tools like Postman or curl.
+## API Overview
 
-## 📚 API Documentation
+See [API_DOCS.md](API_DOCS.md) for complete documentation.
 
-See [API_DOCS.md](API_DOCS.md) for detailed endpoint documentation.
+**Base URL**: `http://localhost:3000/api/v1`
 
-### Quick Overview
+**Health Check** (no `/api/v1` prefix)
+- `GET /health` - Server status and uptime
 
-**Base URL**: `http://localhost:3000`
+**Authentication**
+- `POST /api/v1/auth/signup` - Register new user
+- `POST /api/v1/auth/login` - Login and get JWT token
+- `POST /api/v1/auth/logout-all` - Invalidate all tokens
 
-#### Health Check
-- `GET /` - Server status
-- `GET /server-runtime` - Server uptime
+**Users**
+- `GET /api/v1/users/me` - Get current user
+- `PATCH /api/v1/users/me/profile` - Update profile (firstName, lastName, dateOfBirth, heightCm, weightKg)
+- `PATCH /api/v1/users/me/account` - Update account (username, email)
+- `GET /api/v1/users` - Get all users (admin only)
+- `GET /api/v1/users/:id` - Get user by ID (admin or self)
 
-#### Authentication
-- `POST /auth/signup` - Register a new user
-- `POST /auth/login` - Login and receive JWT token
-- `POST /auth/logout-all` - Logout from all devices (requires auth)
+**Runs**
+- `POST /api/v1/users/me/runs` - Create run
+- `GET /api/v1/users/me/runs` - Get my runs
+- `GET /api/v1/runs/:id` - Get run by ID
+- `PATCH /api/v1/runs/:id` - Update run (owner or admin)
+- `DELETE /api/v1/runs/:id` - Delete run (owner or admin)
 
-#### Users
-- `GET /users/me` - Get current user profile (requires auth)
-- `PATCH /users/me/profile` - Update user profile (requires auth)
-- `PATCH /users/me/account` - Update account info (requires auth)
+## Architecture
 
-#### Runs
-- `POST /users/me/runs` - Create a new run record (requires auth)
-- `GET /users/me/runs` - Get all runs for authenticated user (requires auth)
-- `GET /runs/:id` - Get run by ID
-- `DELETE /runs/:id` - Delete run by ID (requires auth, must be owner)
+**Layered Structure**
+- **Routers**: Route definitions and endpoint setup
+- **Middleware**: Auth, validation, guards, error handling
+- **Controllers**: Request/response handling
+- **Services**: Business logic
+- **Repositories**: Database operations
+- **Models**: Mongoose schemas
+- **Utils**: Helpers (JWT, password, DB, response)
 
-## 🏗️ Project Structure
+**Key Features**
+- Token versioning for session management
+- Permission-based guards (admin, owner-or-admin)
+- Comprehensive input validation
+- Password metadata tracking (failed attempts, lock)
+- UUID-based resource identifiers
 
-```
-src/
-├── app.js                 # Express app configuration
-├── server.js              # Server entry point
-├── config/
-│   └── env.config.js      # Environment variables
-├── controllers/           # Route controllers
-├── middleware/            # Custom middleware
-│   └── validation/        # Input validation
-├── models/                # Mongoose schemas
-├── repositories/          # Database operations
-├── routes/                # Route definitions
-├── services/              # Business logic
-└── utils/                 # Utility functions
+## Testing
 
-test/
-├── __tests__/             # Test files
-├── fixtures/              # Test data
-├── helpers/               # Test utilities
-└── setup/                 # Test configuration
-```
+Tests cover all endpoints and include:
+- Auth (signup, login, session management)
+- Users (profile, account, admin operations)
+- Runs (CRUD operations)
+- Input validation and error handling
 
-## 🔒 Authentication
-
-Protected endpoints require a JWT token in the Authorization header:
-
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-Obtain a token by logging in via `POST /users/login`.
-
-## ✅ Testing
-
-The project includes comprehensive test coverage:
-
-```bash
-npm test
-```
-
-Tests include:
-- User registration and authentication
-- User profile updates
-- Run creation and retrieval
-- Server functionality
-- Input validation
-
-## 📝 Environment Variables
-
-| Variable   | Description                    | Required |
-|------------|--------------------------------|----------|
-| PORT       | Server port number             | Yes      |
-| MONGO_URI  | MongoDB connection string      | Yes      |
-| TOKEN_KEY  | Secret key for JWT signing     | Yes      |
-
-## 🤝 Contributing
-
-This is a course submission project for Hyper Island.
-
-## 📄 License
+## License
 
 ISC
