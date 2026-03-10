@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { MONGO_URI } = require("../config/env.config.js");
 
 let cached = global.mongoose;
 
