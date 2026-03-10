@@ -22,25 +22,24 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
     });
   }
 
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    // Reset cached promise/connection so future calls can retry
+    cached.promise = null;
+    cached.conn = null;
+    throw err;
+  }
 
   console.log("Connected to database (Mongoose).");
 
   return cached.conn;
 };
 
-// const connectDB = async (uri = MONGO_URI) => {
-//   if (!uri) {
-//     throw new Error("MongoDB URI not provided");
-//   }
-//   await mongoose.connect(uri, {
-//     dbName: "runners-app",
-//   });
-//   console.log("Connected to database (Mongoose).");
-// };
-
 const closeDB = async () => {
   await mongoose.connection.close();
+  cached.conn = null;
+  cached.promise = null;
 };
 
 const clearDB = async () => {
