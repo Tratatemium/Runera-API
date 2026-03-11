@@ -29,6 +29,7 @@ const getUptime = () => {
 /* ================================================================================================= */
 
 app.get("/health", (req, res) => {
+  console.log("Got healt check request. ===***===")
   res.status(200).json({
     status: "ok",
     uptime: getUptime(),
