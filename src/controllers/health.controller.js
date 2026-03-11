@@ -1,4 +1,4 @@
-const { checkDBconnection } = require("../utils/db.utils.js");
+const { checkDBConnection } = require("../utils/db.utils.js");
 const { getUptime } = require("../utils/server.utils.js");
 
 const healthController = (req, res) => {
@@ -6,7 +6,7 @@ const healthController = (req, res) => {
     status: "running",
     uptime: getUptime(),
     version: "1.0.0",
-    DBconnection: checkDBconnection(),
+    DBconnection: checkDBConnection(),
   });
 };
 

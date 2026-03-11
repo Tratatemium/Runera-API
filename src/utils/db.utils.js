@@ -29,7 +29,7 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
   return cached.conn;
 };
 
-const checkDBconnection = () => {
+const checkDBConnection = () => {
   const states = {
     0: "disconnected",
     1: "connected",
@@ -54,7 +54,7 @@ const clearDB = async () => {
 
 module.exports = {
   connectDB,
-  checkDBconnection,
+  checkDBConnection,
   closeDB,
   clearDB,
 };
