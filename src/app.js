@@ -39,6 +39,17 @@ app.use((req, res, next) => {
 /*  HEALTH CHECK                                                                                     */
 /* ================================================================================================= */
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    service: "runners-api",
+    status: "running",
+  });
+});
+
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
+});
+
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
