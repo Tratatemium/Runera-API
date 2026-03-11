@@ -78,7 +78,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/users", usersRouter);
 v1Router.use("/runs", runsRouter);
 
-app.use("/v1", v1Router);
+app.use("/api/v1", v1Router);
 
 /* ================================================================================================= */
 /*  ERROR HANDLERS                                                                                   */
