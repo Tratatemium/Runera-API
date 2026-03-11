@@ -8,6 +8,7 @@ module.exports = async (req, res) => {
   try {
     // Ensure DB is connected before handling request
     await connectDB();
+    console.log("Mongoose readyState:", require("mongoose").connection.readyState);
 
     // **Await the Express handler** to prevent early termination
     await handler(req, res);
