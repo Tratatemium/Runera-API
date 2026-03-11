@@ -4,14 +4,16 @@ let cached = global._mongo;
 if (!cached) cached = global._mongo = { conn: null, promise: null };
 
 const connectDB = async (uri = process.env.MONGO_URI) => {
-  console.log("Started connection to the DB")
   if (!uri) throw new Error("MongoDB URI not provided");
 
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
-      dbName: "runners-app"
+      dbName: "runners-app",
+    }).catch(err => {
+      cached.promise = null;
+      throw err;
     });
   }
 
@@ -25,6 +27,16 @@ const connectDB = async (uri = process.env.MONGO_URI) => {
 
   console.log("Connected to database (Mongoose).");
   return cached.conn;
+};
+
+const checkDBconnection = () => {
+  const states = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+  return states[mongoose.connection.readyState];
 };
 
 const closeDB = async () => {
@@ -42,6 +54,7 @@ const clearDB = async () => {
 
 module.exports = {
   connectDB,
+  checkDBconnection,
   closeDB,
   clearDB,
 };

@@ -1,5 +1,8 @@
 const app = require("../src/app.js");
 const { connectDB } = require("../src/utils/db.utils.js");
+const { setServerStartTime } = require("../src/utils/server.utils.js");
+
+setServerStartTime();
 
 let connected = false;
 
