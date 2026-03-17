@@ -19,11 +19,15 @@ const dbErrorHandler = (err, req, res, next) => {
   if (isDuplicateKey) {
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
+    const fieldName = field?.slice(8);
 
     return res.status(409).json({
-      error: field
-        ? `${field.slice(8)} ${value} already exists.` // TODO: take field dynamicly
-        : "Duplicate key error",
+      error: {
+        field: fieldName,
+        message: fieldName
+          ? `${fieldName} ${value} already exists.` // TODO: take field dynamicly
+          : "Duplicate key error",
+      },
     });
   }
 
