@@ -5,25 +5,29 @@ const { sendSuccess } = require("../utils/response.utils.js");
 const getUserById = async (req, res) => {
   const userId = req.params.id;
   const userData = await usersService.getUser(userId);
-  sendSuccess(res, 200, userData);
+  sendSuccess(res, { statusCode: 200, data: { userData } });
 };
 
 const getAllUsers = async (req, res) => {
   const usersData = await usersService.getAllUsers();
-  sendSuccess(res, 200, usersData, { results: usersData.length });
+  sendSuccess(res, {
+    statusCode: 200,
+    data: { userId: newUserId },
+    extra: { results: usersData.length },
+  });
 };
 
 const getMe = async (req, res) => {
   const userId = req.user.userId;
   const userData = await usersService.getUser(userId);
-  sendSuccess(res, 200, userData);
+  sendSuccess(res, { statusCode: 200, data: { userData } });
 };
 
 const updateProfile = async (req, res) => {
   const userId = req.user.userId;
   const profile = req.body.profile;
   const savedProfile = await usersService.updateProfile(userId, profile);
-  sendSuccess(res, 200, savedProfile);
+  sendSuccess(res, { statusCode: 200, data: { savedProfile } });
 };
 
 const updateAccount = async (req, res) => {
