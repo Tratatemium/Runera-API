@@ -1,4 +1,4 @@
-const validators = require("./validators.js");
+const validators = require("./validators.ts");
 
 const validateUUID = (param = "id") => {
   return (req, res, next) => {

@@ -60,6 +60,18 @@ const authErrorHandler = (err, req, res, next) => {
   next(err);
 };
 
+const validationErrorHandler = (err, req, res, next) => {
+  if ((err.name = "ValidationError")) {
+    return res.status(err.status).json({
+      error: {
+        field: err.field,
+        message: err.message,
+      },
+    });
+  }
+  next(err);
+};
+
 // FINAL error handler
 const finalErrorHandler = (err, req, res, next) => {
   const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
@@ -77,5 +89,6 @@ module.exports = {
   jsonSyntaxErrorHandler,
   dbErrorHandler,
   authErrorHandler,
+  validationErrorHandler,
   finalErrorHandler,
 };

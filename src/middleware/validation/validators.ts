@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+// const { Request, Response, NextFunction } = require("express");
 
 /* ================================================================================================= */
 /*  HELPER FUNCTIONS                                                                                 */
@@ -36,7 +36,7 @@ const throwValidationError = ({
 /*  VALIDATE FUNCTIONS                                                                               */
 /* ================================================================================================= */
 
-const validateJsonContentType = (req: Request) => {
+const validateJsonContentType = (req: any) => {
   if (!req.is("json")) {
     throwValidationError({
       message: "Content-Type must be json.",
