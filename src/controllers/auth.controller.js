@@ -4,14 +4,18 @@ const { sendSuccess } = require("../utils/response.utils.js");
 const createUser = async (req, res) => {
   const { email, username, password } = req.body;
   const newUserId = await authService.signup(email, username, password);
-  sendSuccess(res, 201, { userId: newUserId });
+  sendSuccess(res, { statusCode: 201, data: { userId: newUserId } });
 };
 
 const loginUser = async (req, res) => {
   const { email, username, password } = req.body;
   const identifier = email ? email : username;
   const token = await authService.login(identifier, password);
-  sendSuccess(res, 200, { token, expiresIn: "1h" });
+  sendSuccess(res, {
+    statusCode: 200,
+    data: { token, expiresIn: "1h" },
+    cookie: { name: "token", value: token },
+  });
 };
 
 const logoutAll = async (req, res) => {

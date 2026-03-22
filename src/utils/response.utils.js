@@ -1,5 +1,20 @@
-const sendSuccess = (res, statusCode, data, extra = {}) => {
-  res.status(statusCode).json({
+const sendSuccess = (
+  res,
+  { statusCode = 200, data = null, cookie, extra = {} } = {},
+) => {
+  res.status(statusCode);
+
+  if (cookie) {
+    res.cookie(cookie.name, cookie.value, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60,
+      ...cookie.options,
+    });
+  }
+
+  res.json({
     status: "success",
     ...extra,
     data,
