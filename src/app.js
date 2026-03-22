@@ -25,7 +25,7 @@ app.use(
 
 app.use((req, res, next) => {
   console.log("Incoming path:", req.path);
-  if (req.cookies) console.log(req.cookies);
+  if (req.cookies.token) console.log(req.cookies.token);
   next();
 });
 
