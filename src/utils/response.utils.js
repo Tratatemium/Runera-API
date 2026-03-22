@@ -9,6 +9,7 @@ const sendSuccess = (
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      partitioned: true,
       maxAge: 1000 * 60 * 60,
       ...cookie.options,
     });
