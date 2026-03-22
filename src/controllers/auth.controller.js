@@ -13,7 +13,6 @@ const loginUser = async (req, res) => {
   const token = await authService.login(identifier, password);
   sendSuccess(res, {
     statusCode: 200,
-    data: { token, expiresIn: "1h" },
     cookie: { name: "token", value: token },
   });
 };
