@@ -24,12 +24,9 @@ const checkTokenVersion = async (tokenData) => {
 };
 
 const checkAuth = async (req, res, next) => {
-  const header = req.headers.authorization; // Expected format: "Bearer <token>"
-  if (!header || !header.startsWith("Bearer ")) {
-    throwAuthError("Invalid authorization header.");
-  }
+  const token = req.cookies.token;
+  if (!token) throwAuthError("Missing authentication token.");
 
-  const token = header.slice(7);
   const userData = verifyToken(token);
 
   await checkTokenVersion(userData);

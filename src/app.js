@@ -4,6 +4,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const app = express();
 
 /* ================================================================================================= */
@@ -12,18 +13,15 @@ const app = express();
 
 app.use(express.json());
 
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://localhost:3000",
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
   }),
 );
-
-app.use((req, res, next) => {
-  console.log("Incoming path:", req.path);
-  next();
-});
 
 /* ================================================================================================= */
 /*  VERCEL                                                                                     */
