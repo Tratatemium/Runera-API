@@ -7,7 +7,7 @@ const sendSuccess = (
   if (cookie) {
     res.cookie(cookie.name, cookie.value, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 1000 * 60 * 60,
       ...cookie.options,
