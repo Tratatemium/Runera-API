@@ -25,7 +25,7 @@ const checkTokenVersion = async (tokenData) => {
 
 const checkAuth = async (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) throwAuthError("Missing authorization token.");
+  if (!token) throwAuthError("Missing authentication token.");
 
   const userData = verifyToken(token);
 
