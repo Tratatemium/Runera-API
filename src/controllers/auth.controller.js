@@ -17,6 +17,21 @@ const loginUser = async (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  res.cookie(cookie.name, "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    partitioned: true,
+    maxAge: 0,
+    ...cookie.options,
+  });
+  sendSuccess(res, {
+    statusCode: 200,
+    data: { message: "Logged out successfully." },
+  });
+};
+
 const logoutAll = async (req, res) => {
   const { userId } = req.user;
   await authService.invalidatePreviousAccessTokens(userId);
@@ -26,5 +41,6 @@ const logoutAll = async (req, res) => {
 module.exports = {
   createUser,
   loginUser,
+  logout,
   logoutAll,
 };
