@@ -17,6 +17,20 @@ const loginUser = async (req, res) => {
   });
 };
 
+const logout = async (req, res) => {
+  sendSuccess(res, {
+    statusCode: 200,
+    cookie: {
+      name: "token",
+      value: "",
+      options: {
+        maxAge: 0,
+      },
+    },
+    data: { message: "Logged out successfully." },
+  });
+};
+
 const logoutAll = async (req, res) => {
   const { userId } = req.user;
   await authService.invalidatePreviousAccessTokens(userId);
@@ -26,5 +40,6 @@ const logoutAll = async (req, res) => {
 module.exports = {
   createUser,
   loginUser,
+  logout,
   logoutAll,
 };
