@@ -17,7 +17,7 @@ authRouter.post(
   authController.loginUser,
 );
 
-authRouter.post("/logout", authMiddleware.checkAuth, authController.logout);
+authRouter.post("/logout", authController.logout);
 
 authRouter.post(
   "/logoutAll",
