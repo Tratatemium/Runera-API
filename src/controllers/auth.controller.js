@@ -18,16 +18,15 @@ const loginUser = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.cookie(cookie.name, "", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    partitioned: true,
-    maxAge: 0,
-    ...cookie.options,
-  });
   sendSuccess(res, {
     statusCode: 200,
+    cookie: {
+      name: "token",
+      value: "",
+      options: {
+        maxAge: 0,
+      },
+    },
     data: { message: "Logged out successfully." },
   });
 };
