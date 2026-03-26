@@ -47,7 +47,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .delete(`/api/v1/runs/${user1RunId}`)
-        .set("Authorization", `Bearer ${user2Token}`);
+        .set("Cookie", user2Token);
 
       expect403Error(res);
     });
@@ -56,10 +56,10 @@ describe("DELETE /api/v1/runs/:id", () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .delete(`/api/v1/runs/${user1RunId}`)
-        .set("Authorization", `Bearer ${user2Token}`);
+        .set("Cookie", user2Token);
 
       expect403Error(res);
-      expect(res.body.error).toMatch(/not allowed/i);
+      expect(res.body.error.message).toMatch(/not allowed/i);
     });
   });
 
@@ -68,7 +68,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run as user1
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T09:00:00.000Z",
           durationSec: 500,
@@ -86,7 +86,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Delete it as admin
       const deleteRes = await request(app)
         .delete(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
+        .set("Cookie", adminToken);
 
       expect(deleteRes.statusCode).toBe(204);
       expect(deleteRes.body).toEqual({});
@@ -96,7 +96,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run as user2
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           startTime: "2026-02-03T09:30:00.000Z",
           durationSec: 600,
@@ -108,7 +108,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Admin deletes the run
       await request(app)
         .delete(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
+        .set("Cookie", adminToken);
 
       // Verify it no longer exists
       const getAfterDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
@@ -119,7 +119,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run as admin
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           startTime: "2026-02-03T10:30:00.000Z",
           durationSec: 700,
@@ -131,7 +131,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Admin deletes their own run
       const deleteRes = await request(app)
         .delete(`/api/v1/runs/${adminRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
+        .set("Cookie", adminToken);
 
       expect(deleteRes.statusCode).toBe(204);
 
@@ -153,7 +153,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       it(`returns 400 for ${desc}`, async () => {
         const res = await request(app)
           .delete(`/api/v1/runs/${id}`)
-          .set("Authorization", `Bearer ${user1Token}`);
+          .set("Cookie", user1Token);
 
         expect400WithMessage(res, /invalid|UUID/i);
       });
@@ -165,7 +165,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       const nonExistentId = TEST_RUN_IDS.nonExistent;
       const res = await request(app)
         .delete(`/api/v1/runs/${nonExistentId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect404Error(res);
     });
@@ -176,7 +176,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // First, create a new run to delete
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T10:00:00.000Z",
           durationSec: 600,
@@ -188,7 +188,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Now delete it
       const deleteRes = await request(app)
         .delete(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect(deleteRes.statusCode).toBe(204);
       expect(deleteRes.body).toEqual({});
@@ -198,7 +198,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T11:00:00.000Z",
           durationSec: 700,
@@ -216,7 +216,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Delete it
       await request(app)
         .delete(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       // Verify it no longer exists
       const getAfterDelete = await request(app).get(`/api/v1/runs/${newRunId}`);
@@ -227,7 +227,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T12:00:00.000Z",
           durationSec: 800,
@@ -239,25 +239,25 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Get runs before deletion
       const getRunsBefore = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
-      const countBefore = getRunsBefore.body.data.length;
+      const countBefore = getRunsBefore.body.data.myRuns.length;
 
       // Delete the run
       await request(app)
         .delete(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       // Get runs after deletion
       const getRunsAfter = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
-      const countAfter = getRunsAfter.body.data.length;
+      const countAfter = getRunsAfter.body.data.myRuns.length;
 
       expect(countAfter).toBe(countBefore - 1);
       expect(
-        getRunsAfter.body.data.find((run) => run.runId === newRunId),
+        getRunsAfter.body.data.myRuns.find((run) => run.runId === newRunId),
       ).toBeUndefined();
     });
 
@@ -265,7 +265,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create two runs
       const createRes1 = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T13:00:00.000Z",
           durationSec: 900,
@@ -274,7 +274,7 @@ describe("DELETE /api/v1/runs/:id", () => {
 
       const createRes2 = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T14:00:00.000Z",
           durationSec: 1000,
@@ -287,14 +287,14 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Delete first run
       const deleteRes1 = await request(app)
         .delete(`/api/v1/runs/${runId1}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect(deleteRes1.statusCode).toBe(204);
 
       // Delete second run
       const deleteRes2 = await request(app)
         .delete(`/api/v1/runs/${runId2}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect(deleteRes2.statusCode).toBe(204);
 
@@ -312,7 +312,7 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T15:00:00.000Z",
           durationSec: 1100,
@@ -324,14 +324,14 @@ describe("DELETE /api/v1/runs/:id", () => {
       // Delete it once
       const deleteRes1 = await request(app)
         .delete(`/api/v1/runs/${runId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect(deleteRes1.statusCode).toBe(204);
 
       // Try to delete it again
       const deleteRes2 = await request(app)
         .delete(`/api/v1/runs/${runId}`)
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expect404Error(deleteRes2);
     });

@@ -11,6 +11,12 @@ const expectErrorResponse = (response, expectedStatus) => {
   expect(response.statusCode).toBe(expectedStatus);
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.body).toHaveProperty("error");
+  expect(response.body.error).toEqual(
+    expect.objectContaining({
+      name: expect.any(String),
+      message: expect.any(String),
+    }),
+  );
 };
 
 /**
@@ -19,16 +25,16 @@ const expectErrorResponse = (response, expectedStatus) => {
  */
 const getAuthValidationTests = () => [
   {
-    name: "returns 401 when no authorization header is provided",
-    setupAuth: (req) => req, // No auth header
+    name: "returns 401 when no auth cookie is provided",
+    setupAuth: (req) => req,
   },
   {
-    name: "returns 401 when authorization header doesn't start with Bearer",
-    setupAuth: (req) => req.set("Authorization", "InvalidToken"),
+    name: "returns 401 when cookie is malformed",
+    setupAuth: (req) => req.set("Cookie", "token"),
   },
   {
     name: "returns 401 for invalid token",
-    setupAuth: (req) => req.set("Authorization", "Bearer invalid.token.here"),
+    setupAuth: (req) => req.set("Cookie", "token=invalid.token.here"),
   },
 ];
 

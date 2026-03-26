@@ -42,7 +42,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(name, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .set("Content-Type", contentType)
           .send(body);
 
@@ -55,7 +55,7 @@ describe("POST /api/v1/users/me/runs", () => {
     it("returns 400 for empty JSON", async () => {
       const res = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({});
 
       expect400WithMessage(
@@ -72,7 +72,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(name, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send(data);
 
         expect400WithMessage(
@@ -85,7 +85,7 @@ describe("POST /api/v1/users/me/runs", () => {
     it("returns 400 when field is null", async () => {
       const res = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({ ...VALID_RUN_DATA, startTime: null });
 
       expect400WithMessage(res, /startTime/);
@@ -104,7 +104,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`returns 400 for invalid startTime: ${JSON.stringify(value)}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, startTime: value });
 
         expect400WithMessage(res, message);
@@ -121,7 +121,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`accepts valid ISO 8601 format ${desc}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, startTime: value });
 
         expectJsonResponse(res, 201);
@@ -144,7 +144,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`returns 400 for invalid durationSec: ${value}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, durationSec: value });
 
         expect400WithMessage(res, message);
@@ -162,7 +162,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`accepts valid durationSec: ${desc}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, durationSec: value });
 
         expectJsonResponse(res, 201);
@@ -185,7 +185,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`returns 400 for invalid distanceMeters: ${value}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, distanceMeters: value });
 
         expect400WithMessage(res, message);
@@ -203,7 +203,7 @@ describe("POST /api/v1/users/me/runs", () => {
       it(`accepts valid distanceMeters: ${desc}`, async () => {
         const res = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ ...VALID_RUN_DATA, distanceMeters: value });
 
         expectJsonResponse(res, 201);
@@ -216,7 +216,7 @@ describe("POST /api/v1/users/me/runs", () => {
     it("returns 201 for valid run data", async () => {
       const res = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send(VALID_RUN_DATA);
 
       expectJsonResponse(res, 201);
@@ -226,7 +226,7 @@ describe("POST /api/v1/users/me/runs", () => {
     it("handles data with whitespace and string numbers", async () => {
       const res = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "  2024-01-15T10:30:00.000Z  ",
           durationSec: "  1800  ",
@@ -270,18 +270,18 @@ describe("GET /api/v1/users/me/runs", () => {
     it("returns 200 and an array of runs for user1 (has multiple runs)", async () => {
       const res = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("status", "success");
       expect(res.body).toHaveProperty("results");
       expect(res.body).toHaveProperty("data");
-      expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.data.length).toBeGreaterThan(0);
-      expect(res.body.results).toBe(res.body.data.length);
+      expect(Array.isArray(res.body.data.myRuns)).toBe(true);
+      expect(res.body.data.myRuns.length).toBeGreaterThan(0);
+      expect(res.body.results).toBe(res.body.data.myRuns.length);
 
       // Verify all returned runs belong to user1
-      res.body.data.forEach((run) => {
+      res.body.data.myRuns.forEach((run) => {
         expect(run).toHaveProperty("userId", TEST_USERS.user1.userId);
       });
     });
@@ -289,17 +289,17 @@ describe("GET /api/v1/users/me/runs", () => {
     it("returns 200 and an array of runs for user2", async () => {
       const res = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`);
+        .set("Cookie", user2Token);
 
       expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("status", "success");
       expect(res.body).toHaveProperty("results");
       expect(res.body).toHaveProperty("data");
-      expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.data.length).toBeGreaterThan(0);
-      expect(res.body.results).toBe(res.body.data.length);
+      expect(Array.isArray(res.body.data.myRuns)).toBe(true);
+      expect(res.body.data.myRuns.length).toBeGreaterThan(0);
+      expect(res.body.results).toBe(res.body.data.myRuns.length);
 
-      res.body.data.forEach((run) => {
+      res.body.data.myRuns.forEach((run) => {
         expect(run).toHaveProperty("userId", TEST_USERS.user2.userId);
       });
     });
@@ -307,26 +307,26 @@ describe("GET /api/v1/users/me/runs", () => {
     it("returns only the authenticated user's runs, not other users' runs", async () => {
       const res1 = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       const res2 = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`);
+        .set("Cookie", user2Token);
 
       expect(res1.statusCode).toBe(200);
       expect(res2.statusCode).toBe(200);
 
-      res1.body.data.forEach((run) => {
+      res1.body.data.myRuns.forEach((run) => {
         expect(run.userId).toBe(TEST_USERS.user1.userId);
         expect(run.userId).not.toBe(TEST_USERS.user2.userId);
       });
 
-      res2.body.data.forEach((run) => {
+      res2.body.data.myRuns.forEach((run) => {
         expect(run.userId).toBe(TEST_USERS.user2.userId);
         expect(run.userId).not.toBe(TEST_USERS.user1.userId);
       });
 
-      expect(res1.body.data).not.toEqual(res2.body.data);
+      expect(res1.body.data.myRuns).not.toEqual(res2.body.data.myRuns);
     });
 
     it("returns empty array for user with no runs", async () => {
@@ -345,14 +345,14 @@ describe("GET /api/v1/users/me/runs", () => {
 
       const res = await request(app)
         .get("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${noRunsToken}`);
+        .set("Cookie", noRunsToken);
 
       expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("status", "success");
       expect(res.body).toHaveProperty("results", 0);
       expect(res.body).toHaveProperty("data");
-      expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.data.length).toBe(0);
+      expect(Array.isArray(res.body.data.myRuns)).toBe(true);
+      expect(res.body.data.myRuns.length).toBe(0);
     });
   });
 });

@@ -39,7 +39,7 @@ describe("GET /api/v1/users/me", () => {
     it("returns 200 and user data for authenticated user", async () => {
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${user1Token}`);
+        .set("Cookie", user1Token);
 
       expectJsonResponse(res, 200);
       expectValidUserStructure(res.body.data, {
@@ -51,7 +51,7 @@ describe("GET /api/v1/users/me", () => {
     it("returns correct data for different authenticated users", async () => {
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${user2Token}`);
+        .set("Cookie", user2Token);
 
       expectJsonResponse(res, 200);
       expectValidUserStructure(res.body.data, {
@@ -83,7 +83,7 @@ describe("POST /api/v1/auth/logoutAll", () => {
 
       const res = await request(app)
         .post("/api/v1/auth/logoutAll")
-        .set("Authorization", `Bearer ${token}`);
+        .set("Cookie", token);
 
       expect(res.statusCode).toBe(200);
     });
@@ -97,18 +97,18 @@ describe("POST /api/v1/auth/logoutAll", () => {
       // Verify token works
       const beforeLogout = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token}`);
+        .set("Cookie", token);
       expect(beforeLogout.statusCode).toBe(200);
 
       // Logout all sessions
       await request(app)
         .post("/api/v1/auth/logoutAll")
-        .set("Authorization", `Bearer ${token}`);
+        .set("Cookie", token);
 
       // Try to use old token
       const afterLogout = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token}`);
+        .set("Cookie", token);
 
       expect401Error(afterLogout);
     });
@@ -127,28 +127,28 @@ describe("POST /api/v1/auth/logoutAll", () => {
       // Verify both tokens work
       const check1 = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token1}`);
+        .set("Cookie", token1);
       expect(check1.statusCode).toBe(200);
 
       const check2 = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token2}`);
+        .set("Cookie", token2);
       expect(check2.statusCode).toBe(200);
 
       // Logout all sessions using first token
       await request(app)
         .post("/api/v1/auth/logoutAll")
-        .set("Authorization", `Bearer ${token1}`);
+        .set("Cookie", token1);
 
       // Both tokens should now be invalid
       const afterLogout1 = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token1}`);
+        .set("Cookie", token1);
       expect401Error(afterLogout1);
 
       const afterLogout2 = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${token2}`);
+        .set("Cookie", token2);
       expect401Error(afterLogout2);
     });
 
@@ -161,7 +161,7 @@ describe("POST /api/v1/auth/logoutAll", () => {
 
       await request(app)
         .post("/api/v1/auth/logoutAll")
-        .set("Authorization", `Bearer ${oldToken}`);
+        .set("Cookie", oldToken);
 
       // Login again to get new token
       const newToken = await getAuthToken({
@@ -172,10 +172,10 @@ describe("POST /api/v1/auth/logoutAll", () => {
       // Use new token to access protected endpoint
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${newToken}`);
+        .set("Cookie", newToken);
 
       expectJsonResponse(res, 200);
-      expect(res.body.data).toHaveProperty("account");
+      expect(res.body.data.userData).toHaveProperty("account");
     });
   });
 });

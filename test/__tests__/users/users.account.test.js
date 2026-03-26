@@ -46,7 +46,7 @@ describe("PATCH /api/v1/users/me/account", () => {
           const res = await request(app)
             .patch("/api/v1/users/me/account")
             .set("Content-Type", contentType)
-            .set("Authorization", `Bearer ${user1Token}`)
+            .set("Cookie", user1Token)
             .send(body);
 
           expect415Error(res);
@@ -72,7 +72,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it("returns 400 when currentPassword is missing", async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ newPassword: "NewPassword456!" });
 
         expect400WithMessage(res, "currentPassword must be provided.");
@@ -81,7 +81,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it("returns 401 when currentPassword is incorrect", async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             currentPassword: "WrongPassword123!",
             newPassword: "NewPassword456!",
@@ -120,7 +120,7 @@ describe("PATCH /api/v1/users/me/account", () => {
         it(`returns 400 when ${desc} provided`, async () => {
           const res = await request(app)
             .patch("/api/v1/users/me/account")
-            .set("Authorization", `Bearer ${user1Token}`)
+            .set("Cookie", user1Token)
             .send(data);
 
           expect400WithMessage(
@@ -149,7 +149,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it(`returns 400 for invalid newPassword: ${message}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             currentPassword: TEST_USERS.user1.password,
             newPassword: password,
@@ -162,7 +162,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("successfully updates password", async () => {
       const res = await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "NewPassword456!",
@@ -176,7 +176,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${oldToken}`)
+        .set("Cookie", oldToken)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "BrandNewPassword123!",
@@ -184,7 +184,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${oldToken}`);
+        .set("Cookie", oldToken);
 
       expect401Error(res);
     });
@@ -192,7 +192,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("allows login with new password after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "UpdatedPassword789!",
@@ -204,13 +204,13 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body.data).toHaveProperty("token");
+      expect(loginRes.headers).toHaveProperty("set-cookie");
     });
 
     it("rejects login with old password after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newPassword: "AnotherPassword321!",
@@ -243,7 +243,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it(`returns 400 for invalid newEmail: ${message}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user2Token}`)
+          .set("Cookie", user2Token)
           .send({
             currentPassword: TEST_USERS.user2.password,
             newEmail: email,
@@ -256,7 +256,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("successfully updates email", async () => {
       const res = await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "updated_runner02@test.com",
@@ -270,7 +270,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${oldToken}`)
+        .set("Cookie", oldToken)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "completely_new_email@test.com",
@@ -278,7 +278,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${oldToken}`);
+        .set("Cookie", oldToken);
 
       expect401Error(res);
     });
@@ -286,7 +286,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("allows login with new email after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "new_runner02@test.com",
@@ -298,13 +298,13 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body.data).toHaveProperty("token");
+      expect(loginRes.headers).toHaveProperty("set-cookie");
     });
 
     it("rejects login with old email after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           currentPassword: TEST_USERS.user2.password,
           newEmail: "latest_runner02@test.com",
@@ -344,7 +344,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it(`returns 400 for invalid newUsername: ${message}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             currentPassword: TEST_USERS.user1.password,
             newUsername: username,
@@ -357,7 +357,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("successfully updates username", async () => {
       const res = await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "updated_runner_01",
@@ -371,7 +371,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${oldToken}`)
+        .set("Cookie", oldToken)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "totally_new_username",
@@ -379,7 +379,7 @@ describe("PATCH /api/v1/users/me/account", () => {
 
       const res = await request(app)
         .get("/api/v1/users/me")
-        .set("Authorization", `Bearer ${oldToken}`);
+        .set("Cookie", oldToken);
 
       expect401Error(res);
     });
@@ -387,7 +387,7 @@ describe("PATCH /api/v1/users/me/account", () => {
     it("allows login with new username after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "newest_runner_01",
@@ -399,13 +399,13 @@ describe("PATCH /api/v1/users/me/account", () => {
       });
 
       expect(loginRes.statusCode).toBe(200);
-      expect(loginRes.body.data).toHaveProperty("token");
+      expect(loginRes.headers).toHaveProperty("set-cookie");
     });
 
     it("rejects login with old username after update", async () => {
       await request(app)
         .patch("/api/v1/users/me/account")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           currentPassword: TEST_USERS.user1.password,
           newUsername: "final_runner_01",
@@ -428,7 +428,7 @@ describe("PATCH /api/v1/users/me/account", () => {
       it(`accepts valid username ${desc}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/account")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             currentPassword: TEST_USERS.user1.password,
             newUsername: username,

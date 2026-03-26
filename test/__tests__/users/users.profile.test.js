@@ -34,7 +34,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
           .set("Content-Type", contentType)
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send(body);
 
         expect415Error(res);
@@ -67,7 +67,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
       it(`returns 400 when profile is ${desc}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ profile });
 
         expect400WithMessage(res, "profile must be provided as an object.");
@@ -77,7 +77,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
     it("returns 400 for unknown field in profile", async () => {
       const res = await request(app)
         .patch("/api/v1/users/me/profile")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({ profile: { unknownField: "value" } });
 
       expect400WithMessage(res, "Unknown field: unknownField");
@@ -86,7 +86,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
     it("returns 400 for multiple unknown fields", async () => {
       const res = await request(app)
         .patch("/api/v1/users/me/profile")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({ profile: { age: 25, city: "Stockholm" } });
 
       expectJsonResponse(res, 400);
@@ -110,7 +110,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
       it(`returns 400 for invalid ${field}: ${value.slice(0, 20)}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ profile: { [field]: value } });
 
         expect400WithMessage(res, error);
@@ -127,7 +127,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
       it(`returns 400 for dateOfBirth: ${desc}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ profile: { dateOfBirth: value } });
 
         expectJsonResponse(res, 400);
@@ -147,7 +147,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
       it(`returns 400 for ${field}: ${desc}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ profile: { [field]: value } });
 
         expectJsonResponse(res, 400);
@@ -174,7 +174,7 @@ describe("PATCH /api/v1/users/me/profile", () => {
       it(`returns 200 when updating ${desc}`, async () => {
         const res = await request(app)
           .patch("/api/v1/users/me/profile")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({ profile });
 
         expectJsonResponse(res, 200);
@@ -184,12 +184,12 @@ describe("PATCH /api/v1/users/me/profile", () => {
     it("allows different users to update their own profiles", async () => {
       const res1 = await request(app)
         .patch("/api/v1/users/me/profile")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({ profile: { firstName: "Anna" } });
 
       const res2 = await request(app)
         .patch("/api/v1/users/me/profile")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({ profile: { firstName: "Boris" } });
 
       expect(res1.statusCode).toBe(200);
