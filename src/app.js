@@ -64,19 +64,9 @@ app.use("/api/v1", v1Router);
 /*  ERROR HANDLERS                                                                                   */
 /* ================================================================================================= */
 
-const {
-  jsonSyntaxErrorHandler,
-  dbErrorHandler,
-  authErrorHandler,
-  validationErrorHandler,
-  finalErrorHandler,
-} = require("./middleware/error.middleware.js");
+const { apiErrorHandler } = require("./middleware/error.middleware.js");
 
-app.use(jsonSyntaxErrorHandler);
-app.use(dbErrorHandler);
-app.use(authErrorHandler);
-app.use(validationErrorHandler);
-app.use(finalErrorHandler);
+app.use(apiErrorHandler);
 
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */

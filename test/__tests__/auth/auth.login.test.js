@@ -136,10 +136,8 @@ describe("Successful login", () => {
     const res1 = await request(app).post("/api/v1/auth/login").send(loginData);
     const res2 = await request(app).post("/api/v1/auth/login").send(loginData);
 
-    expect(res1.statusCode).toBe(200);
-    expect(res2.statusCode).toBe(200);
-    expect(res1.body.data).toHaveProperty("token");
-    expect(res2.body.data).toHaveProperty("token");
+    expectValidJwtToken(res1);
+    expectValidJwtToken(res2);
   });
 
   it("allows login with case-insensitive email", async () => {

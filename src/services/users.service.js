@@ -1,10 +1,9 @@
+const { NotFoundError } = require("../errors/errors.js");
 const usersRepo = require("../repositories/users.repository.js");
 const authService = require("./auth.service.js");
 
 const throwUserNotFoundError = (userId) => {
-  const err = new Error(`No user with ID ${userId} found!`);
-  err.status = 404;
-  throw err;
+  throw new NotFoundError(`No user with ID ${userId} found!`);
 };
 
 const getUser = async (userId) => {

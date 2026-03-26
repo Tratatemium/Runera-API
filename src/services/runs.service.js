@@ -1,9 +1,8 @@
+const { NotFoundError } = require("../errors/errors.js");
 const runsRepo = require("../repositories/runs.repository.js");
 
 const throwRunNotFoundError = (runId) => {
-  const err = new Error(`No run with ID ${runId} found!`);
-  err.status = 404;
-  throw err;
+  throw new NotFoundError(`No run with ID ${runId} found!`);
 };
 
 const createRun = async (newRun) => {

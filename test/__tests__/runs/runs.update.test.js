@@ -52,7 +52,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .patch(`/api/v1/runs/${user1RunId}`)
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           durationSec: 2500,
         });
@@ -64,13 +64,13 @@ describe("PATCH /api/v1/runs/:id", () => {
       const user1RunId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .patch(`/api/v1/runs/${user1RunId}`)
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           distanceMeters: 6000,
         });
 
       expect403Error(res);
-      expect(res.body.error).toMatch(/not allowed/i);
+      expect(res.body.error.message).toMatch(/not allowed/i);
     });
   });
 
@@ -79,7 +79,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Create a run as user1
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T10:00:00.000Z",
           durationSec: 1800,
@@ -91,21 +91,21 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update it as owner
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           durationSec: 2000,
         });
 
       expectJsonResponse(updateRes, 200);
       expect(updateRes.body.status).toBe("success");
-      expect(updateRes.body.data).toHaveProperty("durationSec", 2000);
+      expect(updateRes.body.data.runData).toHaveProperty("durationSec", 2000);
     });
 
     it("owner can update multiple fields at once", async () => {
       // Create a run as user2
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           startTime: "2026-02-03T11:00:00.000Z",
           durationSec: 1500,
@@ -117,22 +117,22 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update multiple fields
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           durationSec: 1800,
           distanceMeters: 5000,
         });
 
       expectJsonResponse(updateRes, 200);
-      expect(updateRes.body.data).toHaveProperty("durationSec", 1800);
-      expect(updateRes.body.data).toHaveProperty("distanceMeters", 5000);
+      expect(updateRes.body.data.runData).toHaveProperty("durationSec", 1800);
+      expect(updateRes.body.data.runData).toHaveProperty("distanceMeters", 5000);
     });
 
     it("owner can update startTime", async () => {
       // Create a run as user1
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T12:00:00.000Z",
           durationSec: 1200,
@@ -145,20 +145,20 @@ describe("PATCH /api/v1/runs/:id", () => {
       const newStartTime = "2026-02-03T13:00:00.000Z";
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: newStartTime,
         });
 
       expectJsonResponse(updateRes, 200);
-      expect(updateRes.body.data).toHaveProperty("startTime", newStartTime);
+      expect(updateRes.body.data.runData).toHaveProperty("startTime", newStartTime);
     });
 
     it("updated run maintains valid structure", async () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T14:00:00.000Z",
           durationSec: 900,
@@ -170,20 +170,20 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update it
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           distanceMeters: 3000,
         });
 
       expectJsonResponse(updateRes, 200);
-      expectValidRunStructure(updateRes.body.data);
+      expectValidRunStructure(updateRes.body.data.runData);
     });
 
     it("owner update persists in database", async () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T14:30:00.000Z",
           durationSec: 1000,
@@ -195,7 +195,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update it
       await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           distanceMeters: 3100,
         });
@@ -204,7 +204,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const getRes = await request(app).get(`/api/v1/runs/${newRunId}`);
 
       expectJsonResponse(getRes, 200);
-      expect(getRes.body.data).toHaveProperty("distanceMeters", 3100);
+      expect(getRes.body.data.runData).toHaveProperty("distanceMeters", 3100);
     });
   });
 
@@ -213,7 +213,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Create a run as user1
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T15:00:00.000Z",
           durationSec: 1600,
@@ -225,21 +225,21 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update it as admin
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           durationSec: 1800,
         });
 
       expectJsonResponse(updateRes, 200);
       expect(updateRes.body.status).toBe("success");
-      expect(updateRes.body.data).toHaveProperty("durationSec", 1800);
+      expect(updateRes.body.data.runData).toHaveProperty("durationSec", 1800);
     });
 
     it("admin can update multiple fields of another user's run", async () => {
       // Create a run as user2
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           startTime: "2026-02-03T16:00:00.000Z",
           durationSec: 2000,
@@ -251,7 +251,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Admin updates multiple fields
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           startTime: "2026-02-03T17:00:00.000Z",
           durationSec: 2200,
@@ -259,19 +259,19 @@ describe("PATCH /api/v1/runs/:id", () => {
         });
 
       expectJsonResponse(updateRes, 200);
-      expect(updateRes.body.data).toHaveProperty(
+      expect(updateRes.body.data.runData).toHaveProperty(
         "startTime",
         "2026-02-03T17:00:00.000Z",
       );
-      expect(updateRes.body.data).toHaveProperty("durationSec", 2200);
-      expect(updateRes.body.data).toHaveProperty("distanceMeters", 6000);
+      expect(updateRes.body.data.runData).toHaveProperty("durationSec", 2200);
+      expect(updateRes.body.data.runData).toHaveProperty("distanceMeters", 6000);
     });
 
     it("admin update maintains valid run structure", async () => {
       // Create a run as user1
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T18:00:00.000Z",
           durationSec: 1400,
@@ -283,20 +283,20 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Admin updates it
       const updateRes = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           distanceMeters: 4000,
         });
 
       expectJsonResponse(updateRes, 200);
-      expectValidRunStructure(updateRes.body.data);
+      expectValidRunStructure(updateRes.body.data.runData);
     });
 
     it("admin update persists in database", async () => {
       // Create a run as user2
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user2Token}`)
+        .set("Cookie", user2Token)
         .send({
           startTime: "2026-02-03T19:00:00.000Z",
           durationSec: 1100,
@@ -308,7 +308,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Admin updates it
       await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           durationSec: 1300,
         });
@@ -317,7 +317,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const getRes = await request(app).get(`/api/v1/runs/${newRunId}`);
 
       expectJsonResponse(getRes, 200);
-      expect(getRes.body.data).toHaveProperty("durationSec", 1300);
+      expect(getRes.body.data.runData).toHaveProperty("durationSec", 1300);
     });
   });
 
@@ -326,7 +326,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const runId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .patch(`/api/v1/runs/${runId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .set("Content-Type", "text/plain")
         .send("durationSec=2000");
 
@@ -342,7 +342,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       it(`returns 404 for ${desc}`, async () => {
         const res = await request(app)
           .patch(`/api/v1/runs/${id}`)
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             durationSec: 2000,
           });
@@ -355,7 +355,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const nonExistentId = TEST_RUN_IDS.nonExistent;
       const res = await request(app)
         .patch(`/api/v1/runs/${nonExistentId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Cookie", adminToken)
         .send({
           durationSec: 2000,
         });
@@ -367,7 +367,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const runId = TEST_RUN_IDS.user1Run1;
       const res = await request(app)
         .patch(`/api/v1/runs/${runId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({});
 
       expect400WithMessage(res, /must have one of the required fields/i);
@@ -377,7 +377,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-03T23:00:00.000Z",
           durationSec: 1500,
@@ -388,7 +388,7 @@ describe("PATCH /api/v1/runs/:id", () => {
 
       const res = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           durationSec: 1600,
           unknownField: "value",
@@ -407,7 +407,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       it(`returns 400 for invalid durationSec: ${desc}`, async () => {
         const createRes = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             startTime: "2026-02-03T20:00:00.000Z",
             durationSec: 1500,
@@ -418,7 +418,7 @@ describe("PATCH /api/v1/runs/:id", () => {
 
         const res = await request(app)
           .patch(`/api/v1/runs/${newRunId}`)
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             durationSec: value,
           });
@@ -437,7 +437,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       it(`returns 400 for invalid distanceMeters: ${desc}`, async () => {
         const createRes = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             startTime: "2026-02-03T21:00:00.000Z",
             durationSec: 1500,
@@ -448,7 +448,7 @@ describe("PATCH /api/v1/runs/:id", () => {
 
         const res = await request(app)
           .patch(`/api/v1/runs/${newRunId}`)
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             distanceMeters: value,
           });
@@ -467,7 +467,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       it(`returns 400 for invalid startTime: ${desc}`, async () => {
         const createRes = await request(app)
           .post("/api/v1/users/me/runs")
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             startTime: "2026-02-03T22:00:00.000Z",
             durationSec: 1500,
@@ -478,7 +478,7 @@ describe("PATCH /api/v1/runs/:id", () => {
 
         const res = await request(app)
           .patch(`/api/v1/runs/${newRunId}`)
-          .set("Authorization", `Bearer ${user1Token}`)
+          .set("Cookie", user1Token)
           .send({
             startTime: value,
           });
@@ -493,7 +493,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-04T08:00:00.000Z",
           durationSec: 1800,
@@ -505,7 +505,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update it
       const res = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           durationSec: 2000,
         });
@@ -513,14 +513,14 @@ describe("PATCH /api/v1/runs/:id", () => {
       expectJsonResponse(res, 200);
       expect(res.body).toHaveProperty("status", "success");
       expect(res.body).toHaveProperty("data");
-      expect(res.body.data).toBeInstanceOf(Object);
+      expect(res.body.data.runData).toBeInstanceOf(Object);
     });
 
     it("returns all run fields in response", async () => {
       // Create a run
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: "2026-02-04T09:00:00.000Z",
           durationSec: 1600,
@@ -532,17 +532,17 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update one field
       const res = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           durationSec: 1700,
         });
 
       expectJsonResponse(res, 200);
-      expect(res.body.data).toHaveProperty("runId");
-      expect(res.body.data).toHaveProperty("userId");
-      expect(res.body.data).toHaveProperty("startTime");
-      expect(res.body.data).toHaveProperty("durationSec");
-      expect(res.body.data).toHaveProperty("distanceMeters");
+      expect(res.body.data.runData).toHaveProperty("runId");
+      expect(res.body.data.runData).toHaveProperty("userId");
+      expect(res.body.data.runData).toHaveProperty("startTime");
+      expect(res.body.data.runData).toHaveProperty("durationSec");
+      expect(res.body.data.runData).toHaveProperty("distanceMeters");
     });
 
     it("preserves unchanged fields in response", async () => {
@@ -551,7 +551,7 @@ describe("PATCH /api/v1/runs/:id", () => {
       const originalDistance = 5200;
       const createRes = await request(app)
         .post("/api/v1/users/me/runs")
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           startTime: originalStartTime,
           durationSec: 1700,
@@ -563,15 +563,15 @@ describe("PATCH /api/v1/runs/:id", () => {
       // Update only duration
       const res = await request(app)
         .patch(`/api/v1/runs/${newRunId}`)
-        .set("Authorization", `Bearer ${user1Token}`)
+        .set("Cookie", user1Token)
         .send({
           durationSec: 1900,
         });
 
       expectJsonResponse(res, 200);
-      expect(res.body.data).toHaveProperty("durationSec", 1900);
-      expect(res.body.data).toHaveProperty("startTime", originalStartTime);
-      expect(res.body.data).toHaveProperty("distanceMeters", originalDistance);
+      expect(res.body.data.runData).toHaveProperty("durationSec", 1900);
+      expect(res.body.data.runData).toHaveProperty("startTime", originalStartTime);
+      expect(res.body.data.runData).toHaveProperty("distanceMeters", originalDistance);
     });
   });
 });
