@@ -9,7 +9,7 @@ class ApiError extends Error {
 
 class ValidationError extends ApiError {
   constructor(message, field) {
-    super(message, 400);
+    super(message || "Invalid input.", 400);
     this.name = "ValidationError";
     this.field = field;
     Object.setPrototypeOf(this, ValidationError.prototype);
@@ -18,7 +18,7 @@ class ValidationError extends ApiError {
 
 class LoginError extends ApiError {
   constructor(message) {
-    super(message || "Invalid credentials", 401);
+    super(message || "Invalid credentials.", 401);
     this.name = "LoginError";
     Object.setPrototypeOf(this, LoginError.prototype);
   }
@@ -26,7 +26,7 @@ class LoginError extends ApiError {
 
 class AuthError extends ApiError {
   constructor(message) {
-    super(message, 401);
+    super(message || "Authentication failed.", 401);
     this.name = "AuthError";
     Object.setPrototypeOf(this, AuthError.prototype);
   }
@@ -40,10 +40,19 @@ class GuardError extends ApiError {
   }
 }
 
+class NotFoundError extends ApiError {
+  constructor(message) {
+    super(message || "Not found.", 404);
+    this.name = "NotFoundError";
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+}
+
 module.exports = {
   ApiError,
   ValidationError,
   LoginError,
   AuthError,
   GuardError,
+  NotFoundError,
 };

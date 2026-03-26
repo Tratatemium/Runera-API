@@ -1,22 +1,11 @@
-// const { Request, Response, NextFunction } = require("express");
+const { ValidationError } = require("../../errors/errors");
 
 /* ================================================================================================= */
 /*  HELPER FUNCTIONS                                                                                 */
 /* ================================================================================================= */
 
-class ValidationError extends Error {
-  constructor(message, field, status = 400) {
-    super(message);
-    this.name = "ValidationError";
-    this.status = status;
-    this.field = field;
-
-    Object.setPrototypeOf(this, ValidationError.prototype);
-  }
-}
-
-const throwValidationError = ({ message, field = undefined, status = 400 }) => {
-  throw new ValidationError(message, field, status);
+const throwValidationError = ({ message, field = undefined }) => {
+  throw new ValidationError(message, field);
 };
 
 /* ================================================================================================= */

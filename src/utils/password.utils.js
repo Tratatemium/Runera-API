@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { LoginError } = require("../errors/errors");
 
 const saltRounds = 10;
 const algorithm = "bcrypt";
@@ -22,11 +23,7 @@ const comparePasswordHash = async (foundUser, password) => {
     : DUMMY_HASH;
   const isPasswordCorrect = await bcrypt.compare(password, passwordHash);
 
-  if (!foundUser || !isPasswordCorrect) {
-    const err = new Error("Invalid credentials");
-    err.status = 401;
-    throw err;
-  }
+  if (!foundUser || !isPasswordCorrect) throw new LoginError();
 };
 
 module.exports = { createPasswordHash, comparePasswordHash };

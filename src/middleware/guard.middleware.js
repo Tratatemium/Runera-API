@@ -1,13 +1,5 @@
+const { GuardError } = require("../errors/errors.js");
 const runsService = require("../services/runs.service.js");
-
-const throwGuardError = (
-  message = "You are not allowed to perform this action.",
-  status = 403,
-) => {
-  const err = new Error(message);
-  err.status = status;
-  throw err;
-};
 
 const ownershipResolvers = {
   userId: async (req, param) => req.params[param],
@@ -35,13 +27,13 @@ const checkPermissions = ({ mode = "either", param = "id", type }) => {
   return async (req, res, next) => {
     const isAdmin = req.user.role === "admin";
     if (mode === "admin") {
-      if (!isAdmin) throwGuardError("Admins only.");
+      if (!isAdmin) throw new GuardError("Admins only.");
       return next();
     }
 
     const isOwner = await checkOwnership(req, param, type);
-    if (mode === "owner" && !isOwner) throwGuardError("Owners only.");
-    else if (mode === "either" && !isAdmin && !isOwner) throwGuardError();
+    if (mode === "owner" && !isOwner) throw new GuardError("Owners only.");
+    else if (mode === "either" && !isAdmin && !isOwner) throw new GuardError();
 
     next();
   };
