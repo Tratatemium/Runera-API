@@ -1,4 +1,4 @@
-const { sendError } = require("../utils/response.utils");
+const { sendError, capitalize } = require("../utils/response.utils");
 
 const apiErrorHandler = (err, req, res, next) => {
   // --- JSON parse errors ---
@@ -30,7 +30,7 @@ const apiErrorHandler = (err, req, res, next) => {
     err.name = "DuplicateKeyError";
     err.field = field;
     err.message = field
-      ? `${field} ${value} already exists.`
+      ? capitalize(`${field} ${value} already exists.`)
       : "Data already exists";
   }
 
