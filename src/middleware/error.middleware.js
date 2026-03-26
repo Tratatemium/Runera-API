@@ -23,8 +23,9 @@ const apiErrorHandler = (err, req, res, next) => {
   const isDuplicateKey = err.name === "MongoServerError" && err.code === 11000;
 
   if (isDuplicateKey) {
-    const field = Object.keys(err.keyValue || {})[0];
-    const value = field ? err.keyValue[field] : undefined;
+    const rawField = Object.keys(err.keyValue || {})[0];
+    const value = rawField ? err.keyValue[rawField] : undefined;
+    const field = rawField?.slice(rawField.lastIndexOf(".") + 1);
     err.status = 409;
     err.name = "DuplicateKeyError";
     err.field = field;
