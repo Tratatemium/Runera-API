@@ -24,8 +24,8 @@ const apiErrorHandler = (err, req, res, next) => {
 
   if (isDuplicateKey) {
     const rawField = Object.keys(err.keyValue || {})[0];
+    const value = rawField ? err.keyValue[rawField] : undefined;
     const field = rawField?.slice(rawField.lastIndexOf(".") + 1);
-    const value = field ? err.keyValue[field] : undefined;
     err.status = 409;
     err.name = "DuplicateKeyError";
     err.field = field;
