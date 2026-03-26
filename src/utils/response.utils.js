@@ -35,4 +35,8 @@ const sendError = (res, err, extra = {}) => {
   res.status(status).json({ error: errorResponse });
 };
 
-module.exports = { sendSuccess, sendError };
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+module.exports = { sendSuccess, sendError, capitalize };
