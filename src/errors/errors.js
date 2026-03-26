@@ -8,8 +8,8 @@ class ApiError extends Error {
 }
 
 class ValidationError extends ApiError {
-  constructor(message, field) {
-    super(message || "Invalid input.", 400);
+  constructor(message, status, field) {
+    super(message || "Invalid input.", status || 400);
     this.name = "ValidationError";
     this.field = field;
     Object.setPrototypeOf(this, ValidationError.prototype);

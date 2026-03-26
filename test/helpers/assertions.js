@@ -181,7 +181,7 @@ const expect409Error = (response) => {
  * @param {Object} response - Supertest response object
  */
 const expect415Error = (response) => {
-  expect(response.statusCode).toBe(400);
+  expect(response.statusCode).toBe(415);
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.body).toHaveProperty("error");
   expect(response.body.error).toEqual(

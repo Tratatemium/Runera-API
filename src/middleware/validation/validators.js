@@ -4,8 +4,8 @@ const { ValidationError } = require("../../errors/errors");
 /*  HELPER FUNCTIONS                                                                                 */
 /* ================================================================================================= */
 
-const throwValidationError = ({ message, field = undefined }) => {
-  throw new ValidationError(message, field);
+const throwValidationError = ({ message, field = undefined, status }) => {
+  throw new ValidationError(message, status, field);
 };
 
 /* ================================================================================================= */

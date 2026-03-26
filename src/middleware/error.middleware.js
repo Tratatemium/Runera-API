@@ -41,16 +41,18 @@ const apiErrorHandler = (err, req, res, next) => {
   ];
   if (jwtErrors.includes(err.name)) {
     err.status = 401;
-    err.name = "AuthError";
 
     if (err.name === "TokenExpiredError") err.message = "Token expired.";
     else if (err.name === "JsonWebTokenError") err.message = "Invalid token.";
     else if (err.name === "NotBeforeError")
       err.message = "Token not active yet.";
+
+    err.name = "AuthError";
   }
 
   // --- Log server errors ---
-  if (err.status >= 500) console.error(err);
+  const status = err.status || 500;
+  if (status >= 500) console.error(err);
 
   // --- Send error response ---
   sendError(res, err);
