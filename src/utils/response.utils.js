@@ -22,4 +22,17 @@ const sendSuccess = (
   });
 };
 
-module.exports = { sendSuccess };
+const sendError = (res, err, extra = {}) => {
+  const status = err.status || 500;
+  const message = err.message || "Something went wrong";
+  const name = err.name || "Error";
+
+  const errorResponse = { message, name, ...extra };
+
+  if (err.field) {
+    errorResponse.field = err.field;
+  }
+  res.status(status).json({ error: errorResponse });
+};
+
+module.exports = { sendSuccess, sendError };

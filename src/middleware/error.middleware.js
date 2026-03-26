@@ -1,94 +1,59 @@
-const {
-  MongoNetworkError,
-  MongoServerSelectionError,
-  MongoServerError,
-} = require("mongodb");
+const { sendError } = require("../utils/response.utils");
 
-// JSON syntax error filter
-const jsonSyntaxErrorHandler = (err, req, res, next) => {
+const apiErrorHandler = (err, req, res, next) => {
+  // --- JSON parse errors ---
   if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    return res.status(400).json({ error: "Invalid JSON." });
+    err.status = 400;
+    err.name = "InvalidJsonError";
+    err.message = "Invalid JSON payload.";
   }
-  next(err);
-};
 
-// Database error filter
-const dbErrorHandler = (err, req, res, next) => {
-  const isDuplicateKey = err instanceof MongoServerError && err.code === 11000;
+  // --- MongoDB connection errors ---
+  const isConnectionError =
+    err.name === "MongoServerSelectionError" ||
+    err.name === "MongoNetworkError";
+
+  if (isConnectionError) {
+    err.status = 500;
+    err.name = "DatabaseError";
+    err.message = "Failed to connect to database.";
+  }
+
+  // --- Duplicate key errors ---
+  const isDuplicateKey = err.name === "MongoServerError" && err.code === 11000;
 
   if (isDuplicateKey) {
     const field = Object.keys(err.keyValue || {})[0];
     const value = field ? err.keyValue[field] : undefined;
-    const fieldName = field?.slice(8);
-
-    return res.status(409).json({
-      error: {
-        field: fieldName,
-        message: fieldName
-          ? `${fieldName} ${value} already exists.` // TODO: take field dynamicly
-          : "Duplicate key error",
-      },
-    });
+    err.status = 409;
+    err.name = "DuplicateKeyError";
+    err.field = field;
+    err.message = field
+      ? `${field} ${value} already exists.`
+      : "Data already exists";
   }
 
-  const isConnectionError =
-    err instanceof MongoServerSelectionError ||
-    err instanceof MongoNetworkError;
+  // --- JWT errors ---
+  const jwtErrors = [
+    "JsonWebTokenError",
+    "TokenExpiredError",
+    "NotBeforeError",
+  ];
+  if (jwtErrors.includes(err.name)) {
+    err.status = 401;
+    err.name = "AuthError";
 
-  if (isConnectionError) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to connect to database." });
+    if (err.name === "TokenExpiredError") err.message = "Token expired.";
+    else if (err.name === "JsonWebTokenError") err.message = "Invalid token.";
+    else if (err.name === "NotBeforeError")
+      err.message = "Token not active yet.";
   }
 
-  next(err);
+  // --- Log server errors ---
+  if (err.status >= 500) console.error(err);
+
+  // --- Send error response ---
+  sendError(res, err);
 };
 
-const authErrorHandler = (err, req, res, next) => {
-  if (err.name === "JsonWebTokenError") {
-    return res.status(401).json({ error: "Invalid token." });
-  }
-  if (err.name === "TokenExpiredError") {
-    return res.status(401).json({ error: "Token expired." });
-  }
-  if (err.name === "NotBeforeError") {
-    return res.status(401).json({ error: err.message });
-  }
-  // Malformed JWT payload (JSON.parse failed)
-  if (err instanceof SyntaxError && err.message.includes("Unexpected token")) {
-    return res.status(401).json({ error: "Malformed token payload." });
-  }
-  next(err);
-};
-
-const validationErrorHandler = (err, req, res, next) => {
-  if (err.name === "ValidationError") {
-    return res.status(err.status || 400).json({
-      error: {
-        field: err.field,
-        message: err.message,
-      },
-    });
-  }
-  next(err);
-};
-
-// FINAL error handler
-const finalErrorHandler = (err, req, res, next) => {
-  const isValidErrStatus = Number.isInteger(err.status) && err.status >= 400;
-
-  const status = isValidErrStatus ? err.status : 500;
-  const message =
-    isValidErrStatus && err.message ? err.message : "Internal Server Error";
-
-  if (status >= 500) console.error(err);
-
-  res.status(status).json({ error: message });
-};
-
-module.exports = {
-  jsonSyntaxErrorHandler,
-  dbErrorHandler,
-  authErrorHandler,
-  validationErrorHandler,
-  finalErrorHandler,
-};
+module.exports = { apiErrorHandler };
