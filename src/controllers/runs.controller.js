@@ -4,8 +4,8 @@ const { sendSuccess } = require("../utils/response.utils.js");
 const postNewRun = async (req, res) => {
   const userId = req.user.userId;
   const newRun = { userId, ...req.runData };
-  const newRunId = await runsService.createRun(newRun);
-  sendSuccess(res, { statusCode: 201, data: { runId: newRunId } });
+  const runData = await runsService.createRun(newRun);
+  sendSuccess(res, { statusCode: 201, data: { runData } });
 };
 
 const getMyRuns = async (req, res) => {

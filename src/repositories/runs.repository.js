@@ -6,7 +6,7 @@ const addNewRun = async (newRun) => {
   const runToInsert = { runId: newRunId, ...newRun };
   const savedRun = await Run.create(runToInsert);
   console.log("New run added to the database. ID:", newRunId);
-  return savedRun.runId;
+  return savedRun;
 };
 
 const findRunsByUserId = async (userId) => {
