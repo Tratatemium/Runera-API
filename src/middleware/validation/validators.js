@@ -319,7 +319,7 @@ const validateWeather = (weather) => {
   ];
   if (!weatherEnum.includes(weather)) {
     throwValidationError({
-      message: `Weather must be on of ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"] , recived: ${weather}.`,
+      message: `Weather must be one of ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"]. Received: ${weather}.`,
       field: "weather",
     });
   }
