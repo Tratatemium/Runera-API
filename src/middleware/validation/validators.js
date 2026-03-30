@@ -298,6 +298,33 @@ const validateName = (name, fieldName) => {
   }
 };
 
+const validatePerceivedEffort = (perceivedEffort) => {
+  if (perceivedEffort < 1 || perceivedEffort > 10) {
+    throwValidationError({
+      message: "PerceivedEffort must be between 1 and 10",
+      field: "perceivedEffort",
+    });
+  }
+};
+
+const validateWeather = (weather) => {
+  const weatherEnum = [
+    "sunny",
+    "cloudy",
+    "rain",
+    "snow",
+    "windy",
+    "hot",
+    "cold",
+  ];
+  if (!weatherEnum.includes(weather)) {
+    throwValidationError({
+      message: `Weather must be on of ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"] , recived: ${weather}.`,
+      field: "weather",
+    });
+  }
+};
+
 /* ================================================================================================= */
 /*  EXPORTS                                                                                          */
 /* ================================================================================================= */
@@ -314,4 +341,6 @@ module.exports = {
   validateEmail,
   validatePassword,
   validateName,
+  validatePerceivedEffort,
+  validateWeather,
 };
