@@ -26,7 +26,23 @@ const RunSchema = new mongoose.Schema(
       min: 0,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJson: {
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  },
 );
 
 RunSchema.index({ runId: 1 }, { unique: true });
