@@ -2,28 +2,29 @@ const mongoose = require("mongoose");
 
 const RunSchema = new mongoose.Schema(
   {
-    runId: {
-      type: String,
-      required: true,
-    },
-    userId: {
-      type: String,
-      required: true,
-    },
-    startTime: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    durationSec: {
+    runId: { type: String, required: true },
+    userId: { type: String, required: true },
+
+    startTime: { type: Date, required: true, default: Date.now },
+    date: { type: Date, required: true },
+
+    durationSec: { type: Number, required: true, min: 0 },
+    distanceMeters: { type: Number, required: true, min: 0 },
+
+    paceSecPerKm: { type: Number, required: true, min: 0 },
+
+    title: String,
+    notes: String,
+
+    perceivedEffort: {
       type: Number,
-      required: true,
-      min: 0,
+      min: 1,
+      max: 10,
     },
-    distanceMeters: {
-      type: Number,
-      required: true,
-      min: 0,
+
+    weather: {
+      type: String,
+      enum: ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"],
     },
   },
   {
