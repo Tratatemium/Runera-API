@@ -24,7 +24,6 @@ const runFields = [
     validate: (input) => {
       const normalized = Number(String(input).trim());
       validators.validatePositiveNumber(normalized, "durationSec");
-      validators.validateNonZero(normalized, "durationSec");
       return normalized;
     },
   },
@@ -34,7 +33,6 @@ const runFields = [
     validate: (input) => {
       const normalized = Number(String(input).trim());
       validators.validatePositiveNumber(normalized, "distanceMeters");
-      validators.validateNonZero(normalized, "distanceMeters");
       return normalized;
     },
   },
