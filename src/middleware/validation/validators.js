@@ -196,6 +196,15 @@ const validatePositiveNumber = (number, numberName) => {
   }
 };
 
+const validateNonZero = (number, numberName) => {
+  if (number === 0) {
+    throwValidationError({
+      message: `${numberName} can not be 0.`,
+      field: numberName,
+    });
+  }
+};
+
 const validateUsername = (username) => {
   if (typeof username !== "string") {
     throwValidationError({
@@ -337,6 +346,7 @@ module.exports = {
   validateUUID,
   validateISO,
   validatePositiveNumber,
+  validateNonZero,
   validateUsername,
   validateEmail,
   validatePassword,

@@ -8,8 +8,8 @@ const RunSchema = new mongoose.Schema(
     startTime: { type: Date, required: true, default: Date.now },
     date: { type: Date, required: true },
 
-    durationSec: { type: Number, required: true, min: 0 },
-    distanceMeters: { type: Number, required: true, min: 0 },
+    durationSec: { type: Number, required: true, min: 1 },
+    distanceMeters: { type: Number, required: true, min: 1 },
 
     paceSecPerKm: { type: Number, required: true, min: 0 },
 

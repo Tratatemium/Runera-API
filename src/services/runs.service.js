@@ -1,12 +1,18 @@
 const { NotFoundError } = require("../errors/errors.js");
 const runsRepo = require("../repositories/runs.repository.js");
+const { getStartOfDay } = require("../utils/runs.utils.js");
 
 const throwRunNotFoundError = (runId) => {
   throw new NotFoundError(`No run with ID ${runId} found!`);
 };
 
 const createRun = async (newRun) => {
-  return await runsRepo.addNewRun(newRun);
+  const enriched = {
+    ...newRun,
+    date: getStartOfDay(newRun.startTime),
+    paceSecPerKm: newRun.timeSeconds / (newRun.distanceMeters / 1000),
+  };
+  return await runsRepo.addNewRun(enriched);
 };
 
 const getRunsByUser = async (userId) => {
