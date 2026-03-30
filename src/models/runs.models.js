@@ -26,8 +26,8 @@ const RunSchema = new mongoose.Schema(
       min: 0,
     },
   },
-  { timestamps: true },
   {
+    timestamps: true,
     toJson: {
       transform: (_, ret) => {
         delete ret._id;
