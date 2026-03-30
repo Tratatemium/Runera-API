@@ -83,7 +83,15 @@ const validateRun = ({ mode = "require_all" }) => {
       object: req.body,
       objectName: "Run data",
       requiredFields: ["startTime", "durationSec", "distanceMeters"],
-      allowedFields: ["title", "notes", "perceivedEffort", "weather"],
+      allowedFields: [
+        "startTime",
+        "durationSec",
+        "distanceMeters",
+        "title",
+        "notes",
+        "perceivedEffort",
+        "weather",
+      ],
       mode: mode,
     });
 

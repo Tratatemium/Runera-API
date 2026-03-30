@@ -10,7 +10,7 @@ const createRun = async (newRun) => {
   const enriched = {
     ...newRun,
     date: getStartOfDay(newRun.startTime),
-    paceSecPerKm: newRun.timeSeconds / (newRun.distanceMeters / 1000),
+    paceSecPerKm: newRun.durationSec / (newRun.distanceMeters / 1000),
   };
   return await runsRepo.addNewRun(enriched);
 };
