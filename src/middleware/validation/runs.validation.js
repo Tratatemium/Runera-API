@@ -36,18 +36,52 @@ const runFields = [
       return normalized;
     },
   },
+  {
+    key: "title",
+    input: null,
+    validate: (input) => {
+      validators.assertString(input, "title");
+      return input;
+    },
+  },
+  {
+    key: "notes",
+    input: null,
+    validate: (input) => {
+      validators.assertString(input, "notes");
+      return input;
+    },
+  },
+  {
+    key: "perceivedEffort",
+    input: null,
+    validate: (input) => {
+      const normalized = Number(String(input).trim());
+      validators.validatePositiveNumber(normalized, "perceivedEffort");
+      validators.validatePerceivedEffort(normalized);
+      return normalized;
+    },
+  },
+  {
+    key: "weather",
+    input: null,
+    validate: (input) => {
+      validators.assertString(input, "weather");
+      validators.validateWeather(input);
+      return input;
+    },
+  },
 ];
 
 const validateRun = ({ mode = "require_all" }) => {
   return (req, res, next) => {
     validators.validateJsonContentType(req);
 
-    const fieldKeys = runFields.map((f) => f.key);
     validators.assertRequestFields({
       object: req.body,
       objectName: "Run data",
-      requiredFields: fieldKeys,
-      allowedFields: fieldKeys,
+      requiredFields: ["startTime", "durationSec", "distanceMeters"],
+      allowedFields: ["title", "notes", "perceivedEffort", "weather"],
       mode: mode,
     });
 
