@@ -24,7 +24,16 @@ const RunSchema = new mongoose.Schema(
 
     weather: {
       type: String,
-      enum: ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"],
+      enum: [
+        "sunny",
+        "partly_cloudy",
+        "cloudy",
+        "rain",
+        "snow",
+        "windy",
+        "hot",
+        "cold",
+      ],
     },
   },
   {

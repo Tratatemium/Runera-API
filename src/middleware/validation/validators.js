@@ -310,6 +310,7 @@ const validatePerceivedEffort = (perceivedEffort) => {
 const validateWeather = (weather) => {
   const weatherEnum = [
     "sunny",
+    "partly_cloudy",
     "cloudy",
     "rain",
     "snow",
@@ -319,7 +320,7 @@ const validateWeather = (weather) => {
   ];
   if (!weatherEnum.includes(weather)) {
     throwValidationError({
-      message: `Weather must be one of ["sunny", "cloudy", "rain", "snow", "windy", "hot", "cold"]. Received: ${weather}.`,
+      message: `Weather must be one of ["sunny", "partly_cloudy", "cloudy", "rain", "snow", "windy", "hot", "cold"]. Received: ${weather}.`,
       field: "weather",
     });
   }
