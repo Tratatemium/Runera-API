@@ -40,7 +40,11 @@ const updateRunById = async (runId, runUpdate) => {
     paceSecPerKm: durationSec / (distanceMeters / 1000),
   };
 
-  return await runsRepo.updateRunById(runId, enrichedUpdate);
+  const updatedRun = await runsRepo.updateRunById(runId, enrichedUpdate);
+  if (!updatedRun) {
+    throwRunNotFoundError(runId);
+  }
+  return updatedRun;
 };
 
 const deleteRunById = async (runId) => {
