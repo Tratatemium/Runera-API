@@ -15,10 +15,21 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+const allowedOrigins = ["https://localhost:3000", "https://runera.vercel.app/"];
+
 app.use(
   cors({
-    origin: "https://localhost:3000",
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
