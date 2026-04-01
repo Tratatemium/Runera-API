@@ -16,6 +16,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = ["https://localhost:3000", "https://runera.vercel.app"];
+const allowedVercelHostPattern = /^runera(-.+)?\.vercel\.app$/i;
+
+const isAllowedVercelOrigin = (origin) => {
+  try {
+    const { hostname } = new URL(origin);
+    return allowedVercelHostPattern.test(hostname);
+  } catch {
+    return false;
+  }
+};
 
 app.use(
   cors({
@@ -23,11 +33,11 @@ app.use(
       if (
         !origin ||
         allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app")
+        isAllowedVercelOrigin(origin)
       ) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(null, false);
       }
     },
     credentials: true,
