@@ -15,11 +15,33 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+const allowedOrigins = ["https://localhost:3000", "https://runera.vercel.app"];
+const allowedVercelHostPattern = /^runera(?:-[a-z0-9-]+)?\.vercel\.app$/i;
+
+const isAllowedVercelOrigin = (origin) => {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === "https:" && allowedVercelHostPattern.test(hostname);
+  } catch {
+    return false;
+  }
+};
+
 app.use(
   cors({
-    origin: "https://localhost:3000",
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        isAllowedVercelOrigin(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   }),
 );
 
