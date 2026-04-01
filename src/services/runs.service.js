@@ -27,9 +27,24 @@ const getRunById = async (runId) => {
 };
 
 const updateRunById = async (runId, runUpdate) => {
-  const runData = await runsRepo.updateRunById(runId, runUpdate);
-  if (!runData) throwRunNotFoundError(runId);
-  return runData;
+  const existingRun = await runsRepo.findRunById(runId);
+  if (!existingRun) throwRunNotFoundError(runId);
+
+  const startTime = runUpdate.startTime ?? existingRun.startTime;
+  const durationSec = runUpdate.durationSec ?? existingRun.durationSec;
+  const distanceMeters = runUpdate.distanceMeters ?? existingRun.distanceMeters;
+
+  const enrichedUpdate = {
+    ...runUpdate,
+    date: getStartOfDay(startTime),
+    paceSecPerKm: durationSec / (distanceMeters / 1000),
+  };
+
+  const updatedRun = await runsRepo.updateRunById(runId, enrichedUpdate);
+  if (!updatedRun) {
+    throwRunNotFoundError(runId);
+  }
+  return updatedRun;
 };
 
 const deleteRunById = async (runId) => {
