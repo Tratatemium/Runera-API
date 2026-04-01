@@ -16,12 +16,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = ["https://localhost:3000", "https://runera.vercel.app"];
-const allowedVercelHostPattern = /^runera(-.+)?\.vercel\.app$/i;
+const allowedVercelHostPattern = /^runera(?:-[a-z0-9-]+)?\.vercel\.app$/i;
 
 const isAllowedVercelOrigin = (origin) => {
   try {
-    const { hostname } = new URL(origin);
-    return allowedVercelHostPattern.test(hostname);
+    const { protocol, hostname } = new URL(origin);
+    return protocol === "https:" && allowedVercelHostPattern.test(hostname);
   } catch {
     return false;
   }
@@ -41,6 +41,7 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   }),
 );
 
